@@ -5,3 +5,4 @@ accessModifier: internal
 filter:
   paths:
     - v1/apps
+    - v1/apps/{id}/appStoreVersions
