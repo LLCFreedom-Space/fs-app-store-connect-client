@@ -13,6 +13,9 @@ This Swift package provides a client library for interacting with the App Store 
 
 ## Features
 
+- Fetch information from the App Store about apps by bundle ID about all your own apps.
+Handles different response formats (JSON and JSONP).
+Throws informative errors for server errors and not found cases.
 
 ## Installation
 
