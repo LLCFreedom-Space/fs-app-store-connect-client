@@ -14,12 +14,12 @@ public final class AppStoreConnectClient {
     /// Initializes the client with App Store Connect credentials.
     /// - Parameter credentials: Credentials needed to authenticate with the App Store Connect API.
     /// - Throws: An error if initialization fails.
-    public init(with credentials: AppStoreConnectCredentials) throws {
+    public init(with credentials: Credentials) throws {
         self.client = try Client(
             serverURL: Servers.server1(),
             transport: URLSessionTransport(),
             middlewares: [
-                JWTMiddleware(credentials: credentials)
+                AuthenticationMiddleware(credentials: credentials)
             ]
         )
     }
@@ -27,13 +27,13 @@ public final class AppStoreConnectClient {
     /// Fetches collection of apps from the App Store Connect API.
     /// - Returns: An array of `App` objects.
     /// - Throws: An error if the fetch operation fails.
-    public func fetchApps() async throws -> [App] {
+    public func fetchApps() async throws -> [Application] {
         let response = try await client.apps_hyphen_get_collection()
         switch response {
         case .ok(let okResponse):
             switch okResponse.body {
             case .json(let json):
-                return json.data.compactMap({ App(schema: $0) })
+                return json.data.compactMap({ Application(schema: $0) })
             }
         case .badRequest(let result):
             throw AppStoreConnectError.badRequest
@@ -50,7 +50,7 @@ public final class AppStoreConnectClient {
     /// - Parameter app: The app for which to fetch versions.
     /// - Returns: An array of `Release` objects.
     /// - Throws: An error if the fetch operation fails.
-    public func fetchVersions(for app: App) async throws -> [Release] {
+    public func fetchVersions(for app: Application) async throws -> [Release] {
         let response = try await client.apps_hyphen_appStoreVersions_hyphen_get_to_many_related(
             path: .init(id: app.id)
         )

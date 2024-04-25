@@ -69,7 +69,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         var mockClient = MockClient()
         mockClient.result = "ok"
         let client = AppStoreConnectClient(client: mockClient)
-        let app = App(id: "", bundleID: "")
+        let app = Application(id: "", bundleID: "")
         let apps = try await client.fetchVersions(for: app)
         XCTAssertEqual(1, apps.count)
         XCTAssertEqual(apps.first?.appStoreState, "ACCEPTED")
@@ -80,7 +80,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         var mockClient = MockClient()
         mockClient.result = "badRequest"
         let client = AppStoreConnectClient(client: mockClient)
-        let app = App(id: "", bundleID: "")
+        let app = Application(id: "", bundleID: "")
         do {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
@@ -93,7 +93,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         var mockClient = MockClient()
         mockClient.result = "forbidden"
         let client = AppStoreConnectClient(client: mockClient)
-        let app = App(id: "", bundleID: "")
+        let app = Application(id: "", bundleID: "")
         do {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
@@ -106,7 +106,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         var mockClient = MockClient()
         mockClient.result = "notFound"
         let client = AppStoreConnectClient(client: mockClient)
-        let app = App(id: "", bundleID: "")
+        let app = Application(id: "", bundleID: "")
         do {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
@@ -119,7 +119,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         var mockClient = MockClient()
         mockClient.result = "unauthorized"
         let client = AppStoreConnectClient(client: mockClient)
-        let app = App(id: "", bundleID: "")
+        let app = Application(id: "", bundleID: "")
         do {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
@@ -132,7 +132,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         var mockClient = MockClient()
         mockClient.result = "undocumented"
         let client = AppStoreConnectClient(client: mockClient)
-        let app = App(id: "", bundleID: "")
+        let app = Application(id: "", bundleID: "")
         do {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")

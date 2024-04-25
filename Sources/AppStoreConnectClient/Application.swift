@@ -7,7 +7,7 @@
 
 import Foundation
 /// Represents an app in the App Store Connect ecosystem.
-public struct App {
+public struct Application {
     /// The identifier of the app.
     public let id: String
     /// The bundle identifier of the app.

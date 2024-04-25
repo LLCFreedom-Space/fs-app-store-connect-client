@@ -1,5 +1,5 @@
 //
-//  JWTMiddlewareTests.swift
+//  AuthenticationMiddlewareTests.swift
 //
 //
 //  Created by Mykola Vasyk on 23.04.2024.
@@ -10,11 +10,11 @@ import JWTKit
 import OpenAPIRuntime
 @testable import AppStoreConnectClient
 
-final class JWTMiddlewareTests: XCTestCase {
+final class AuthenticationMiddlewareTests: XCTestCase {
     func testCreateJWT() throws {
-        let credentials = AppStoreConnectCredentials(
+        let credentials = Credentials(
             issuerId: UUID().uuidString,
-            privateKeyId: UUID().uuidString,
+            keyId: UUID().uuidString,
             privateKey:
             """
             -----BEGIN PRIVATE KEY-----
@@ -25,16 +25,16 @@ final class JWTMiddlewareTests: XCTestCase {
             -----END PRIVATE KEY-----
             """
         )
-        let jWTMiddleware = JWTMiddleware()
-        let token = try jWTMiddleware.createJWT(credentials)
+        let authenticationMiddleware = AuthenticationMiddleware()
+        let token = try authenticationMiddleware.createJWT(credentials)
         XCTAssertNoThrow(token)
         XCTAssertNotNil(token)
     }
     
     func testCreateJWTInvalidPrivateKey() throws {
-        let credentials = AppStoreConnectCredentials(
+        let credentials = Credentials(
             issuerId: UUID().uuidString,
-            privateKeyId: UUID().uuidString,
+            keyId: UUID().uuidString,
             privateKey:
             """
             MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgX6js0tmnxknIV+w0
@@ -43,8 +43,8 @@ final class JWTMiddlewareTests: XCTestCase {
             bXp8F8EX
             """
         )
-        let jWTMiddleware = JWTMiddleware()
-        XCTAssertThrowsError(try jWTMiddleware.createJWT(credentials)) { error in
+        let authenticationMiddleware = AuthenticationMiddleware()
+        XCTAssertThrowsError(try authenticationMiddleware.createJWT(credentials)) { error in
             XCTAssertEqual(error as? AppStoreConnectError, .invalidPrivateKey)
         }
     }

@@ -21,8 +21,6 @@ public enum AppStoreConnectError: Error, Equatable {
     case notFound
     /// Invalid access token, indicated by App Store Connect server.
     case invalidToken
-    /// The provided JWT is invalid.
-    case invalidJWT
     /// The provided private key is invalid.
     case invalidPrivateKey
     /// The provided payload is invalid.

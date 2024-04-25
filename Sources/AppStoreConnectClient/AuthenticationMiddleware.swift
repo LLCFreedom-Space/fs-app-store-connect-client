@@ -1,5 +1,5 @@
 //
-//  JWTMiddleware.swift
+//  AuthenticationMiddleware.swift
 //
 //
 //  Created by Mykola Vasyk on 22.04.2024.
@@ -11,9 +11,9 @@ import HTTPTypes
 import JWTKit
 
 /// Struct representing JWT Middleware conforming to ClientMiddleware protocol
-struct JWTMiddleware: ClientMiddleware {
+package struct AuthenticationMiddleware: ClientMiddleware {
     /// The credentials required for generating JWT.
-    var credentials: AppStoreConnectCredentials?
+    var credentials: Credentials?
     
     /// Intercepts an outgoing HTTP request and an incoming HTTP response.
     /// - Parameters:
@@ -24,7 +24,7 @@ struct JWTMiddleware: ClientMiddleware {
     ///   - next: A closure that calls the next middleware, or the transport.
     /// - Returns: An HTTP response and its body.
     /// - Throws: An error if interception of the request and response fails.
-    func intercept(
+    package func intercept(
         _ request: HTTPRequest,
         body: HTTPBody?,
         baseURL: URL,
@@ -44,14 +44,14 @@ struct JWTMiddleware: ClientMiddleware {
         /// - Parameter credentials: The App Store Connect credentials.
         /// - Returns: A JWT string.
         /// - Throws: An error if JWT signing fails or credentials are invalid.
-    func createJWT(_ credentials: AppStoreConnectCredentials) throws -> String {
+    func createJWT(_ credentials: Credentials) throws -> String {
         let signers = JWTSigners()
         do {
             try signers.use(.es256(key: .private(pem: credentials.privateKey)))
         } catch {
             throw AppStoreConnectError.invalidPrivateKey
         }
-        let jwkID = JWKIdentifier(string: credentials.privateKeyId)
+        let jwkID = JWKIdentifier(string: credentials.keyId)
         let issuer = IssuerClaim(value: credentials.issuerId)
         let payload = Payload(
             issueID: issuer,
