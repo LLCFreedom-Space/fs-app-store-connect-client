@@ -9,9 +9,10 @@ concurrency:
 
 jobs:
   SwiftLint:
-    runs-on: macos-latest
+    runs-on: macOS-13
     steps:
-      - uses: actions/checkout@v1
-
-      - name: Lint code using SwiftLint
-        run: swiftlint lint --reporter github-actions-logging
+      - uses: actions/checkout@v4
+      - name: Switch Xcode 🔄
+        run: sudo xcode-select --switch /Applications/Xcode_15.0.app
+      - name: Swift Lint
+        run: swiftlint --strict

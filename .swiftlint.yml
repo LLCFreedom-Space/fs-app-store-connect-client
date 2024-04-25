@@ -127,16 +127,10 @@ custom_rules:
     message: "Numbers smell; define a constant instead."
     severity: warning
 
-    #    multiline_commented_code:
-    #       regex: '^\s*[a-z]'
-    #       match_kinds: comment
-    #       message: "Comment starting with lowercase letter - did you forget to delete old code?"
-    #       severity: warning
-
-    # commented_code:
-    # regex: '(?<!:|\/)\/\/\h*[a-z.](?!swiftlint)'
-    # message: "Comment starting with lowercase letter - did you forget to delete old code?"
-    # severity: warning
+  commented_code:
+    regex: '(?<!:|\/)\/\/\h*[a-z.](?!swiftlint)'
+    message: "Comment starting with lowercase letter - did you forget to delete old code?"
+    severity: warning
 
 # binary rules can set their severity level
 attributes:
