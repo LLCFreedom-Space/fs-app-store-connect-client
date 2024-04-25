@@ -13,9 +13,9 @@ This Swift package provides a client library for interacting with the App Store 
 
 ## Features
 
-- Fetch information from the App Store about apps by bundle ID about all your own apps.
-Handles different response formats (JSON and JSONP).
-Throws informative errors for server errors and not found cases.
+- Fetch App Store information for your own apps using secure JWT-authenticated requests.
+- Handles JSON formats response.
+- Throws informative errors for server errors and not found cases.
 
 ## Installation
 
@@ -34,7 +34,21 @@ import AppStoreConnectClient
 ```
 
 ## Usage
-
+Here's an example of how to use the AppStoreConnectClient to fetch information about an apps:
+```swift
+let client = try AppStoreConnectClient(with: credentials)
+do {
+let fetchedApps = try await client.fetchApps()
+let apps = try await client.fetchApps()
+guard let app = apps.first(where: { $0.bundleID == "com.freedomspace.dealogx" }) else {
+            throw AppStoreConnectError.invalidBundleId
+        }
+let releases = try await client.fetchVersions(for: app)
+// ... access to properties of apps
+} catch {
+print("Error fetching: \(error)")
+}
+```
 
 ## Contributions
 
