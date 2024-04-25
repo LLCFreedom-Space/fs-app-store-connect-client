@@ -60,7 +60,8 @@ final class AppStoreConnectClientTests: XCTestCase {
             _ = try await client.fetchApps()
             XCTFail("Expected error not thrown")
         } catch {
-            XCTAssertEqual(AppStoreConnectError.serverError(errorCode: 501).localizedDescription, error.localizedDescription)
+            let errorCode = 501
+            XCTAssertEqual(AppStoreConnectError.serverError(errorCode: errorCode).localizedDescription, error.localizedDescription)
         }
     }
     
@@ -136,7 +137,8 @@ final class AppStoreConnectClientTests: XCTestCase {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
         } catch {
-            XCTAssertEqual(AppStoreConnectError.serverError(errorCode: 501).localizedDescription, error.localizedDescription)
+            let errorCode = 501
+            XCTAssertEqual(AppStoreConnectError.serverError(errorCode: errorCode).localizedDescription, error.localizedDescription)
         }
     }
 }

@@ -13,7 +13,7 @@ import JWTKit
 /// Struct representing JWT Middleware conforming to ClientMiddleware protocol
 struct JWTMiddleware: ClientMiddleware {
     /// The credentials required for generating JWT.
-    var credentials: AppStoreConnectCredentials? = nil
+    var credentials: AppStoreConnectCredentials?
     
     /// Intercepts an outgoing HTTP request and an incoming HTTP response.
     /// - Parameters:

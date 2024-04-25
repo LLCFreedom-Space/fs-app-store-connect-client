@@ -26,7 +26,9 @@ public struct App {
     /// - Parameter schema: The OpenAPI schema representation of the app.
     /// - Returns: An instance of `App` if initialization is successful, otherwise `nil`.
     init?(schema: Components.Schemas.App) {
-        guard let bundleID = schema.attributes?.bundleId else { return nil }
+        guard let bundleID = schema.attributes?.bundleId else {
+            return nil
+        }
         self.id = schema.id
         self.bundleID = bundleID
     }

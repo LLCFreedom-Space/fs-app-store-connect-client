@@ -1,6 +1,3 @@
-// The Swift Programming Language
-// https://docs.swift.org/swift-book
-
 import OpenAPIURLSession
 import Foundation
 
@@ -22,7 +19,7 @@ public final class AppStoreConnectClient {
             serverURL: Servers.server1(),
             transport: URLSessionTransport(),
             middlewares: [
-                JWTMiddleware(credentials: credentials),
+                JWTMiddleware(credentials: credentials)
             ]
         )
     }
@@ -38,11 +35,11 @@ public final class AppStoreConnectClient {
             case .json(let json):
                 return json.data.compactMap({ App(schema: $0) })
             }
-        case .badRequest(_):
+        case .badRequest(let result):
             throw AppStoreConnectError.badRequest
-        case .forbidden(_):
+        case .forbidden(let result):
             throw AppStoreConnectError.forbidden
-        case .unauthorized(_):
+        case .unauthorized(let result):
             throw AppStoreConnectError.unauthorized
         case .undocumented(let statusCode, _):
             throw AppStoreConnectError.serverError(errorCode: statusCode)
@@ -63,13 +60,13 @@ public final class AppStoreConnectClient {
             case .json(let json):
                 return json.data.compactMap({ Release(schema: $0) })
             }
-        case .badRequest(_):
+        case .badRequest(let result):
             throw AppStoreConnectError.badRequest
-        case .forbidden(_):
+        case .forbidden(let result):
             throw AppStoreConnectError.forbidden
-        case .notFound(_):
+        case .notFound(let result):
             throw AppStoreConnectError.notFound
-        case .unauthorized(_):
+        case .unauthorized(let result):
             throw AppStoreConnectError.unauthorized
         case .undocumented(let statusCode, _):
             throw AppStoreConnectError.serverError(errorCode: statusCode)

@@ -18,7 +18,7 @@ public struct Payload: JWTPayload {
     /// Represents the audience claim.
     var audience: AudienceClaim
     
-    ///Verifies the payload using the provided JWTSigner.
+    /// Verifies the payload using the provided JWTSigner.
     /// - Parameter signer: The JWTSigner instance used for verification.
     /// - Throws: Throws an error if the payload verification fails.
     public func verify(using signer: JWTSigner) throws {

@@ -11,6 +11,7 @@ import OpenAPIRuntime
 
 struct MockClient: APIProtocol {
     var result: String?
+    let statusCode = 501
     func apps_hyphen_appStoreVersions_hyphen_get_to_many_related(
         _ input: Operations.apps_hyphen_appStoreVersions_hyphen_get_to_many_related.Input
     ) async throws -> Operations.apps_hyphen_appStoreVersions_hyphen_get_to_many_related.Output {
@@ -28,9 +29,9 @@ struct MockClient: APIProtocol {
         case "undocumented":
             return .undocumented(statusCode: 501, UndocumentedPayload())
         case .none:
-            return .undocumented(statusCode: 501, UndocumentedPayload())
-        case .some(_):
-            return .undocumented(statusCode: 501, UndocumentedPayload())
+            return .undocumented(statusCode: statusCode, UndocumentedPayload())
+        case .some(let some):
+            return .undocumented(statusCode: statusCode, UndocumentedPayload())
         }
     }
     
@@ -47,11 +48,11 @@ struct MockClient: APIProtocol {
         case "unauthorized":
             return .unauthorized(.init(body: .json(MockObjects.errorResponse)))
         case "undocumented":
-            return .undocumented(statusCode: 501, UndocumentedPayload())
+            return .undocumented(statusCode: statusCode, UndocumentedPayload())
         case .none:
-            return .undocumented(statusCode: 501, UndocumentedPayload())
-        case .some(_):
-            return .undocumented(statusCode: 501, UndocumentedPayload())
+            return .undocumented(statusCode: statusCode, UndocumentedPayload())
+        case .some(let some):
+            return .undocumented(statusCode: statusCode, UndocumentedPayload())
         }
     }
 }
