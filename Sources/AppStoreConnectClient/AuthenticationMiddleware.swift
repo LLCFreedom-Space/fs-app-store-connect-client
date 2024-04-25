@@ -1,3 +1,20 @@
+// FS App Store Connect Client
+// Copyright (C) 2024  FREEDOM SPACE, LLC
+
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU Affero General Public License as published
+//  by the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Affero General Public License for more details.
+//
+//  You should have received a copy of the GNU Affero General Public License
+//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 //
 //  AuthenticationMiddleware.swift
 //
@@ -10,8 +27,33 @@ import Foundation
 import HTTPTypes
 import JWTKit
 
-/// Struct representing JWT Middleware conforming to ClientMiddleware protocol
+/// Struct representing Authentication Middleware conforming to ClientMiddleware protocol
 package struct AuthenticationMiddleware: ClientMiddleware {
+    /// Represents a payload structure conforming to the JWTPayload protocol.
+    /// This structure contains claims related to JWT such as issuer, expiration, and audience.
+     struct Payload: JWTPayload {
+        /// Represents the issuer claim.
+        var issueID: IssuerClaim
+        /// Represents the expiration claim.
+        var expiration: ExpirationClaim
+        /// Represents the audience claim.
+        var audience: AudienceClaim
+        
+        /// Verifies the payload using the provided JWTSigner.
+        /// - Parameter signer: The JWTSigner instance used for verification.
+        /// - Throws: Throws an error if the payload verification fails.
+        func verify(using signer: JWTSigner) throws {
+            try expiration.verifyNotExpired()
+        }
+        
+        /// Coding keys for encoding and decoding the payload.
+        private enum CodingKeys: String, CodingKey {
+            case issueID = "iss"
+            case expiration = "exp"
+            case audience = "aud"
+        }
+    }
+    
     /// The credentials required for generating JWT.
     var credentials: Credentials?
     
