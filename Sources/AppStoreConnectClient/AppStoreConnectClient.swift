@@ -54,7 +54,9 @@ public final class AppStoreConnectClient {
     /// - Returns: An array of `Release` objects.
     /// - Throws: An error if the fetch operation fails.
     public func fetchVersions(for app: App) async throws -> [Release] {
-        let response = try await client.apps_hyphen_appStoreVersions_hyphen_get_to_many_related(path: .init(id: app.id))
+        let response = try await client.apps_hyphen_appStoreVersions_hyphen_get_to_many_related(
+            path: .init(id: app.id)
+        )
         switch response {
         case .ok(let okResponse):
             switch okResponse.body {

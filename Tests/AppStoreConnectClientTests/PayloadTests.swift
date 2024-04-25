@@ -13,7 +13,11 @@ final class PayloadTests: XCTestCase {
     func testPayload() {
         let expiration = Date()
         let expirationClaim = ExpirationClaim(value: expiration)
-        let payload = Payload(issueID: "issueID", expiration: expirationClaim, audience: "audience")
+        let payload = Payload(
+            issueID: "issueID",
+            expiration: expirationClaim,
+            audience: "audience"
+        )
         XCTAssertEqual(payload.issueID, "issueID")
         XCTAssertEqual(payload.expiration, expirationClaim)
         XCTAssertEqual(payload.audience, "audience")

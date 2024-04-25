@@ -31,4 +31,3 @@ class AppTests: XCTestCase {
         XCTAssertNil(app)
     }
 }
-

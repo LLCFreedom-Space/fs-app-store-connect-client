@@ -10,7 +10,11 @@ import XCTest
 
 final class AppStoreConnectCredentialsTests: XCTestCase {
     func testAppStoreConnectCredentials() {
-        let appStoreConnectCredentials = AppStoreConnectCredentials(issuerId: "issuerId", privateKeyId: "privateKeyId", privateKey: "privateKey")
+        let appStoreConnectCredentials = AppStoreConnectCredentials(
+            issuerId: "issuerId",
+            privateKeyId: "privateKeyId",
+            privateKey: "privateKey"
+        )
         XCTAssertEqual(appStoreConnectCredentials.issuerId, "issuerId")
         XCTAssertEqual(appStoreConnectCredentials.privateKeyId, "privateKeyId")
         XCTAssertEqual(appStoreConnectCredentials.privateKey, "privateKey")

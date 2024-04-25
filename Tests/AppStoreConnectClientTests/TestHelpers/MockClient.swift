@@ -11,7 +11,9 @@ import OpenAPIRuntime
 
 struct MockClient: APIProtocol {
     var result: String?
-    func apps_hyphen_appStoreVersions_hyphen_get_to_many_related(_ input: Operations.apps_hyphen_appStoreVersions_hyphen_get_to_many_related.Input) async throws -> Operations.apps_hyphen_appStoreVersions_hyphen_get_to_many_related.Output {
+    func apps_hyphen_appStoreVersions_hyphen_get_to_many_related(
+        _ input: Operations.apps_hyphen_appStoreVersions_hyphen_get_to_many_related.Input
+    ) async throws -> Operations.apps_hyphen_appStoreVersions_hyphen_get_to_many_related.Output {
         switch result {
         case "ok":
             return .ok(.init(body: .json(MockObjects.appStoreVersionsResponse)))
@@ -32,7 +34,9 @@ struct MockClient: APIProtocol {
         }
     }
     
-    func apps_hyphen_get_collection(_ input: Operations.apps_hyphen_get_collection.Input) async throws -> Operations.apps_hyphen_get_collection.Output {
+    func apps_hyphen_get_collection(
+        _ input: Operations.apps_hyphen_get_collection.Input
+    ) async throws -> Operations.apps_hyphen_get_collection.Output {
         switch result {
         case "ok":
             return .ok(.init(body: .json(MockObjects.appsResponse)))
@@ -50,6 +54,4 @@ struct MockClient: APIProtocol {
             return .undocumented(statusCode: 501, UndocumentedPayload())
         }
     }
-    
-    
 }

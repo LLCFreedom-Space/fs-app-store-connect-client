@@ -10,7 +10,14 @@ import XCTest
 
 final class ReleaseTests: XCTestCase {
     func testRelease() {
-        let schema = Components.Schemas.AppStoreVersion(_type: .appStoreVersions, id: "",attributes: Components.Schemas.AppStoreVersion.attributesPayload(versionString: "1.2.3", appStoreState: .ACCEPTED))
+        let schema = Components.Schemas.AppStoreVersion(
+            _type: .appStoreVersions,
+            id: "",
+            attributes: Components.Schemas.AppStoreVersion.attributesPayload(
+                versionString: "1.2.3",
+                appStoreState: .ACCEPTED
+            )
+        )
         let release = Release(schema: schema)
         let state = release?.appStoreState
         let version = release?.version
@@ -19,7 +26,14 @@ final class ReleaseTests: XCTestCase {
     }
     
     func testReleaseNil() {
-        let schema = Components.Schemas.AppStoreVersion(_type: .appStoreVersions, id: "",attributes: Components.Schemas.AppStoreVersion.attributesPayload(versionString: nil, appStoreState: .ACCEPTED))
+        let schema = Components.Schemas.AppStoreVersion(
+            _type: .appStoreVersions,
+            id: "",
+            attributes: Components.Schemas.AppStoreVersion.attributesPayload(
+                versionString: nil,
+                appStoreState: .ACCEPTED
+            )
+        )
         let release = Release(schema: schema)
         XCTAssertNil(release)
     }
