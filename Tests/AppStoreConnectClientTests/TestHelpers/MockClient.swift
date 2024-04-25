@@ -27,7 +27,7 @@ struct MockClient: APIProtocol {
         case "unauthorized":
             return .unauthorized(.init(body: .json(MockObjects.errorResponse)))
         case "undocumented":
-            return .undocumented(statusCode: 501, UndocumentedPayload())
+            return .undocumented(statusCode: statusCode, UndocumentedPayload())
         case .none:
             return .undocumented(statusCode: statusCode, UndocumentedPayload())
         case .some(let some):
