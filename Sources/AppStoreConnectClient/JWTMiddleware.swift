@@ -1,6 +1,6 @@
 //
 //  JWTMiddleware.swift
-//  
+//
 //
 //  Created by Mykola Vasyk on 22.04.2024.
 //
@@ -10,9 +10,20 @@ import Foundation
 import HTTPTypes
 import JWTKit
 
+/// Struct representing JWT Middleware conforming to ClientMiddleware protocol
 struct JWTMiddleware: ClientMiddleware {
-    let credentials: AppStoreConnectCredentials
+    /// The credentials required for generating JWT.
+    var credentials: AppStoreConnectCredentials? = nil
     
+    /// Intercepts an outgoing HTTP request and an incoming HTTP response.
+    /// - Parameters:
+    ///   - request: An HTTP request.
+    ///   - body: An HTTP request body.
+    ///   - baseURL: A server base URL.
+    ///   - operationID: The identifier of the OpenAPI operation.
+    ///   - next: A closure that calls the next middleware, or the transport.
+    /// - Returns: An HTTP response and its body.
+    /// - Throws: An error if interception of the request and response fails.
     func intercept(
         _ request: HTTPRequest,
         body: HTTPBody?,
@@ -21,38 +32,40 @@ struct JWTMiddleware: ClientMiddleware {
         next: @Sendable (HTTPRequest, HTTPBody?, URL) async throws -> (HTTPResponse, HTTPBody?)
     ) async throws -> (HTTPResponse, HTTPBody?) {
         var request = request
+        guard let credentials = credentials else {
+            throw AppStoreConnectError.noHaveCredentials
+        }
         let jwt = try createJWT(credentials)
         request.headerFields[.authorization] = "Bearer \(jwt)"
         return try await next(request, body, baseURL)
     }
     
+    /// Creates a JWT (JSON Web Token) using the provided credentials.
+        /// - Parameter credentials: The App Store Connect credentials.
+        /// - Returns: A JWT string.
+        /// - Throws: An error if JWT signing fails or credentials are invalid.
     func createJWT(_ credentials: AppStoreConnectCredentials) throws -> String {
-        guard let signer = try? JWTSigner.es256(
-            key: ECDSAKey.private(pem: credentials.privateKey))
-        else {
-            throw AppStoreConnectError.invalidJWT
+        let signers = JWTSigners()
+        do {
+            try signers.use(.es256(key: .private(pem: credentials.privateKey)))
+        } catch {
+            throw AppStoreConnectError.invalidPrivateKey
         }
-        
+        let jwkID = JWKIdentifier(string: credentials.privateKeyId)
+        let issuer = IssuerClaim(value: credentials.issuerId)
         let payload = Payload(
-            issueID: IssuerClaim(value: credentials.issuerId),
+            issueID: issuer,
             expiration: ExpirationClaim(
                 value: Date(
                     timeInterval: 2 * 60,
                     since: Date()
                 )
             ),
-            audience: AudienceClaim(
-                value: "appstoreconnect-v1"
-            )
+            audience: AudienceClaim(value: "appstoreconnect-v1")
         )
-        
-        guard let jwt = try? signer.sign(
-            payload,
-            kid: JWKIdentifier(string: credentials.privateKeyId)
-        ) else {
-            throw AppStoreConnectError.invalidJWT
+        guard let jwt = try? signers.sign(payload, kid: jwkID) else {
+            throw AppStoreConnectError.invalidSign
         }
-        
         return jwt
     }
 }
