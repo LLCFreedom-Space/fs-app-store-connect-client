@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import SwiftUI
+
 /// Represents an app in the App Store Connect ecosystem.
 public struct Application {
     /// The identifier of the app.

@@ -14,7 +14,8 @@ import JWTKit
 package struct AuthenticationMiddleware: ClientMiddleware {
     /// The credentials required for generating JWT.
     var credentials: Credentials?
-    
+    var cachedToken: String?
+
     /// Intercepts an outgoing HTTP request and an incoming HTTP response.
     /// - Parameters:
     ///   - request: An HTTP request.
@@ -45,6 +46,9 @@ package struct AuthenticationMiddleware: ClientMiddleware {
         /// - Returns: A JWT string.
         /// - Throws: An error if JWT signing fails or credentials are invalid.
     func createJWT(_ credentials: Credentials) throws -> String {
+//        if let cachedToken = jwt.cachedToken {
+//                        return cachedToken
+//                    }
         let signers = JWTSigners()
         do {
             try signers.use(.es256(key: .private(pem: credentials.privateKey)))
