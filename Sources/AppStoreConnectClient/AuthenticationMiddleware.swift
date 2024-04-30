@@ -8,7 +8,7 @@
 import OpenAPIRuntime
 import Foundation
 import HTTPTypes
-import JWTKit
+import Crypto
 
 /// Struct representing Authentication Middleware conforming to ClientMiddleware protocol
 package struct AuthenticationMiddleware: ClientMiddleware {
@@ -46,30 +46,8 @@ package struct AuthenticationMiddleware: ClientMiddleware {
         /// - Returns: A JWT string.
         /// - Throws: An error if JWT signing fails or credentials are invalid.
     func createJWT(_ credentials: Credentials) throws -> String {
-//        if let cachedToken = jwt.cachedToken {
-//                        return cachedToken
-//                    }
-        let signers = JWTSigners()
-        do {
-            try signers.use(.es256(key: .private(pem: credentials.privateKey)))
-        } catch {
-            throw AppStoreConnectError.invalidPrivateKey
-        }
-        let jwkID = JWKIdentifier(string: credentials.keyId)
-        let issuer = IssuerClaim(value: credentials.issuerId)
-        let payload = Payload(
-            issueID: issuer,
-            expiration: ExpirationClaim(
-                value: Date(
-                    timeInterval: 2 * 60,
-                    since: Date()
-                )
-            ),
-            audience: AudienceClaim(value: "appstoreconnect-v1")
-        )
-        guard let jwt = try? signers.sign(payload, kid: jwkID) else {
-            throw AppStoreConnectError.invalidSign
-        }
-        return jwt
+        let privateKey = try JWT.PrivateKey(pemRepresentation: credentials.privateKey)
+        var jwt = JWT(keyID: credentials.keyId, privateKey: privateKey, issuerIdentifier: credentials.issuerId, expireDuration: 20 * 60)
+        return try jwt.getToken()
     }
 }

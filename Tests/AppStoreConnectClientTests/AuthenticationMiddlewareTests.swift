@@ -6,8 +6,8 @@
 //
 
 import XCTest
-import JWTKit
 import OpenAPIRuntime
+import Crypto
 @testable import AppStoreConnectClient
 
 final class AuthenticationMiddlewareTests: XCTestCase {
@@ -39,7 +39,7 @@ final class AuthenticationMiddlewareTests: XCTestCase {
             -----END PRIVATE KEY-----
             """
         )
-        let authenticationMiddleware = AuthenticationMiddleware()
+        let authenticationMiddleware = AuthenticationMiddleware(credentials: credentials)
         let token = try authenticationMiddleware.createJWT(credentials)
         XCTAssertNoThrow(token)
         XCTAssertNotNil(token)

@@ -25,4 +25,12 @@ public enum AppStoreConnectError: Error, Equatable {
     case invalidSign
     /// The credentials is empty.
     case noHaveCredentials
+
+}
+
+public enum DecodingError: Error  {
+    
+    case invalidPartCount(String, Int)
+    
+    case invalidPayloadDecode
 }
