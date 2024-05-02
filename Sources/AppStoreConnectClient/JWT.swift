@@ -53,6 +53,7 @@ internal struct JWT {
         self.issuerIdentifier = issuerIdentifier
         self.expireDuration = expireDuration
     }
+    
     /// Creates a JWT token using the provided credentials.
     /// - Parameter credentials: The credentials required for generating the token.
     /// - Returns: The generated JWT token.
@@ -70,6 +71,20 @@ internal struct JWT {
         return "\(digest).\(signature)"
     }
     
+    /// Verifies if the token has expired.
+    /// - Parameter token: The JWT token to verify.
+    /// - Returns: A boolean indicating whether the token is not expired.
+    static func verifyNotExpired(_ token: String) -> Bool {
+        do {
+            let payload = try getPayload(from: token)
+            let expiryDate = Date(timeIntervalSince1970: payload.expiration)
+            let now = Date()
+            return expiryDate > now
+        } catch {
+            return false
+        }
+    }
+    
     /// Calculates the digest of the token.
     /// - Returns: The digest of the token.
     /// - Throws: An error if digest calculation fails.
@@ -84,20 +99,6 @@ internal struct JWT {
         let payloadEncoded = try JSONEncoder().encode(payload.self).base64EncodedString()
         let digest = "\(headerEncoded).\(payloadEncoded)"
         return digest
-    }
-    
-    /// Verifies if the token has expired.
-    /// - Parameter token: The JWT token to verify.
-    /// - Returns: A boolean indicating whether the token is not expired.
-    static func verifyNotExpired(_ token: String) -> Bool {
-        do {
-            let payload = try getPayload(from: token)
-            let expiryDate = Date(timeIntervalSince1970: payload.expiration)
-            let now = Date()
-            return expiryDate > now
-        } catch {
-            return false
-        }
     }
     
     /// Retrieves the payload from a JWT token.
