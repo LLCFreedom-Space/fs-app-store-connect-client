@@ -15,4 +15,6 @@ public struct Credentials: Sendable {
     let keyId: String
     /// The private key.
     let privateKey: String
+    
+    let expireDuration: TimeInterval
 }

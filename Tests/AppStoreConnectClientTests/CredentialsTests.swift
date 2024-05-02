@@ -13,7 +13,8 @@ final class CredentialsTests: XCTestCase {
         let сredentials = Credentials(
             issuerId: "issuerId",
             keyId: "keyId",
-            privateKey: "privateKey"
+            privateKey: "privateKey", 
+            expireDuration: 1
         )
         XCTAssertEqual(сredentials.issuerId, "issuerId")
         XCTAssertEqual(сredentials.keyId, "keyId")

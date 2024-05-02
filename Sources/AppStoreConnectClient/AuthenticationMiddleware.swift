@@ -11,11 +11,14 @@ import HTTPTypes
 import Crypto
 
 /// Struct representing Authentication Middleware conforming to ClientMiddleware protocol
-package struct AuthenticationMiddleware: ClientMiddleware {
+package actor AuthenticationMiddleware: ClientMiddleware {
     /// The credentials required for generating JWT.
-    var credentials: Credentials?
-    var cachedToken: String?
-
+    private let credentials: Credentials
+    private var cachedToken: String? = nil
+    
+    init(credentials: Credentials) {
+        self.credentials = credentials
+    }
     /// Intercepts an outgoing HTTP request and an incoming HTTP response.
     /// - Parameters:
     ///   - request: An HTTP request.
@@ -33,21 +36,18 @@ package struct AuthenticationMiddleware: ClientMiddleware {
         next: @Sendable (HTTPRequest, HTTPBody?, URL) async throws -> (HTTPResponse, HTTPBody?)
     ) async throws -> (HTTPResponse, HTTPBody?) {
         var request = request
-        guard let credentials = credentials else {
-            throw AppStoreConnectError.noHaveCredentials
-        }
-        let jwt = try createJWT(credentials)
+        let jwt = try getToken()
         request.headerFields[.authorization] = "Bearer \(jwt)"
         return try await next(request, body, baseURL)
     }
     
-    /// Creates a JWT (JSON Web Token) using the provided credentials.
-        /// - Parameter credentials: The App Store Connect credentials.
-        /// - Returns: A JWT string.
-        /// - Throws: An error if JWT signing fails or credentials are invalid.
-    func createJWT(_ credentials: Credentials) throws -> String {
-        let privateKey = try JWT.PrivateKey(pemRepresentation: credentials.privateKey)
-        var jwt = JWT(keyID: credentials.keyId, privateKey: privateKey, issuerIdentifier: credentials.issuerId, expireDuration: 20 * 60)
-        return try jwt.getToken()
+    func getToken() throws -> String {
+        if let cachedToken = cachedToken, JWT.verifyNotExpired(cachedToken) {
+            return cachedToken
+        } else {
+            let newToken = try JWT.createToken(by: credentials)
+            cachedToken = newToken
+            return newToken
+        }
     }
 }

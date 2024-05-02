@@ -9,7 +9,7 @@ import OpenAPIURLSession
 import Foundation
 
 /// The client for interacting with the App Store Connect API.
-public final class AppStoreConnectClient {
+public struct AppStoreConnectClient {
     private let client: any APIProtocol
     
     /// Initializes the client with a custom API protocol implementation.
