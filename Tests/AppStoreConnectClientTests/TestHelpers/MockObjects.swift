@@ -74,21 +74,13 @@ struct AppStoreVersionResponse {
 }
 
 enum AppStoreState: String {
-    case accepted = "ACCEPTED"
     case readyForSale = "READY_FOR_SALE"
-    case rejected = "REJECTED"
 }
 
 enum AppVersionState: String {
-    case accepted = "ACCEPTED"
     case readyForDistribution = "READY_FOR_DISTRIBUTION"
-    case readyForReview = "READY_FOR_REVIEW"
-    case rejected = "REJECTED"
 }
 
 enum Platform: String {
     case iOS = "IOS"
-    case macOS = "MAC_OS"
-    case tvOS = "TV_OS"
-    case visionOS = "VISION_OS"
 }

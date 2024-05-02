@@ -8,7 +8,7 @@
 import Foundation
 
 /// Represents the credentials required for authenticating with the App Store Connect API using JWT.
-public struct Credentials: Sendable {
+public struct Credentials {
     /// The issuer identifier.
     let issuerId: String
     /// The private key identifier.

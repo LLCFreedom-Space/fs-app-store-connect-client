@@ -12,6 +12,7 @@ import Crypto
 
 final class AuthenticationMiddlewareTests: XCTestCase {
     func testGetToken() async throws {
+        let seconds: TimeInterval = 10
         let credentials = Credentials(
             issuerId: UUID().uuidString,
             keyId: UUID().uuidString,
@@ -23,7 +24,7 @@ final class AuthenticationMiddlewareTests: XCTestCase {
             1RTwjmYSi9R/zpBnuQ4EiMnCqfMPWiZqB4QdbAd0E7oH50VpuZ1P087G
             -----END PRIVATE KEY-----
             """, 
-            expireDuration: 10
+            expireDuration: seconds
         )
         let authenticationMiddleware = AuthenticationMiddleware(credentials: credentials)
         let token = try await authenticationMiddleware.getToken()
@@ -36,6 +37,7 @@ final class AuthenticationMiddlewareTests: XCTestCase {
     }
     
     func testGetTokenInvalidPrivateKey() async throws {
+        let seconds: TimeInterval = 10
         let credentials = Credentials(
             issuerId: UUID().uuidString,
             keyId: UUID().uuidString,
@@ -45,7 +47,7 @@ final class AuthenticationMiddlewareTests: XCTestCase {
             OF/2NxApJCzGCEDdfSp6VQO30hyhRANCAAQRWz+jn65BtOMvdyHKcvjBeBSDZH2r
             1RTwjmYSi9R/zpBnuQ4EiMnCqfMPWiZqB4QdbAd0E7oH50VpuZ1P087G
             """,
-            expireDuration: 10
+            expireDuration: seconds
         )
         let authenticationMiddleware = AuthenticationMiddleware(credentials: credentials)
         do {

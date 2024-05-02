@@ -15,11 +15,11 @@ package actor AuthenticationMiddleware: ClientMiddleware {
     /// The credentials required for generating JWT.
     private let credentials: Credentials
     /// The cached JWT token.
-    private var cachedToken: String? = nil
+    private var cachedToken: String?
     
     /// Initializes the authentication middleware with the provided credentials.
     /// - Parameter credentials: The credentials required for authentication.
-    init(credentials: Credentials) {
+    package init(credentials: Credentials) {
         self.credentials = credentials
     }
     /// Intercepts an outgoing HTTP request and an incoming HTTP response.

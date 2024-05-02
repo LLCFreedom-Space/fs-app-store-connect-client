@@ -10,7 +10,6 @@ import Foundation
 @testable import AppStoreConnectClient
 
 final class JWTTests: XCTestCase {
-    
     func testVerifyNotExpiredSuccess() throws {
         let privateKey = """
             -----BEGIN PRIVATE KEY-----
@@ -92,4 +91,3 @@ final class JWTTests: XCTestCase {
         XCTAssertFalse(result)
     }
 }
-

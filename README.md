@@ -43,7 +43,7 @@ let credentials = Credentials(
     privateKey:
         """
         -----BEGIN PRIVATE KEY-----
-        JSON WEB TOKEN
+                PRIVATE KEY
         -----END PRIVATE KEY-----
         """
 let client = try AppStoreConnectClient(with: credentials)
@@ -63,7 +63,7 @@ let credentials = Credentials(
     privateKey:
         """
         -----BEGIN PRIVATE KEY-----
-        JSON WEB TOKEN
+                PRIVATE KEY
         -----END PRIVATE KEY-----
         """
 let client = try AppStoreConnectClient(with: credentials)
