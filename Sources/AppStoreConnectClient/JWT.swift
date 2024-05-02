@@ -76,7 +76,7 @@ internal struct JWT {
     private func digest() throws -> String {
         let now = Date()
         let payload = Payload(
-            expirationTime: now.addingTimeInterval(expireDuration).timeIntervalSince1970,
+            expiration: now.addingTimeInterval(expireDuration).timeIntervalSince1970,
             issuerId: issuerIdentifier,
             issuedAt: now.timeIntervalSince1970
         )
@@ -92,7 +92,7 @@ internal struct JWT {
     static func verifyNotExpired(_ token: String) -> Bool {
         do {
             let payload = try getPayload(from: token)
-            let expiryDate = Date(timeIntervalSince1970: payload.expirationTime)
+            let expiryDate = Date(timeIntervalSince1970: payload.expiration)
             let now = Date()
             return expiryDate > now
         } catch {
@@ -105,15 +105,14 @@ internal struct JWT {
     /// - Returns: The extracted payload.
     /// - Throws: An error if payload extraction fails.
     private static func getPayload(from token: String) throws -> JWT.Payload {
-        let parts = token.components(separatedBy: ".")
-        guard parts.count == 3 else {
-            throw JWTError.invalidPartCount(token, parts.count)
+        let components = token.components(separatedBy: ".")
+        guard components.count == 3 else {
+            throw JWTError.invalidComponentsCount(token, components.count)
         }
-        guard let payloadData = base64UrlDecode(parts[1]) else {
+        guard let data = base64UrlDecode(components[1]) else {
             throw JWTError.invalidPayloadDecode
         }
-        let decoder = JSONDecoder()
-        return try decoder.decode(JWT.Payload.self, from: payloadData)
+        return try JSONDecoder().decode(JWT.Payload.self, from: data)
     }
     
     /// Decodes a base64 URL encoded string.

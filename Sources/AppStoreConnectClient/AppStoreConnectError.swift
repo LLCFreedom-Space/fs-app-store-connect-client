@@ -39,13 +39,3 @@ public enum AppStoreConnectError: Error, Equatable {
     /// The credentials is empty.
     case noHaveCredentials
 }
-
-/// An enumeration representing decoding errors that may occur during the decoding process of a JSON Web Token (JWT).
-public enum JWTError: Error {
-    /// Indicates that the JWT has an invalid number of parts.
-    case invalidPartCount(String, Int)
-    /// Indicates that there was an issue decoding the payload of the JWT.
-    case invalidPayloadDecode
-    /// The provided private key is invalid.
-    case invalidPrivateKey
-}

@@ -71,7 +71,7 @@ final class AuthenticationMiddlewareTests: XCTestCase {
             _ = try await authenticationMiddleware.getToken()
             XCTFail("Expected error not thrown")
         } catch {
-            XCTAssertEqual(error.localizedDescription, AppStoreConnectError.invalidPrivateKey.localizedDescription)
+            XCTAssertEqual(error.localizedDescription, JWTError.invalidPrivateKey.localizedDescription)
         }
     }
 }

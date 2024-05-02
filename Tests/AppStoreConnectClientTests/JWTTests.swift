@@ -65,7 +65,7 @@ final class JWTTests: XCTestCase {
         XCTAssertFalse(result)
     }
     
-    func testInvalidPartCount() throws {
+    func testInvalidComponentsCount() throws {
         let privateKey = """
             -----BEGIN PRIVATE KEY-----
             MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgevZzL1gdAFr88hb2
@@ -80,9 +80,9 @@ final class JWTTests: XCTestCase {
             expireDuration: 2
         )
         let jwt = try JWT.createToken(by: credentials)
-        var parts = jwt.components(separatedBy: ".")
-        let resultParts = parts.remove(at: 0)
-        let result = JWT.verifyNotExpired(resultParts)
+        var components = jwt.components(separatedBy: ".")
+        let resultComponent = components.remove(at: 0)
+        let result = JWT.verifyNotExpired(resultComponent)
         XCTAssertFalse(result)
     }
     

@@ -16,22 +16,20 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-//  Credentials.swift
+//  JWTError.swift
+//  
 //
-//
-//  Created by Mykola Vasyk on 22.04.2024.
+//  Created by Mykola Vasyk on 02.05.2024.
 //
 
 import Foundation
 
-/// Represents the credentials required for authenticating with the App Store Connect API using JWT.
-public struct Credentials {
-    /// The issuer identifier.
-    public let issuerId: String
-    /// The private key identifier.
-    public let keyId: String
-    /// The private key.
-    public let privateKey: String
-    /// The duration until the token expires.
-    public let expireDuration: TimeInterval
+/// An enumeration representing decoding errors that may occur during the decoding process of a JSON Web Token (JWT).
+public enum JWTError: Error {
+    /// Indicates that the JWT has an invalid number of parts.
+    case invalidComponentsCount(String, Int)
+    /// Indicates that there was an issue decoding the payload of the JWT.
+    case invalidPayloadDecode
+    /// The provided private key is invalid.
+    case invalidPrivateKey
 }

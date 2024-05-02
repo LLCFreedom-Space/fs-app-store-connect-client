@@ -54,7 +54,7 @@ extension JWT {
         /// The audience for the token.
         let audience: String = "appstoreconnect-v1"
         /// The expiration time of the token.
-        let expirationTime: TimeInterval
+        let expiration: TimeInterval
         /// The identifier of the issuer.
         let issuerId: String
         /// The time at which the token was issued.
@@ -65,7 +65,7 @@ extension JWT {
             case audience = "aud"
             case issuerId = "iss"
             case issuedAt = "iat"
-            case expirationTime = "exp"
+            case expiration = "exp"
         }
     }
 }
@@ -86,7 +86,7 @@ extension JWT {
             do {
                 self.key = try P256.Signing.PrivateKey(pemRepresentation: pemRepresentation)
             } catch {
-                throw AppStoreConnectError.invalidPrivateKey
+                throw JWTError.invalidPrivateKey
             }
         }
         
