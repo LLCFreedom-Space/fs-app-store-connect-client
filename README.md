@@ -17,6 +17,7 @@ This Swift package provides a client library for interacting with the App Store 
 - Get a list of all App Store versions of your app across all platforms using secure JWT-authenticated requests.
 - Handles JSON formats response.
 - Throws informative errors for server errors and not found cases.
+- Ensure test coverage for code to guarantee robustness and reliability.
 
 ## Installation
 
@@ -45,7 +46,9 @@ let credentials = Credentials(
         -----BEGIN PRIVATE KEY-----
                 PRIVATE KEY
         -----END PRIVATE KEY-----
-        """
+        """,
+    expireDuration: "<TIME_INTERVAL>"
+    )
 let client = try AppStoreConnectClient(with: credentials)
 do {
 let fetchedApps = try await client.fetchApps()
@@ -65,12 +68,14 @@ let credentials = Credentials(
         -----BEGIN PRIVATE KEY-----
                 PRIVATE KEY
         -----END PRIVATE KEY-----
-        """
+        """,
+    expireDuration: "<TIME_INTERVAL>"
+    )
 let client = try AppStoreConnectClient(with: credentials)
 do {
 let fetchedApps = try await client.fetchApps()
 let apps = try await client.fetchApps()
-guard let app = apps.first(where: { $0.bundleID == "com.freedomspace.dealogx" }) else {
+guard let app = apps.first(where: { $0.bundleID == "your.bundle.id" }) else {
         throw AppStoreConnectError.invalidBundleId
     }
 let releases = try await client.fetchVersions(for: app)
