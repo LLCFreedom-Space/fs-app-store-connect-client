@@ -1,0 +1,24 @@
+name: fs-app-store-connect-client
+id: ari:cloud:compass:9f2f3021-6c0c-4d5b-bf04-558f54eb6d69:component/a1dbf0d8-af76-46a1-b26b-63b12025bc76/da9558aa-5706-40f9-9a80-a3c7fd674aa4
+description: This Swift package provides a client library for interacting with the App Store Connect API. It leverages the power of Swift OpenAPI Generator to automatically generate code from the provided OpenAPI specification file (openapi.yaml).
+configVersion: 1
+typeId: LIBRARY
+ownerId: ari:cloud:identity::team/fcc4f8ef-8527-4eb0-9a5e-6515cb346bcc
+fields:
+  tier: 4
+links:
+  - name: null
+    type: REPOSITORY
+    url: https://github.com/LLCFreedom-Space/fs-app-store-connect-client
+relationships:
+  DEPENDS_ON: []
+labels:
+  - appstore-api
+  - appstoreconnect
+  - appstoreconnectapi
+  - language:swift
+  - openapi-generator
+  - source:github
+  - swift
+  - swift5
+customFields: null
