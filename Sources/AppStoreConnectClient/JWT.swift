@@ -107,10 +107,10 @@ internal struct JWT {
     private static func getPayload(from token: String) throws -> JWT.Payload {
         let parts = token.components(separatedBy: ".")
         guard parts.count == 3 else {
-            throw DecodingError.invalidPartCount(token, parts.count)
+            throw JWTError.invalidPartCount(token, parts.count)
         }
         guard let payloadData = base64UrlDecode(parts[1]) else {
-            throw DecodingError.invalidPayloadDecode
+            throw JWTError.invalidPayloadDecode
         }
         let decoder = JSONDecoder()
         return try decoder.decode(JWT.Payload.self, from: payloadData)
