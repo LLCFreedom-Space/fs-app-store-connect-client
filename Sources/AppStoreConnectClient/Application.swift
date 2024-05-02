@@ -1,4 +1,4 @@
-//FS App Store Connect Client
+// FS App Store Connect Client
 // Copyright (C) 2024  FREEDOM SPACE, LLC
 
 //
