@@ -14,8 +14,11 @@ import Crypto
 package actor AuthenticationMiddleware: ClientMiddleware {
     /// The credentials required for generating JWT.
     private let credentials: Credentials
+    /// The cached JWT token.
     private var cachedToken: String? = nil
     
+    /// Initializes the authentication middleware with the provided credentials.
+    /// - Parameter credentials: The credentials required for authentication.
     init(credentials: Credentials) {
         self.credentials = credentials
     }
@@ -41,6 +44,9 @@ package actor AuthenticationMiddleware: ClientMiddleware {
         return try await next(request, body, baseURL)
     }
     
+    /// Retrieves a valid JWT token.
+    /// - Returns: A valid JWT token.
+    /// - Throws: An error if token retrieval fails.
     func getToken() throws -> String {
         if let cachedToken = cachedToken, JWT.verifyNotExpired(cachedToken) {
             return cachedToken

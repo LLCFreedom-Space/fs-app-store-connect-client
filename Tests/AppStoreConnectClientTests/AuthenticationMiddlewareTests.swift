@@ -11,20 +11,6 @@ import Crypto
 @testable import AppStoreConnectClient
 
 final class AuthenticationMiddlewareTests: XCTestCase {
-    //    func testPayload() {
-    //        let expiration = Date()
-    //        let expirationClaim = ExpirationClaim(value: expiration)
-    //        let payload = Payload(
-    //            expiration: "issueID",
-    //            issuerId: expirationClaim,
-    //            issuedAt: "audience",
-    //            audience: <#String?#>
-    //        )
-    //        XCTAssertEqual(payload.issueID, "issueID")
-    //        XCTAssertEqual(payload.expiration, expirationClaim)
-    //        XCTAssertEqual(payload.audience, "audience")
-    //    }
-    
     func testGetToken() async throws {
         let credentials = Credentials(
             issuerId: UUID().uuidString,
@@ -32,10 +18,9 @@ final class AuthenticationMiddlewareTests: XCTestCase {
             privateKey:
             """
             -----BEGIN PRIVATE KEY-----
-            MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgX6js0tmnxknIV+w0
-            eLfoDF2fnng+GESiHP6fmTKMMEugCgYIKoZIzj0DAQehRANCAASQpzpdWKT1n4YG
-            i8jYKh1w/iNojELO+4RWUSZ5zceH5HdExSKWec/UOXImcpnN5alC98tcmxf7GNRe
-            bXp8F8EX
+            MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgevZzL1gdAFr88hb2
+            OF/2NxApJCzGCEDdfSp6VQO30hyhRANCAAQRWz+jn65BtOMvdyHKcvjBeBSDZH2r
+            1RTwjmYSi9R/zpBnuQ4EiMnCqfMPWiZqB4QdbAd0E7oH50VpuZ1P087G
             -----END PRIVATE KEY-----
             """, 
             expireDuration: 10
@@ -56,11 +41,10 @@ final class AuthenticationMiddlewareTests: XCTestCase {
             keyId: UUID().uuidString,
             privateKey:
             """
-            MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgX6js0tmnxknIV+w0
-            eLfoDF2fnng+GESiHP6fmTKMMEugCgYIKoZIzj0DAQehRANCAASQpzpdWKT1n4YG
-            i8jYKh1w/iNojELO+4RWUSZ5zceH5HdExSKWec/UOXImcpnN5alC98tcmxf7GNRe
-            bXp8F8EX
-            """, 
+            MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgevZzL1gdAFr88hb2
+            OF/2NxApJCzGCEDdfSp6VQO30hyhRANCAAQRWz+jn65BtOMvdyHKcvjBeBSDZH2r
+            1RTwjmYSi9R/zpBnuQ4EiMnCqfMPWiZqB4QdbAd0E7oH50VpuZ1P087G
+            """,
             expireDuration: 10
         )
         let authenticationMiddleware = AuthenticationMiddleware(credentials: credentials)

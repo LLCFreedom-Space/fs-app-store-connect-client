@@ -22,14 +22,14 @@ public struct AppStoreConnectClient {
     /// - Parameter credentials: Credentials needed to authenticate with the App Store Connect API.
     /// - Throws: An error if initialization fails.
     public init(with credentials: Credentials) throws {
-            self.client = try Client(
-                serverURL: Servers.server1(),
-                transport: URLSessionTransport(),
-                middlewares: [
-                    AuthenticationMiddleware(credentials: credentials)
-                ]
-            )
-        }
+        self.client = try Client(
+            serverURL: Servers.server1(),
+            transport: URLSessionTransport(),
+            middlewares: [
+                AuthenticationMiddleware(credentials: credentials)
+            ]
+        )
+    }
     
     /// Fetches collection of apps from the App Store Connect API.
     /// - Returns: An array of `App` objects.

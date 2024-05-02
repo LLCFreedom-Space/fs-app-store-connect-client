@@ -8,13 +8,23 @@
 import Crypto
 import Foundation
 
+/// JWT (JSON Web Token) provides a way to securely transmit information between parties as a JSON object.
 internal struct JWT {
+    /// The header containing metadata about the token.
     private let header: Header
-    private var cachedToken: String? = nil
+    /// The private key used for signing the token.
     private let privateKey: PrivateKey
+    /// The identifier of the issuer.
     private let issuerIdentifier: String
+    /// The duration until the token expires.
     private let expireDuration: TimeInterval
     
+    /// Initializes a JWT instance.
+    /// - Parameters:
+    ///   - keyID: The identifier for the key.
+    ///   - privateKey: The private key used for signing the token.
+    ///   - issuerIdentifier: The identifier of the issuer.
+    ///   - expireDuration: The duration until the token expires.
     init(
         keyID: String,
         privateKey: PrivateKey,
@@ -26,7 +36,10 @@ internal struct JWT {
         self.issuerIdentifier = issuerIdentifier
         self.expireDuration = expireDuration
     }
-    
+    /// Creates a JWT token using the provided credentials.
+    /// - Parameter credentials: The credentials required for generating the token.
+    /// - Returns: The generated JWT token.
+    /// - Throws: An error if token creation fails.
     static func createToken(by credentials: Credentials) throws -> String {
         let privateKey = try JWT.PrivateKey(pemRepresentation: credentials.privateKey)
         let jwt = JWT(
@@ -40,6 +53,9 @@ internal struct JWT {
         return "\(digest).\(signature)"
     }
     
+    /// Calculates the digest of the token.
+    /// - Returns: The digest of the token.
+    /// - Throws: An error if digest calculation fails.
     private func digest() throws -> String {
         let now = Date()
         let payload = Payload(
@@ -53,6 +69,9 @@ internal struct JWT {
         return digest
     }
     
+    /// Verifies if the token has expired.
+    /// - Parameter token: The JWT token to verify.
+    /// - Returns: A boolean indicating whether the token is not expired.
     static func verifyNotExpired(_ token: String) -> Bool {
         do {
             let payload = try getPayload(from: token)
@@ -64,6 +83,10 @@ internal struct JWT {
         }
     }
     
+    /// Retrieves the payload from a JWT token.
+    /// - Parameter token: The JWT token from which to extract the payload.
+    /// - Returns: The extracted payload.
+    /// - Throws: An error if payload extraction fails.
     private static func getPayload(from token: String) throws -> JWT.Payload {
         let parts = token.components(separatedBy: ".")
         guard parts.count == 3 else {
@@ -76,6 +99,9 @@ internal struct JWT {
         return try decoder.decode(JWT.Payload.self, from: payloadData)
     }
     
+    /// Decodes a base64 URL encoded string.
+    /// - Parameter value: The base64 URL encoded string.
+    /// - Returns: The decoded data.
     private static func base64UrlDecode(_ value: String) -> Data? {
         var base64 = value
             .replacingOccurrences(of: "-", with: "+")
