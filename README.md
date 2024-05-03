@@ -13,6 +13,11 @@ This Swift package provides a client library for interacting with the App Store 
 
 ## Features
 
+- Find and list your apps in App Store Connect using secure JWT-authenticated requests.
+- Get a list of all App Store versions of your app across all platforms using secure JWT-authenticated requests.
+- Handles JSON formats response.
+- Throws informative errors for server errors and not found cases.
+- Ensure test coverage for code to guarantee robustness and reliability.
 
 ## Installation
 
@@ -31,7 +36,54 @@ import AppStoreConnectClient
 ```
 
 ## Usage
+Here's an example of how to use the AppStoreConnectClient to fetch information about list of your apps in App Store Connect:
+```swift
+let credentials = Credentials(
+    issuerId: "<ISSUER_ID>"
+    keyId: "<KEY_ID>"
+    privateKey:
+        """
+        -----BEGIN PRIVATE KEY-----
+                PRIVATE KEY
+        -----END PRIVATE KEY-----
+        """,
+    expireDuration: "<TIME_INTERVAL>"
+    )
+let client = try AppStoreConnectClient(with: credentials)
+do {
+let fetchedApps = try await client.fetchApps()
+// ... access to properties of apps
+} catch {
+print("Error fetching: \(error)")
+}
+```
 
+Here's an example of how to use the AppStoreConnectClient to fetch information about versions of your app:
+```swift
+let credentials = Credentials(
+    issuerId: "<ISSUER_ID>"
+    keyId: "<KEY_ID>"
+    privateKey:
+        """
+        -----BEGIN PRIVATE KEY-----
+                PRIVATE KEY
+        -----END PRIVATE KEY-----
+        """,
+    expireDuration: "<TIME_INTERVAL>"
+    )
+let client = try AppStoreConnectClient(with: credentials)
+do {
+let fetchedApps = try await client.fetchApps()
+let apps = try await client.fetchApps()
+guard let app = apps.first(where: { $0.bundleId == "your.bundle.id" }) else {
+        throw AppStoreConnectError.invalidBundleId
+    }
+let releases = try await client.fetchVersions(for: app)
+// ... access to properties of apps
+} catch {
+print("Error fetching: \(error)")
+}
+```
 
 ## Contributions
 
