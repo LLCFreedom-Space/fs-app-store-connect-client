@@ -75,7 +75,7 @@ let client = try AppStoreConnectClient(with: credentials)
 do {
 let fetchedApps = try await client.fetchApps()
 let apps = try await client.fetchApps()
-guard let app = apps.first(where: { $0.bundleID == "your.bundle.id" }) else {
+guard let app = apps.first(where: { $0.bundleId == "your.bundle.id" }) else {
         throw AppStoreConnectError.invalidBundleId
     }
 let releases = try await client.fetchVersions(for: app)

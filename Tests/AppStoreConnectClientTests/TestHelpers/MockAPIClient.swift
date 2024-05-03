@@ -16,7 +16,7 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-//  MockClient.swift
+//  MockAPIClient.swift
 //
 //
 //  Created by Mykola Vasyk on 22.04.2024.
@@ -26,28 +26,28 @@ import Foundation
 import OpenAPIRuntime
 @testable import AppStoreConnectClient
 
-struct MockClient: APIProtocol {
-    var result: String?
+struct MockAPIClient: APIProtocol {
+    var result: Result?
     let statusCode = 501
     func apps_hyphen_appStoreVersions_hyphen_get_to_many_related(
         _ input: Operations.apps_hyphen_appStoreVersions_hyphen_get_to_many_related.Input
     ) async throws -> Operations.apps_hyphen_appStoreVersions_hyphen_get_to_many_related.Output {
         switch result {
-        case "ok":
+        case .ok:
             return .ok(.init(body: .json(MockObjects.appStoreVersionsResponse)))
-        case "badRequest":
+        case .badRequest:
             return .badRequest(.init(body: .json(MockObjects.errorResponse)))
-        case "forbidden":
+        case .forbidden:
             return .forbidden(.init(body: .json(MockObjects.errorResponse)))
-        case "notFound":
+        case .notFound:
             return .notFound(.init(body: .json(MockObjects.errorResponse)))
-        case "unauthorized":
+        case .unauthorized:
             return .unauthorized(.init(body: .json(MockObjects.errorResponse)))
-        case "undocumented":
+        case .undocumented:
             return .undocumented(statusCode: statusCode, UndocumentedPayload())
         case .none:
             return .undocumented(statusCode: statusCode, UndocumentedPayload())
-        case .some(let some):
+        case .some:
             return .undocumented(statusCode: statusCode, UndocumentedPayload())
         }
     }
@@ -56,20 +56,30 @@ struct MockClient: APIProtocol {
         _ input: Operations.apps_hyphen_get_collection.Input
     ) async throws -> Operations.apps_hyphen_get_collection.Output {
         switch result {
-        case "ok":
+        case .ok:
             return .ok(.init(body: .json(MockObjects.appsResponse)))
-        case "badRequest":
+        case .badRequest:
             return .badRequest(.init(body: .json(MockObjects.errorResponse)))
-        case "forbidden":
+        case .forbidden:
             return .forbidden(.init(body: .json(MockObjects.errorResponse)))
-        case "unauthorized":
+        case .unauthorized:
             return .unauthorized(.init(body: .json(MockObjects.errorResponse)))
-        case "undocumented":
+        case .undocumented:
             return .undocumented(statusCode: statusCode, UndocumentedPayload())
         case .none:
             return .undocumented(statusCode: statusCode, UndocumentedPayload())
-        case .some(let some):
+        case .some:
             return .undocumented(statusCode: statusCode, UndocumentedPayload())
         }
     }
+    
+    enum Result {
+        case ok
+        case badRequest
+        case forbidden
+        case notFound
+        case unauthorized
+        case undocumented
+    }
 }
+

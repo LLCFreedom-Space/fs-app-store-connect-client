@@ -29,25 +29,25 @@ public struct Application {
     /// The identifier of the app.
     public let id: String
     /// The bundle identifier of the app.
-    public let bundleID: String
+    public let bundleId: String
     
     /// Initializes an `App` with the provided identifier and bundle identifier.
     /// - Parameters:
     ///   - id: The identifier of the app.
-    ///   - bundleID: The bundle identifier of the app.
-    public init(id: String, bundleID: String) {
+    ///   - bundleId: The bundle identifier of the app.
+    public init(id: String, bundleId: String) {
         self.id = id
-        self.bundleID = bundleID
+        self.bundleId = bundleId
     }
 
     /// Initializes an `App` from an OpenAPI schema representation.
     /// - Parameter schema: The OpenAPI schema representation of the app.
     /// - Returns: An instance of `App` if initialization is successful, otherwise `nil`.
     init?(schema: Components.Schemas.App) {
-        guard let bundleID = schema.attributes?.bundleId else {
+        guard let bundleId = schema.attributes?.bundleId else {
             return nil
         }
         self.id = schema.id
-        self.bundleID = bundleID
+        self.bundleId = bundleId
     }
 }

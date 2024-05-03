@@ -14,7 +14,6 @@
 //
 //  You should have received a copy of the GNU Affero General Public License
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 //
 //  MockObjects.swift
 //
@@ -70,34 +69,4 @@ enum MockObjects {
         )
         return response
     }
-    
-    static let appStoreVersionResponse: [AppStoreVersionResponse] = [
-        AppStoreVersionResponse(
-            id: app.id,
-            appStoreState: .readyForSale,
-            appVersionState: .readyForDistribution,
-            platform: .iOS,
-            versionString: appStoreVersion.attributes?.versionString ?? "1.1.1"
-        )
-    ]
-}
-
-struct AppStoreVersionResponse {
-    let id: String
-    let appStoreState: AppStoreState
-    let appVersionState: AppVersionState
-    let platform: Platform
-    let versionString: String
-}
-
-enum AppStoreState: String {
-    case readyForSale = "READY_FOR_SALE"
-}
-
-enum AppVersionState: String {
-    case readyForDistribution = "READY_FOR_DISTRIBUTION"
-}
-
-enum Platform: String {
-    case iOS = "IOS"
 }

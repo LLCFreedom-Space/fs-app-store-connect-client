@@ -25,7 +25,6 @@
 import OpenAPIRuntime
 import Foundation
 import HTTPTypes
-import Crypto
 
 /// Struct representing Authentication Middleware conforming to ClientMiddleware protocol
 package actor AuthenticationMiddleware: ClientMiddleware {

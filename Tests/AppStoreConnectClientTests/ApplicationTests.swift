@@ -35,7 +35,7 @@ class ApplicationTests: XCTestCase {
         let app = Application(schema: schema)
         XCTAssertNotNil(app)
         XCTAssertEqual(app?.id, "1234567")
-        XCTAssertEqual(app?.bundleID, "com.example.app")
+        XCTAssertEqual(app?.bundleId, "com.example.app")
     }
     
     func testInitWithInvalidSchema() {

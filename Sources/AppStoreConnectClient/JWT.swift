@@ -38,17 +38,17 @@ internal struct JWT {
     
     /// Initializes a JWT instance.
     /// - Parameters:
-    ///   - keyID: The identifier for the key.
+    ///   - keyId: The identifier for the key.
     ///   - privateKey: The private key used for signing the token.
     ///   - issuerIdentifier: The identifier of the issuer.
     ///   - expireDuration: The duration until the token expires.
     init(
-        keyID: String,
+        keyId: String,
         privateKey: PrivateKey,
         issuerIdentifier: String,
         expireDuration: TimeInterval
     ) {
-        self.header = Header(key: keyID)
+        self.header = Header(key: keyId)
         self.privateKey = privateKey
         self.issuerIdentifier = issuerIdentifier
         self.expireDuration = expireDuration
@@ -61,7 +61,7 @@ internal struct JWT {
     static func createToken(by credentials: Credentials) throws -> String {
         let privateKey = try JWT.PrivateKey(pemRepresentation: credentials.privateKey)
         let jwt = JWT(
-            keyID: credentials.keyId,
+            keyId: credentials.keyId,
             privateKey: privateKey,
             issuerIdentifier: credentials.issuerId,
             expireDuration: credentials.expireDuration

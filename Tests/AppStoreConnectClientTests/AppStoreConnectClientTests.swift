@@ -27,18 +27,18 @@ import XCTest
 
 final class AppStoreConnectClientTests: XCTestCase {
     func testFetchAppsSuccess() async throws {
-        var mockClient = MockClient()
-        mockClient.result = "ok"
+        var mockClient = MockAPIClient()
+        mockClient.result = .ok
         let client = AppStoreConnectClient(client: mockClient)
         let apps = try await client.fetchApps()
         XCTAssertEqual(1, apps.count)
         XCTAssertEqual("1234567", apps.first?.id)
-        XCTAssertEqual("com.example.app", apps.first?.bundleID)
+        XCTAssertEqual("com.example.app", apps.first?.bundleId)
     }
     
     func testFetchAppsBadRequest() async throws {
-        var mockClient = MockClient()
-        mockClient.result = "badRequest"
+        var mockClient = MockAPIClient()
+        mockClient.result = .badRequest
         let client = AppStoreConnectClient(client: mockClient)
         
         do {
@@ -50,8 +50,8 @@ final class AppStoreConnectClientTests: XCTestCase {
     }
     
     func testFetchAppsForbidden() async throws {
-        var mockClient = MockClient()
-        mockClient.result = "forbidden"
+        var mockClient = MockAPIClient()
+        mockClient.result = .forbidden
         let client = AppStoreConnectClient(client: mockClient)
         
         do {
@@ -63,8 +63,8 @@ final class AppStoreConnectClientTests: XCTestCase {
     }
     
     func testFetchAppsUnauthorized() async throws {
-        var mockClient = MockClient()
-        mockClient.result = "unauthorized"
+        var mockClient = MockAPIClient()
+        mockClient.result = .unauthorized
         let client = AppStoreConnectClient(client: mockClient)
         
         do {
@@ -76,8 +76,8 @@ final class AppStoreConnectClientTests: XCTestCase {
     }
     
     func testFetchAppsUndocumented() async throws {
-        var mockClient = MockClient()
-        mockClient.result = "undocumented"
+        var mockClient = MockAPIClient()
+        mockClient.result = .undocumented
         let client = AppStoreConnectClient(client: mockClient)
         
         do {
@@ -90,10 +90,10 @@ final class AppStoreConnectClientTests: XCTestCase {
     }
     
     func testFetchVersionsSuccess() async throws {
-        var mockClient = MockClient()
-        mockClient.result = "ok"
+        var mockClient = MockAPIClient()
+        mockClient.result = .ok
         let client = AppStoreConnectClient(client: mockClient)
-        let app = Application(id: "", bundleID: "")
+        let app = Application(id: "", bundleId: "")
         let apps = try await client.fetchVersions(for: app)
         XCTAssertEqual(1, apps.count)
         XCTAssertEqual(apps.first?.appStoreState, "ACCEPTED")
@@ -101,10 +101,10 @@ final class AppStoreConnectClientTests: XCTestCase {
     }
     
     func testFetchVersionsBadRequest() async throws {
-        var mockClient = MockClient()
-        mockClient.result = "badRequest"
+        var mockClient = MockAPIClient()
+        mockClient.result = .badRequest
         let client = AppStoreConnectClient(client: mockClient)
-        let app = Application(id: "", bundleID: "")
+        let app = Application(id: "", bundleId: "")
         do {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
@@ -114,10 +114,10 @@ final class AppStoreConnectClientTests: XCTestCase {
     }
     
     func testFetchVersionsForbidden() async throws {
-        var mockClient = MockClient()
-        mockClient.result = "forbidden"
+        var mockClient = MockAPIClient()
+        mockClient.result = .forbidden
         let client = AppStoreConnectClient(client: mockClient)
-        let app = Application(id: "", bundleID: "")
+        let app = Application(id: "", bundleId: "")
         do {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
@@ -127,10 +127,10 @@ final class AppStoreConnectClientTests: XCTestCase {
     }
     
     func testFetchVersionsNotFound() async throws {
-        var mockClient = MockClient()
-        mockClient.result = "notFound"
+        var mockClient = MockAPIClient()
+        mockClient.result = .notFound
         let client = AppStoreConnectClient(client: mockClient)
-        let app = Application(id: "", bundleID: "")
+        let app = Application(id: "", bundleId: "")
         do {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
@@ -140,10 +140,10 @@ final class AppStoreConnectClientTests: XCTestCase {
     }
     
     func testFetchVersionsUnauthorized() async throws {
-        var mockClient = MockClient()
-        mockClient.result = "unauthorized"
+        var mockClient = MockAPIClient()
+        mockClient.result = .unauthorized
         let client = AppStoreConnectClient(client: mockClient)
-        let app = Application(id: "", bundleID: "")
+        let app = Application(id: "", bundleId: "")
         do {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
@@ -153,10 +153,10 @@ final class AppStoreConnectClientTests: XCTestCase {
     }
     
     func testFetchVersionsUndocumented() async throws {
-        var mockClient = MockClient()
-        mockClient.result = "undocumented"
+        var mockClient = MockAPIClient()
+        mockClient.result = .undocumented
         let client = AppStoreConnectClient(client: mockClient)
-        let app = Application(id: "", bundleID: "")
+        let app = Application(id: "", bundleId: "")
         do {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
