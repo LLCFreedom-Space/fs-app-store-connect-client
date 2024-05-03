@@ -82,4 +82,3 @@ struct MockAPIClient: APIProtocol {
         case undocumented
     }
 }
-
