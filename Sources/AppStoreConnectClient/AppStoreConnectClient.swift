@@ -38,7 +38,7 @@ public struct AppStoreConnectClient {
     /// Initializes the client with App Store Connect credentials.
     /// - Parameter credentials: Credentials needed to authenticate with the App Store Connect API.
     /// - Throws: An error if initialization fails.
-    public init(with credentials: Credentials) throws {
+    public init(with credentials: Credentials) async throws {
         self.client = try Client(
             serverURL: Servers.server1(),
             transport: URLSessionTransport(),
@@ -60,15 +60,37 @@ public struct AppStoreConnectClient {
                 return json.data.compactMap({ Application(schema: $0) })
             }
         case .badRequest(let result):
-            throw AppStoreConnectError.badRequest
+            switch result.body {
+            case .json(let json):
+                    throw AppStoreConnectError.badRequest(errors: handleError(from: json))
+            }
         case .forbidden(let result):
-            throw AppStoreConnectError.forbidden
+            switch result.body {
+            case .json(let json):
+                throw AppStoreConnectError.forbidden(errors: handleError(from: json))
+            }
         case .unauthorized(let result):
-            throw AppStoreConnectError.unauthorized
+            switch result.body {
+            case .json(let json):
+                throw AppStoreConnectError.unauthorized(errors: handleError(from: json))
+            }
         case .undocumented(let statusCode, _):
             throw AppStoreConnectError.serverError(errorCode: statusCode)
         }
     }
+    
+    private func handleError(from response: Components.Schemas.ErrorResponse) -> String? {
+        var stringError = ""
+        response.errors?.forEach({ error in
+            stringError.append("""
+\nThe request failed with error response status: \(error.status), error code: \(error.code), error title: \(error.title), error detail: \(error.detail).
+""")
+        })
+        guard !stringError.isEmpty else {
+            return nil
+        }
+        return stringError
+}
     
     /// Fetches a collection of versions for a specified app from the App Store Connect API.
     /// - Parameter app: The app for which to fetch versions.
@@ -85,13 +107,25 @@ public struct AppStoreConnectClient {
                 return json.data.compactMap({ Release(schema: $0) })
             }
         case .badRequest(let result):
-            throw AppStoreConnectError.badRequest
+            switch result.body {
+            case .json(let json):
+                throw AppStoreConnectError.badRequest(errors: handleError(from: json))
+            }
         case .forbidden(let result):
-            throw AppStoreConnectError.forbidden
+            switch result.body {
+            case .json(let json):
+                throw AppStoreConnectError.forbidden(errors: handleError(from: json))
+            }
         case .notFound(let result):
-            throw AppStoreConnectError.notFound
+            switch result.body {
+            case .json(let json):
+                throw AppStoreConnectError.notFound(errors: handleError(from: json))
+            }
         case .unauthorized(let result):
-            throw AppStoreConnectError.unauthorized
+            switch result.body {
+            case .json(let json):
+                throw AppStoreConnectError.unauthorized(errors: handleError(from: json))
+            }
         case .undocumented(let statusCode, _):
             throw AppStoreConnectError.serverError(errorCode: statusCode)
         }

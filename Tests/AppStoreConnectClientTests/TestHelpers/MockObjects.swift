@@ -27,10 +27,31 @@ import OpenAPIRuntime
 
 enum MockObjects {
     static var errorResponse: Components.Schemas.ErrorResponse {
-        let response = Components.Schemas.ErrorResponse(
-            errors: Components.Schemas.ErrorResponse.errorsPayload()
+        var errorsPayload: Components.Schemas.ErrorResponse.errorsPayload = []
+        let payload1 = Components.Schemas.ErrorResponse.errorsPayload.init(arrayLiteral: .init(status: "400", code: "BAD_REQUEST", title: "Invalid Input", detail: "The provided data failed validation"))
+        let payload2 = Components.Schemas.ErrorResponse.errorsPayload.init(arrayLiteral: .init(status: "500", code: "INTERNAL_SERVER_ERROR", title: "Server Error", detail: "An unexpected error"))
+        
+        
+        //let mock = MockAPIClient()
+        var errorsArray: [Components.Schemas.ErrorResponse] = []
+        let response1 = Components.Schemas.ErrorResponse(
+            errors: Components.Schemas.ErrorResponse.errorsPayload.init(arrayLiteral: .init(status: "400", code: "BAD_REQUEST", title: "Invalid Input", detail: "The provided data failed validation"))
         )
-        return response
+//        switch mock.result {
+//            case .badRequest:
+//                response = Components.Schemas.ErrorResponse(
+//                    errors: Components.Schemas.ErrorResponse.errorsPayload.init(arrayLiteral: .init(status: "400", code: "BAD_REQUEST", title: "Invalid Input", detail: "The provided data failed validation"))
+//                )
+//            case .forbidden:
+//                response = Components.Schemas.ErrorResponse(
+//                    errors: Components.Schemas.ErrorResponse.errorsPayload.init(arrayLiteral: .init(status: "403", code: "FORBIDDEN", title: "Access Denied", detail: "You do not have permission to access this resource"))
+        //        )
+        let response2 = Components.Schemas.ErrorResponse(
+            errors: Components.Schemas.ErrorResponse.errorsPayload.init(arrayLiteral: .init(status: "500", code: "INTERNAL_SERVER_ERROR", title: "Server Error", detail: "An unexpected error"))
+        )
+        errorsPayload.append(payload1)
+        errorsPayload.append(payload2)
+        return errorsPayload
     }
     
     static var appStoreVersionsResponse: Components.Schemas.AppStoreVersionsResponse {
@@ -66,6 +87,21 @@ enum MockObjects {
                 versionString: "1.1.1",
                 appStoreState: .ACCEPTED
             )
+        )
+        return response
+    }
+    
+    static var appsResponseForFetchApps: Components.Schemas.AppsResponse {
+        let response = Components.Schemas.AppsResponse(
+            data: [app],
+            links: Components.Schemas.PagedDocumentLinks(_self: "")
+        )
+        return response
+    }
+    
+    static var errorResponseForFetchApps: Components.Schemas.ErrorResponse {
+        let response = Components.Schemas.ErrorResponse(
+            errors: Components.Schemas.ErrorResponse.errorsPayload()
         )
         return response
     }
