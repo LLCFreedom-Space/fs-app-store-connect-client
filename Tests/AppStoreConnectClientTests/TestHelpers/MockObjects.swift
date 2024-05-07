@@ -26,33 +26,12 @@ import OpenAPIRuntime
 @testable import AppStoreConnectClient
 
 enum MockObjects {
-    static var errorResponse: Components.Schemas.ErrorResponse {
-        var errorsPayload: Components.Schemas.ErrorResponse.errorsPayload = []
-        let payload1 = Components.Schemas.ErrorResponse.errorsPayload.init(arrayLiteral: .init(status: "400", code: "BAD_REQUEST", title: "Invalid Input", detail: "The provided data failed validation"))
-        let payload2 = Components.Schemas.ErrorResponse.errorsPayload.init(arrayLiteral: .init(status: "500", code: "INTERNAL_SERVER_ERROR", title: "Server Error", detail: "An unexpected error"))
+    static var errorResponse: Components.Schemas.ErrorResponse = {
+        let payload1 = Components.Schemas.ErrorResponse.errorsPayloadPayload(status: "500", code: "INTERNAL_SERVER_ERROR", title: "Server Error", detail: "An unexpected error")
+        let payload2 = Components.Schemas.ErrorResponse.errorsPayloadPayload(status: "500", code: "INTERNAL_SERVER_ERROR", title: "Server Error", detail: "An unexpected error")
+        return Components.Schemas.ErrorResponse(errors: [payload1, payload2])
         
-        
-        //let mock = MockAPIClient()
-        var errorsArray: [Components.Schemas.ErrorResponse] = []
-        let response1 = Components.Schemas.ErrorResponse(
-            errors: Components.Schemas.ErrorResponse.errorsPayload.init(arrayLiteral: .init(status: "400", code: "BAD_REQUEST", title: "Invalid Input", detail: "The provided data failed validation"))
-        )
-//        switch mock.result {
-//            case .badRequest:
-//                response = Components.Schemas.ErrorResponse(
-//                    errors: Components.Schemas.ErrorResponse.errorsPayload.init(arrayLiteral: .init(status: "400", code: "BAD_REQUEST", title: "Invalid Input", detail: "The provided data failed validation"))
-//                )
-//            case .forbidden:
-//                response = Components.Schemas.ErrorResponse(
-//                    errors: Components.Schemas.ErrorResponse.errorsPayload.init(arrayLiteral: .init(status: "403", code: "FORBIDDEN", title: "Access Denied", detail: "You do not have permission to access this resource"))
-        //        )
-        let response2 = Components.Schemas.ErrorResponse(
-            errors: Components.Schemas.ErrorResponse.errorsPayload.init(arrayLiteral: .init(status: "500", code: "INTERNAL_SERVER_ERROR", title: "Server Error", detail: "An unexpected error"))
-        )
-        errorsPayload.append(payload1)
-        errorsPayload.append(payload2)
-        return errorsPayload
-    }
+    }()
     
     static var appStoreVersionsResponse: Components.Schemas.AppStoreVersionsResponse {
         let response = Components.Schemas.AppStoreVersionsResponse(
