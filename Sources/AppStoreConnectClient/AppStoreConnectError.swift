@@ -36,4 +36,6 @@ public enum AppStoreConnectError: Error, Equatable {
     case badRequest(errors: String?)
     /// The requested resource was not found.
     case notFound(errors: String?)
+    
+    case unexpectedError(errors: String?)
 }

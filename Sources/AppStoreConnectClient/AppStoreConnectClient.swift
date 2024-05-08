@@ -105,32 +105,28 @@ public struct AppStoreConnectClient {
         )
         switch response {
         case .ok(let okResponse):
-            switch okResponse.body {
-            case .json(let json):
+            if case .json(let json) = okResponse.body {
                 return json.data.compactMap({ Release(schema: $0) })
             }
         case .badRequest(let result):
-            switch result.body {
-            case .json(let json):
+            if case .json(let json) = result.body {
                 throw AppStoreConnectError.badRequest(errors: handleError(from: json))
             }
         case .forbidden(let result):
-            switch result.body {
-            case .json(let json):
+            if case .json(let json) = result.body {
                 throw AppStoreConnectError.forbidden(errors: handleError(from: json))
             }
         case .notFound(let result):
-            switch result.body {
-            case .json(let json):
+            if case .json(let json) = result.body {
                 throw AppStoreConnectError.notFound(errors: handleError(from: json))
             }
         case .unauthorized(let result):
-            switch result.body {
-            case .json(let json):
+            if case .json(let json) = result.body {
                 throw AppStoreConnectError.unauthorized(errors: handleError(from: json))
             }
         case .undocumented(let statusCode, _):
             throw AppStoreConnectError.serverError(errorCode: statusCode)
         }
+        throw AppStoreConnectError.unexpectedError(errors: "\(response)")
     }
 }
