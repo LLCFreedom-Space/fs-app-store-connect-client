@@ -98,7 +98,7 @@ public struct AppStoreConnectClient {
     /// Fetches a collection of versions for a specified app from the App Store Connect API.
     /// - Parameter app: The app for which to fetch versions.
     /// - Returns: An array of `Release` objects.
-    /// - Throws: An error if the fetch operation fails.
+    /// - Throws: An error of type `AppStoreConnectError` if the fetch operation fails.
     public func fetchVersions(for app: Application) async throws -> [Release] {
         let response = try await client.apps_hyphen_appStoreVersions_hyphen_get_to_many_related(
             path: .init(id: app.id)
@@ -114,6 +114,9 @@ public struct AppStoreConnectClient {
         throw AppStoreConnectError.unexpectedError(errors: "\(response)")
     }
     
+    /// Handles error responses returned by the App Store Connect API.
+    /// - Parameter response: The response received from the API.
+    /// - Throws: An error of type `AppStoreConnectError` if the response indicates an error.
     func errorResponse(
         from response: Operations.apps_hyphen_appStoreVersions_hyphen_get_to_many_related.Output
     ) async throws -> [Release] {
