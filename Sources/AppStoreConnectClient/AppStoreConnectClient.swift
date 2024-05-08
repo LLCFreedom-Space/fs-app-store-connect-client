@@ -127,6 +127,6 @@ public struct AppStoreConnectClient {
         case .undocumented(let statusCode, _):
             throw AppStoreConnectError.serverError(errorCode: statusCode)
         }
-        throw AppStoreConnectError.unexpectedError(errors: "\(response)")
+        return []
     }
 }
