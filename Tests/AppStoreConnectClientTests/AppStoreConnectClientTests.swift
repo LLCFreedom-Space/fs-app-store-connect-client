@@ -40,7 +40,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         var mockClient = MockAPIClient()
         mockClient.result = .badRequest
         let client = AppStoreConnectClient(client: mockClient)
-        let text = "\nThe request failed with error response status: 400, error code: BAD_REQUEST, error title: Invalid Input, error detail: The provided data failed validation."
+        let text = "\nThe request failed with: 400, BAD_REQUEST, Invalid Input, The provided data failed validation."
         let expectedError = AppStoreConnectError.badRequest(errors: text)
         do {
             _ = try await client.fetchApps()
@@ -58,7 +58,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         var mockClient = MockAPIClient()
         mockClient.result = .forbidden
         let client = AppStoreConnectClient(client: mockClient)
-        let text = "\nThe request failed with error response status: 403, error code: FORBIDDEN, error title: Access Denied, error detail: You do not have permission to access this resource."
+        let text = "\nThe request failed with: 403, FORBIDDEN, Access Denied, You do not have permission to access this resource."
         let expectedError = AppStoreConnectError.forbidden(errors: text)
         do {
             _ = try await client.fetchApps()
@@ -76,7 +76,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         var mockClient = MockAPIClient()
         mockClient.result = .unauthorized
         let client = AppStoreConnectClient(client: mockClient)
-        let text = "\nThe request failed with error response status: 401, error code: UNAUTHORIZED, error title: Unauthorized, error detail: Authentication credentials were missing or incorrect."
+        let text = "\nThe request failed with: 401, UNAUTHORIZED, Unauthorized, Authentication credentials were missing or incorrect."
         let expectedError = AppStoreConnectError.unauthorized(errors: text)
         do {
             _ = try await client.fetchApps()
@@ -116,7 +116,7 @@ final class AppStoreConnectClientTests: XCTestCase {
     }
     
     func testFetchVersionsBadRequest() async throws {
-        let text = "\nThe request failed with error response status: 400, error code: BAD_REQUEST, error title: Invalid Input, error detail: The provided data failed validation."
+        let text = "\nThe request failed with: 400, BAD_REQUEST, Invalid Input, The provided data failed validation."
         let expectedError = AppStoreConnectError.badRequest(errors: text)
         var mockClient = MockAPIClient()
         mockClient.result = .badRequest
@@ -135,7 +135,7 @@ final class AppStoreConnectClientTests: XCTestCase {
     }
     
     func testFetchVersionsForbidden() async throws {
-        let text = "\nThe request failed with error response status: 403, error code: FORBIDDEN, error title: Access Denied, error detail: You do not have permission to access this resource."
+        let text = "\nThe request failed with: 403, FORBIDDEN, Access Denied, You do not have permission to access this resource."
         let expectedError = AppStoreConnectError.forbidden(errors: text)
         var mockClient = MockAPIClient()
         mockClient.result = .forbidden
@@ -154,7 +154,7 @@ final class AppStoreConnectClientTests: XCTestCase {
     }
     
     func testFetchVersionsNotFound() async throws {
-        let text = "\nThe request failed with error response status: 404, error code: NOT_FOUND, error title: Resource Not Found, error detail: The requested resource was not found."
+        let text = "\nThe request failed with: 404, NOT_FOUND, Resource Not Found, The requested resource was not found."
         let expectedError = AppStoreConnectError.notFound(errors: text)
         var mockClient = MockAPIClient()
         mockClient.result = .notFound
@@ -173,7 +173,7 @@ final class AppStoreConnectClientTests: XCTestCase {
     }
     
     func testFetchVersionsUnauthorized() async throws {
-        let text = "\nThe request failed with error response status: 401, error code: UNAUTHORIZED, error title: Unauthorized, error detail: Authentication credentials were missing or incorrect."
+        let text = "\nThe request failed with: 401, UNAUTHORIZED, Unauthorized, Authentication credentials were missing or incorrect."
         let expectedError = AppStoreConnectError.unauthorized(errors: text)
         var mockClient = MockAPIClient()
         mockClient.result = .unauthorized

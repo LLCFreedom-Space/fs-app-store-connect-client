@@ -84,11 +84,11 @@ public struct AppStoreConnectClient {
     /// - Returns: A formatted string describing the error response, or `nil` if the response is empty.
     private func handleError(from response: Components.Schemas.ErrorResponse) -> String? {
         var stringError = ""
-        response.errors?.forEach({ error in
+        response.errors?.forEach { error in
             stringError.append("""
-        \nThe request failed with error response status: \(error.status), error code: \(error.code), error title: \(error.title), error detail: \(error.detail).
+        \nThe request failed with: \(error.status), \(error.code), \(error.title), \(error.detail).
         """)
-        })
+        }
         guard !stringError.isEmpty else {
             return nil
         }
