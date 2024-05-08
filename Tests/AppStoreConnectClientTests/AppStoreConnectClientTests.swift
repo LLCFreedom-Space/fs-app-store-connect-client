@@ -27,7 +27,7 @@ import XCTest
 
 final class AppStoreConnectClientTests: XCTestCase {
     func testFetchAppsSuccess() async throws {
-        var mockClient = MockAPIClient()
+        var mockClient = MockAPIClient(result: .ok)
         mockClient.result = .ok
         let client = AppStoreConnectClient(client: mockClient)
         let apps = try await client.fetchApps()
@@ -65,7 +65,7 @@ final class AppStoreConnectClientTests: XCTestCase {
             XCTFail("Expected error not thrown")
         } catch {
             if let appStoreConnectError = error as? AppStoreConnectError {
-                XCTAssertEqual(AppStoreConnectError.forbidden(errors: <#T##String?#>), expectedError)
+                XCTAssertEqual(appStoreConnectError, expectedError)
             } else {
                 XCTFail("Unexpected error type: \(error)")
             }
@@ -76,12 +76,17 @@ final class AppStoreConnectClientTests: XCTestCase {
         var mockClient = MockAPIClient()
         mockClient.result = .unauthorized
         let client = AppStoreConnectClient(client: mockClient)
-        
+        let text = "\nThe request failed with error response status: 401, error code: UNAUTHORIZED, error title: Unauthorized, error detail: Authentication credentials were missing or incorrect."
+        let expectedError = AppStoreConnectError.unauthorized(errors: text)
         do {
             _ = try await client.fetchApps()
             XCTFail("Expected error not thrown")
         } catch {
-            //XCTAssertEqual(AppStoreConnectError.unauthorized.localizedDescription, error.localizedDescription)
+            if let appStoreConnectError = error as? AppStoreConnectError {
+                XCTAssertEqual(appStoreConnectError, expectedError)
+            } else {
+                XCTFail("Unexpected error type: \(error)")
+            }
         }
     }
     
@@ -111,6 +116,8 @@ final class AppStoreConnectClientTests: XCTestCase {
     }
     
     func testFetchVersionsBadRequest() async throws {
+        let text = "\nThe request failed with error response status: 400, error code: BAD_REQUEST, error title: Invalid Input, error detail: The provided data failed validation."
+        let expectedError = AppStoreConnectError.badRequest(errors: text)
         var mockClient = MockAPIClient()
         mockClient.result = .badRequest
         let client = AppStoreConnectClient(client: mockClient)
@@ -119,11 +126,17 @@ final class AppStoreConnectClientTests: XCTestCase {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
         } catch {
-            //XCTAssertEqual(AppStoreConnectError.badRequest.localizedDescription, error.localizedDescription)
+            if let appStoreConnectError = error as? AppStoreConnectError {
+                XCTAssertEqual(appStoreConnectError, expectedError)
+            } else {
+                XCTFail("Unexpected error type: \(error)")
+            }
         }
     }
     
     func testFetchVersionsForbidden() async throws {
+        let text = "\nThe request failed with error response status: 403, error code: FORBIDDEN, error title: Access Denied, error detail: You do not have permission to access this resource."
+        let expectedError = AppStoreConnectError.forbidden(errors: text)
         var mockClient = MockAPIClient()
         mockClient.result = .forbidden
         let client = AppStoreConnectClient(client: mockClient)
@@ -132,11 +145,17 @@ final class AppStoreConnectClientTests: XCTestCase {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
         } catch {
-            //XCTAssertEqual(AppStoreConnectError.forbidden.localizedDescription, error.localizedDescription)
+            if let appStoreConnectError = error as? AppStoreConnectError {
+                XCTAssertEqual(appStoreConnectError, expectedError)
+            } else {
+                XCTFail("Unexpected error type: \(error)")
+            }
         }
     }
     
     func testFetchVersionsNotFound() async throws {
+        let text = "\nThe request failed with error response status: 404, error code: NOT_FOUND, error title: Resource Not Found, error detail: The requested resource was not found."
+        let expectedError = AppStoreConnectError.notFound(errors: text)
         var mockClient = MockAPIClient()
         mockClient.result = .notFound
         let client = AppStoreConnectClient(client: mockClient)
@@ -145,11 +164,17 @@ final class AppStoreConnectClientTests: XCTestCase {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
         } catch {
-            //XCTAssertEqual(AppStoreConnectError.notFound.localizedDescription, error.localizedDescription)
+            if let appStoreConnectError = error as? AppStoreConnectError {
+                XCTAssertEqual(appStoreConnectError, expectedError)
+            } else {
+                XCTFail("Unexpected error type: \(error)")
+            }
         }
     }
     
     func testFetchVersionsUnauthorized() async throws {
+        let text = "\nThe request failed with error response status: 401, error code: UNAUTHORIZED, error title: Unauthorized, error detail: Authentication credentials were missing or incorrect."
+        let expectedError = AppStoreConnectError.unauthorized(errors: text)
         var mockClient = MockAPIClient()
         mockClient.result = .unauthorized
         let client = AppStoreConnectClient(client: mockClient)
@@ -158,7 +183,11 @@ final class AppStoreConnectClientTests: XCTestCase {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
         } catch {
-            //XCTAssertEqual(AppStoreConnectError.unauthorized.localizedDescription, error.localizedDescription)
+            if let appStoreConnectError = error as? AppStoreConnectError {
+                XCTAssertEqual(appStoreConnectError, expectedError)
+            } else {
+                XCTFail("Unexpected error type: \(error)")
+            }
         }
     }
     

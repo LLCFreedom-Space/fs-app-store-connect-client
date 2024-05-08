@@ -62,7 +62,7 @@ public struct AppStoreConnectClient {
         case .badRequest(let result):
             switch result.body {
             case .json(let json):
-                    throw AppStoreConnectError.badRequest(errors: handleError(from: json))
+                throw AppStoreConnectError.badRequest(errors: handleError(from: json))
             }
         case .forbidden(let result):
             switch result.body {
@@ -79,18 +79,21 @@ public struct AppStoreConnectClient {
         }
     }
     
+    /// Converts an error response into a formatted string.
+    /// - Parameter response: The error response object.
+    /// - Returns: A formatted string describing the error response, or `nil` if the response is empty.
     private func handleError(from response: Components.Schemas.ErrorResponse) -> String? {
         var stringError = ""
         response.errors?.forEach({ error in
             stringError.append("""
-\nThe request failed with error response status: \(error.status), error code: \(error.code), error title: \(error.title), error detail: \(error.detail).
-""")
+        \nThe request failed with error response status: \(error.status), error code: \(error.code), error title: \(error.title), error detail: \(error.detail).
+        """)
         })
         guard !stringError.isEmpty else {
             return nil
         }
         return stringError
-}
+    }
     
     /// Fetches a collection of versions for a specified app from the App Store Connect API.
     /// - Parameter app: The app for which to fetch versions.

@@ -14,6 +14,7 @@
 //
 //  You should have received a copy of the GNU Affero General Public License
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 //
 //  MockObjects.swift
 //
@@ -26,11 +27,80 @@ import OpenAPIRuntime
 @testable import AppStoreConnectClient
 
 enum MockObjects {
-    static var errorResponse: Components.Schemas.ErrorResponse = {
-        let payload1 = Components.Schemas.ErrorResponse.errorsPayloadPayload(status: "500", code: "INTERNAL_SERVER_ERROR", title: "Server Error", detail: "An unexpected error")
-        let payload2 = Components.Schemas.ErrorResponse.errorsPayloadPayload(status: "500", code: "INTERNAL_SERVER_ERROR", title: "Server Error", detail: "An unexpected error")
+    static var errorBadRequest: Components.Schemas.ErrorResponse {
+        return (
+            .init(
+                errors: Components.Schemas.ErrorResponse.errorsPayload.init(
+                    arrayLiteral: .init(
+                        status: "400",
+                        code: "BAD_REQUEST",
+                        title: "Invalid Input",
+                        detail: "The provided data failed validation"
+                    )
+                )
+            )
+        )
+    }
+    
+    static var errorForbidden: Components.Schemas.ErrorResponse {
+        return (
+            .init(
+                errors: Components.Schemas.ErrorResponse.errorsPayload.init(
+                    arrayLiteral: .init(
+                        status: "403",
+                        code: "FORBIDDEN",
+                        title: "Access Denied",
+                        detail: "You do not have permission to access this resource"
+                    )
+                )
+            )
+        )
+    }
+    
+    static var errorNotFound: Components.Schemas.ErrorResponse {
+        return (
+            .init(
+                errors: Components.Schemas.ErrorResponse.errorsPayload.init(
+                    arrayLiteral: .init(
+                        status: "404",
+                        code: "NOT_FOUND",
+                        title: "Resource Not Found",
+                        detail: "The requested resource was not found"
+                    )
+                )
+            )
+        )
+    }
+    
+    static var errorUnauthorized: Components.Schemas.ErrorResponse {
+        return (
+            .init(
+                errors: Components.Schemas.ErrorResponse.errorsPayload.init(
+                    arrayLiteral: .init(
+                        status: "401",
+                        code: "UNAUTHORIZED",
+                        title: "Unauthorized",
+                        detail: "Authentication credentials were missing or incorrect"
+                    )
+                )
+            )
+        )
+    }
+    
+    static var errorResponseArray: Components.Schemas.ErrorResponse = {
+        let payload1 = Components.Schemas.ErrorResponse.errorsPayloadPayload(
+            status: "400",
+            code: "BED_REQUEST",
+            title: "Server Error",
+            detail: "An unexpected error"
+        )
+        let payload2 = Components.Schemas.ErrorResponse.errorsPayloadPayload(
+            status: "500",
+            code: "INTERNAL_SERVER_ERROR",
+            title: "Server Error",
+            detail: "An unexpected error"
+        )
         return Components.Schemas.ErrorResponse(errors: [payload1, payload2])
-        
     }()
     
     static var appStoreVersionsResponse: Components.Schemas.AppStoreVersionsResponse {
@@ -66,21 +136,6 @@ enum MockObjects {
                 versionString: "1.1.1",
                 appStoreState: .ACCEPTED
             )
-        )
-        return response
-    }
-    
-    static var appsResponseForFetchApps: Components.Schemas.AppsResponse {
-        let response = Components.Schemas.AppsResponse(
-            data: [app],
-            links: Components.Schemas.PagedDocumentLinks(_self: "")
-        )
-        return response
-    }
-    
-    static var errorResponseForFetchApps: Components.Schemas.ErrorResponse {
-        let response = Components.Schemas.ErrorResponse(
-            errors: Components.Schemas.ErrorResponse.errorsPayload()
         )
         return response
     }

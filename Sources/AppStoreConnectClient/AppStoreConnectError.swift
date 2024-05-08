@@ -28,8 +28,6 @@ import Foundation
 public enum AppStoreConnectError: Error, Equatable {
     /// A server-side error occurred, indicated by the provided status code.
     case serverError(errorCode: Int)
-    
-    case error(statusCode: Int, errors: String)
     /// No results were found for the specified bundle ID.
     case unauthorized(errors: String?)
     /// The request is forbidden.
@@ -38,8 +36,4 @@ public enum AppStoreConnectError: Error, Equatable {
     case badRequest(errors: String?)
     /// The requested resource was not found.
     case notFound(errors: String?)
-    /// The credentials is empty.
-    case noHaveCredentials
-    /// There was a problem with the request/response.
-    case unexpectedError
 }
