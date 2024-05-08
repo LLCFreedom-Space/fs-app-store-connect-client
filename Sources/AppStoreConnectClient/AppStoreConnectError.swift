@@ -38,4 +38,10 @@ public enum AppStoreConnectError: Error, Equatable {
     case notFound(errors: String?)
     
     case unexpectedError(errors: String?)
+    
+    case error
+}
+
+enum responseError: Error, Equatable {
+    
 }

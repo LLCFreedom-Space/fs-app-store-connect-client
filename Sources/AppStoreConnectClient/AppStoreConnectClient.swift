@@ -108,25 +108,41 @@ public struct AppStoreConnectClient {
             if case .json(let json) = okResponse.body {
                 return json.data.compactMap({ Release(schema: $0) })
             }
+        default:
+            return try await errorResponse(from: response)
+        }
+        throw AppStoreConnectError.unexpectedError(errors: "\(response)")
+    }
+    
+    func errorResponse(
+        from response: Operations.apps_hyphen_appStoreVersions_hyphen_get_to_many_related.Output
+    ) async throws -> [Release] {
+        switch response {
         case .badRequest(let result):
-            if case .json(let json) = result.body {
+            switch result.body {
+            case .json(let json):
                 throw AppStoreConnectError.badRequest(errors: handleError(from: json))
             }
         case .forbidden(let result):
-            if case .json(let json) = result.body {
+            switch result.body {
+            case .json(let json):
                 throw AppStoreConnectError.forbidden(errors: handleError(from: json))
             }
         case .notFound(let result):
-            if case .json(let json) = result.body {
+            switch result.body {
+            case .json(let json):
                 throw AppStoreConnectError.notFound(errors: handleError(from: json))
             }
         case .unauthorized(let result):
-            if case .json(let json) = result.body {
+            switch result.body {
+            case .json(let json):
                 throw AppStoreConnectError.unauthorized(errors: handleError(from: json))
             }
         case .undocumented(let statusCode, _):
             throw AppStoreConnectError.serverError(errorCode: statusCode)
+            
+        default:
+            throw AppStoreConnectError.unexpectedError(errors: "\(response)")
         }
-        return []
     }
 }
