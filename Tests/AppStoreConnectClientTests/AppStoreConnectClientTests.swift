@@ -27,7 +27,7 @@ import XCTest
 
 final class AppStoreConnectClientTests: XCTestCase {
     func testFetchAppsSuccess() async throws {
-        var mockClient = MockAPIClient(result: .ok)
+        var mockClient = MockAPIClient()
         mockClient.result = .ok
         let client = AppStoreConnectClient(client: mockClient)
         let apps = try await client.fetchApps()
@@ -49,11 +49,11 @@ final class AppStoreConnectClientTests: XCTestCase {
             _ = try await client.fetchApps()
             XCTFail("Expected error not thrown")
         } catch {
-            if let appStoreConnectError = error as? AppStoreConnectError {
-                XCTAssertEqual(appStoreConnectError, expectedError)
-            } else {
-                XCTFail("Unexpected error type: \(error)")
-            }
+            XCTAssertEqual(
+                error as? AppStoreConnectError,
+                expectedError,
+                "Unexpected error: \(error)"
+            )
         }
     }
     
@@ -70,11 +70,11 @@ final class AppStoreConnectClientTests: XCTestCase {
             _ = try await client.fetchApps()
             XCTFail("Expected error not thrown")
         } catch {
-            if let appStoreConnectError = error as? AppStoreConnectError {
-                XCTAssertEqual(appStoreConnectError, expectedError)
-            } else {
-                XCTFail("Unexpected error type: \(error)")
-            }
+            XCTAssertEqual(
+                error as? AppStoreConnectError,
+                expectedError,
+                "Unexpected error: \(error)"
+            )
         }
     }
     
@@ -91,11 +91,11 @@ final class AppStoreConnectClientTests: XCTestCase {
             _ = try await client.fetchApps()
             XCTFail("Expected error not thrown")
         } catch {
-            if let appStoreConnectError = error as? AppStoreConnectError {
-                XCTAssertEqual(appStoreConnectError, expectedError)
-            } else {
-                XCTFail("Unexpected error type: \(error)")
-            }
+            XCTAssertEqual(
+                error as? AppStoreConnectError,
+                expectedError,
+                "Unexpected error: \(error)"
+            )
         }
     }
     
@@ -109,7 +109,10 @@ final class AppStoreConnectClientTests: XCTestCase {
             XCTFail("Expected error not thrown")
         } catch {
             let errorCode = 501
-            XCTAssertEqual(AppStoreConnectError.serverError(errorCode: errorCode).localizedDescription, error.localizedDescription)
+            XCTAssertEqual(
+                AppStoreConnectError.serverError(errorCode: errorCode).localizedDescription,
+                error.localizedDescription
+            )
         }
     }
     
@@ -138,11 +141,11 @@ final class AppStoreConnectClientTests: XCTestCase {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
         } catch {
-            if let appStoreConnectError = error as? AppStoreConnectError {
-                XCTAssertEqual(appStoreConnectError, expectedError)
-            } else {
-                XCTFail("Unexpected error type: \(error)")
-            }
+            XCTAssertEqual(
+                error as? AppStoreConnectError,
+                expectedError,
+                "Unexpected error: \(error)"
+            )
         }
     }
     
@@ -160,11 +163,11 @@ final class AppStoreConnectClientTests: XCTestCase {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
         } catch {
-            if let appStoreConnectError = error as? AppStoreConnectError {
-                XCTAssertEqual(appStoreConnectError, expectedError)
-            } else {
-                XCTFail("Unexpected error type: \(error)")
-            }
+            XCTAssertEqual(
+                error as? AppStoreConnectError,
+                expectedError,
+                "Unexpected error: \(error)"
+            )
         }
     }
     
@@ -182,11 +185,11 @@ final class AppStoreConnectClientTests: XCTestCase {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
         } catch {
-            if let appStoreConnectError = error as? AppStoreConnectError {
-                XCTAssertEqual(appStoreConnectError, expectedError)
-            } else {
-                XCTFail("Unexpected error type: \(error)")
-            }
+            XCTAssertEqual(
+                error as? AppStoreConnectError,
+                expectedError,
+                "Unexpected error: \(error)"
+            )
         }
     }
     
@@ -204,11 +207,11 @@ final class AppStoreConnectClientTests: XCTestCase {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
         } catch {
-            if let appStoreConnectError = error as? AppStoreConnectError {
-                XCTAssertEqual(appStoreConnectError, expectedError)
-            } else {
-                XCTFail("Unexpected error type: \(error)")
-            }
+            XCTAssertEqual(
+                error as? AppStoreConnectError,
+                expectedError,
+                "Unexpected error: \(error)"
+            )
         }
     }
     
@@ -222,7 +225,10 @@ final class AppStoreConnectClientTests: XCTestCase {
             XCTFail("Expected error not thrown")
         } catch {
             let errorCode = 501
-            XCTAssertEqual(AppStoreConnectError.serverError(errorCode: errorCode).localizedDescription, error.localizedDescription)
+            XCTAssertEqual(
+                AppStoreConnectError.serverError(errorCode: errorCode).localizedDescription,
+                error.localizedDescription
+            )
         }
     }
 }

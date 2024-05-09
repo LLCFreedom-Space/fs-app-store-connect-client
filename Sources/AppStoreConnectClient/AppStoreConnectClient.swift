@@ -38,7 +38,7 @@ public struct AppStoreConnectClient {
     /// Initializes the client with App Store Connect credentials.
     /// - Parameter credentials: Credentials needed to authenticate with the App Store Connect API.
     /// - Throws: An error if initialization fails.
-    public init(with credentials: Credentials) async throws {
+    public init(with credentials: Credentials) throws {
         self.client = try Client(
             serverURL: Servers.server1(),
             transport: URLSessionTransport(),
@@ -59,21 +59,12 @@ public struct AppStoreConnectClient {
             case .json(let json):
                 return json.data.compactMap({ Application(schema: $0) })
             }
-        case .badRequest(let result):
-            switch result.body {
-            case .json(let json):
-                throw AppStoreConnectError.badRequest(errors: handleError(from: json))
-            }
+        case .badRequest:
+                throw AppStoreConnectError.badRequest(errors: errorDescription(from: response))
         case .forbidden(let result):
-            switch result.body {
-            case .json(let json):
-                throw AppStoreConnectError.forbidden(errors: handleError(from: json))
-            }
+                throw AppStoreConnectError.forbidden(errors: errorDescription(from: response))
         case .unauthorized(let result):
-            switch result.body {
-            case .json(let json):
-                throw AppStoreConnectError.unauthorized(errors: handleError(from: json))
-            }
+                throw AppStoreConnectError.unauthorized(errors: errorDescription(from: response))
         case .undocumented(let statusCode, _):
             throw AppStoreConnectError.serverError(errorCode: statusCode)
         }
@@ -82,12 +73,52 @@ public struct AppStoreConnectClient {
     /// Converts an error response into a formatted string.
     /// - Parameter response: The error response object.
     /// - Returns: A formatted string describing the error response, or `nil` if the response is empty.
-    private func handleError(from response: Components.Schemas.ErrorResponse) -> String? {
+    private func errorDescription(
+        from response: Operations.apps_hyphen_get_collection.Output
+    ) -> String? {
         var stringError = ""
-        response.errors?.forEach { error in
-            stringError.append("""
-        \nThe request failed with: \(error.status), \(error.code), \(error.title), \(error.detail).
-        """)
+        switch response {
+        case .badRequest(let result):
+            switch result.body {
+            case .json(let json):
+                do {
+                    try response.badRequest.body.json.errors?.forEach { error in
+                        stringError.append("""
+                        \nThe request failed with: \(error.status), \(error.code), \(error.title), \(error.detail).
+                        """)
+                    }
+                } catch {
+                    return nil
+                }
+            }
+        case .forbidden(let result):
+            switch result.body {
+            case .json(let json):
+                do {
+                    try response.forbidden.body.json.errors?.forEach { error in
+                        stringError.append("""
+                        \nThe request failed with: \(error.status), \(error.code), \(error.title), \(error.detail).
+                        """)
+                    }
+                } catch {
+                    return nil
+                }
+            }
+        case .unauthorized(let result):
+            switch result.body {
+            case .json(let json):
+                do {
+                    try response.unauthorized.body.json.errors?.forEach { error in
+                        stringError.append("""
+                        \nThe request failed with: \(error.status), \(error.code), \(error.title), \(error.detail).
+                        """)
+                    }
+                } catch {
+                    return nil
+                }
+            }
+        default:
+            break
         }
         guard !stringError.isEmpty else {
             return nil
@@ -109,7 +140,7 @@ public struct AppStoreConnectClient {
                 return json.data.compactMap({ Release(schema: $0) })
             }
         default:
-            return try await errorResponse(from: response)
+            return try errorResponse(from: response)
         }
         throw AppStoreConnectError.unexpectedError(errors: "\(response)")
     }
@@ -117,29 +148,29 @@ public struct AppStoreConnectClient {
     /// Handles error responses returned by the App Store Connect API.
     /// - Parameter response: The response received from the API.
     /// - Throws: An error of type `AppStoreConnectError` if the response indicates an error.
-    func errorResponse(
+    private func errorResponse(
         from response: Operations.apps_hyphen_appStoreVersions_hyphen_get_to_many_related.Output
-    ) async throws -> [Release] {
+    ) throws -> [Release] {
         switch response {
         case .badRequest(let result):
             switch result.body {
             case .json(let json):
-                throw AppStoreConnectError.badRequest(errors: handleError(from: json))
+                throw AppStoreConnectError.badRequest(errors: errorDescription(from: json))
             }
         case .forbidden(let result):
             switch result.body {
             case .json(let json):
-                throw AppStoreConnectError.forbidden(errors: handleError(from: json))
+                throw AppStoreConnectError.forbidden(errors: errorDescription(from: json))
             }
         case .notFound(let result):
             switch result.body {
             case .json(let json):
-                throw AppStoreConnectError.notFound(errors: handleError(from: json))
+                throw AppStoreConnectError.notFound(errors: errorDescription(from: json))
             }
         case .unauthorized(let result):
             switch result.body {
             case .json(let json):
-                throw AppStoreConnectError.unauthorized(errors: handleError(from: json))
+                throw AppStoreConnectError.unauthorized(errors: errorDescription(from: json))
             }
         case .undocumented(let statusCode, _):
             throw AppStoreConnectError.serverError(errorCode: statusCode)
