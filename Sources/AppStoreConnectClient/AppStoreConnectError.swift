@@ -39,3 +39,21 @@ public enum AppStoreConnectError: Error, Equatable {
     /// An unexpected error occurred.
     case unexpectedError(errors: String?)
 }
+
+extension AppStoreConnectError {
+    /// Converts an error response into a formatted string.
+    /// - Parameter response: The error response object.
+    /// - Returns: A formatted string describing the error response, or `nil` if the response is empty.
+    static func errorDescription(from response: Components.Schemas.ErrorResponse) -> String? {
+        var stringError = ""
+        response.errors?.forEach { error in
+            stringError.append("""
+                \nThe request failed with: \(error.status), \(error.code), \(error.title), \(error.detail).
+                """)
+        }
+        guard !stringError.isEmpty else {
+            return nil
+        }
+        return stringError
+    }
+}

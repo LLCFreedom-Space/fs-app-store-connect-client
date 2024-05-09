@@ -55,75 +55,24 @@ public struct AppStoreConnectClient {
         let response = try await client.apps_hyphen_get_collection()
         switch response {
         case .ok(let okResponse):
-            switch okResponse.body {
-            case .json(let json):
-                return json.data.compactMap({ Application(schema: $0) })
-            }
-        case .badRequest:
-                throw AppStoreConnectError.badRequest(errors: errorDescription(from: response))
-        case .forbidden(let result):
-                throw AppStoreConnectError.forbidden(errors: errorDescription(from: response))
-        case .unauthorized(let result):
-                throw AppStoreConnectError.unauthorized(errors: errorDescription(from: response))
-        case .undocumented(let statusCode, _):
-            throw AppStoreConnectError.serverError(errorCode: statusCode)
-        }
-    }
-    
-    /// Converts an error response into a formatted string.
-    /// - Parameter response: The error response object.
-    /// - Returns: A formatted string describing the error response, or `nil` if the response is empty.
-    private func errorDescription(
-        from response: Operations.apps_hyphen_get_collection.Output
-    ) -> String? {
-        var stringError = ""
-        switch response {
+            return try okResponse.body.json.data.compactMap({ Application(schema: $0) })
         case .badRequest(let result):
-            switch result.body {
-            case .json(let json):
-                do {
-                    try response.badRequest.body.json.errors?.forEach { error in
-                        stringError.append("""
-                        \nThe request failed with: \(error.status), \(error.code), \(error.title), \(error.detail).
-                        """)
-                    }
-                } catch {
-                    return nil
-                }
-            }
+            throw AppStoreConnectError.badRequest(
+                errors: AppStoreConnectError.errorDescription(from: try result.body.json)
+            )
         case .forbidden(let result):
-            switch result.body {
-            case .json(let json):
-                do {
-                    try response.forbidden.body.json.errors?.forEach { error in
-                        stringError.append("""
-                        \nThe request failed with: \(error.status), \(error.code), \(error.title), \(error.detail).
-                        """)
-                    }
-                } catch {
-                    return nil
-                }
-            }
+            throw AppStoreConnectError.forbidden(
+                errors: AppStoreConnectError.errorDescription(from: try result.body.json)
+            )
         case .unauthorized(let result):
-            switch result.body {
-            case .json(let json):
-                do {
-                    try response.unauthorized.body.json.errors?.forEach { error in
-                        stringError.append("""
-                        \nThe request failed with: \(error.status), \(error.code), \(error.title), \(error.detail).
-                        """)
-                    }
-                } catch {
-                    return nil
-                }
-            }
-        default:
-            break
+            throw AppStoreConnectError.unauthorized(
+                errors: AppStoreConnectError.errorDescription(from: try result.body.json)
+            )
+        case .undocumented(let statusCode, _):
+            throw AppStoreConnectError.serverError(
+                errorCode: statusCode
+            )
         }
-        guard !stringError.isEmpty else {
-            return nil
-        }
-        return stringError
     }
     
     /// Fetches a collection of versions for a specified app from the App Store Connect API.
@@ -153,25 +102,21 @@ public struct AppStoreConnectClient {
     ) throws -> [Release] {
         switch response {
         case .badRequest(let result):
-            switch result.body {
-            case .json(let json):
-                throw AppStoreConnectError.badRequest(errors: errorDescription(from: json))
-            }
+            throw AppStoreConnectError.badRequest(
+                errors: AppStoreConnectError.errorDescription(from: try result.body.json)
+                )
         case .forbidden(let result):
-            switch result.body {
-            case .json(let json):
-                throw AppStoreConnectError.forbidden(errors: errorDescription(from: json))
-            }
+            throw AppStoreConnectError.forbidden(
+                errors: AppStoreConnectError.errorDescription(from: try result.body.json)
+                )
         case .notFound(let result):
-            switch result.body {
-            case .json(let json):
-                throw AppStoreConnectError.notFound(errors: errorDescription(from: json))
-            }
+            throw AppStoreConnectError.notFound(
+                errors: AppStoreConnectError.errorDescription(from: try result.body.json)
+                )
         case .unauthorized(let result):
-            switch result.body {
-            case .json(let json):
-                throw AppStoreConnectError.unauthorized(errors: errorDescription(from: json))
-            }
+            throw AppStoreConnectError.unauthorized(
+                errors: AppStoreConnectError.errorDescription(from: try result.body.json)
+                )
         case .undocumented(let statusCode, _):
             throw AppStoreConnectError.serverError(errorCode: statusCode)
             

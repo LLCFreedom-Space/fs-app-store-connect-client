@@ -33,9 +33,9 @@ enum MockObjects {
                 errors: Components.Schemas.ErrorResponse.errorsPayload.init(
                     arrayLiteral: .init(
                         status: "400",
-                        code: "BAD_REQUEST",
-                        title: "Invalid Input",
-                        detail: "The provided data failed validation"
+                        code: "Foo",
+                        title: "Bar",
+                        detail: "Foo Bar"
                     )
                 )
             )
@@ -48,9 +48,9 @@ enum MockObjects {
                 errors: Components.Schemas.ErrorResponse.errorsPayload.init(
                     arrayLiteral: .init(
                         status: "403",
-                        code: "FORBIDDEN",
-                        title: "Access Denied",
-                        detail: "You do not have permission to access this resource"
+                        code: "Foo",
+                        title: "Bar",
+                        detail: "Foo Bar"
                     )
                 )
             )
@@ -63,9 +63,9 @@ enum MockObjects {
                 errors: Components.Schemas.ErrorResponse.errorsPayload.init(
                     arrayLiteral: .init(
                         status: "404",
-                        code: "NOT_FOUND",
-                        title: "Resource Not Found",
-                        detail: "The requested resource was not found"
+                        code: "Foo",
+                        title: "Bar",
+                        detail: "Foo Bar"
                     )
                 )
             )
@@ -78,30 +78,14 @@ enum MockObjects {
                 errors: Components.Schemas.ErrorResponse.errorsPayload.init(
                     arrayLiteral: .init(
                         status: "401",
-                        code: "UNAUTHORIZED",
-                        title: "Unauthorized",
-                        detail: "Authentication credentials were missing or incorrect"
+                        code: "Foo",
+                        title: "Bar",
+                        detail: "Foo Bar"
                     )
                 )
             )
         )
     }
-    
-    static var errorResponseArray: Components.Schemas.ErrorResponse = {
-        let payload1 = Components.Schemas.ErrorResponse.errorsPayloadPayload(
-            status: "400",
-            code: "BED_REQUEST",
-            title: "Server Error",
-            detail: "An unexpected error"
-        )
-        let payload2 = Components.Schemas.ErrorResponse.errorsPayloadPayload(
-            status: "500",
-            code: "INTERNAL_SERVER_ERROR",
-            title: "Server Error",
-            detail: "An unexpected error"
-        )
-        return Components.Schemas.ErrorResponse(errors: [payload1, payload2])
-    }()
     
     static var appStoreVersionsResponse: Components.Schemas.AppStoreVersionsResponse {
         let response = Components.Schemas.AppStoreVersionsResponse(
@@ -133,7 +117,7 @@ enum MockObjects {
             _type: .appStoreVersions,
             id: app.id,
             attributes: Components.Schemas.AppStoreVersion.attributesPayload(
-                versionString: "1.1.1",
+                versionString: "Foo.Bar.Baz",
                 appStoreState: .ACCEPTED
             )
         )
