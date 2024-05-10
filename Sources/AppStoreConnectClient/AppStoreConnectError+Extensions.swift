@@ -28,7 +28,7 @@ extension AppStoreConnectError {
     /// Converts an error response into a formatted string.
     /// - Parameter response: The error response object.
     /// - Returns: A formatted string describing the error response, or `nil` if the response is empty.
-    static func errorDescription(from response: Components.Schemas.ErrorResponse) -> String? {
+    static func parseErrorDescription(from response: Components.Schemas.ErrorResponse) -> String? {
         var stringError = ""
         response.errors?.forEach { error in
             stringError.append("""

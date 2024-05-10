@@ -58,7 +58,7 @@ public struct AppStoreConnectClient {
         case .ok(let okResponse):
             result = try okResponse.body.json.data.compactMap({ Application(schema: $0) })
         default:
-            let error = try error(from: response)
+            let error = try handleErrors(from: response)
             throw error
         }
         return result
@@ -77,7 +77,7 @@ public struct AppStoreConnectClient {
         case .ok(let okResponse):
             result = try okResponse.body.json.data.compactMap({ Release(schema: $0) })
         default:
-            let error = try error(from: response)
+            let error = try handleErrors(from: response)
             throw error
         }
         return result
@@ -86,25 +86,25 @@ public struct AppStoreConnectClient {
     /// Handles error responses returned by the App Store Connect API when fetching app store versions.
     /// - Parameter response: The response received from the API.
     /// - Throws: An error of type `AppStoreConnectError` if the response indicates an error.
-    private func error(
+    private func handleErrors(
         from response: Operations.apps_hyphen_appStoreVersions_hyphen_get_to_many_related.Output
     ) throws -> AppStoreConnectError {
         switch response {
         case .badRequest(let result):
             return AppStoreConnectError.badRequest(
-                errors: AppStoreConnectError.errorDescription(from: try result.body.json)
+                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
                 )
         case .forbidden(let result):
             return AppStoreConnectError.forbidden(
-                errors: AppStoreConnectError.errorDescription(from: try result.body.json)
+                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
                 )
         case .notFound(let result):
             return AppStoreConnectError.notFound(
-                errors: AppStoreConnectError.errorDescription(from: try result.body.json)
+                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
                 )
         case .unauthorized(let result):
             return AppStoreConnectError.unauthorized(
-                errors: AppStoreConnectError.errorDescription(from: try result.body.json)
+                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
                 )
         case .undocumented(let statusCode, _):
             return AppStoreConnectError.serverError(errorCode: statusCode)
@@ -117,21 +117,21 @@ public struct AppStoreConnectClient {
     /// Handles error responses returned by the App Store Connect API when fetching app collections.
     /// - Parameter response: The response received from the API.
     /// - Throws: An error of type `AppStoreConnectError` if the response indicates an error.
-    private func error(
+    private func handleErrors(
         from response: Operations.apps_hyphen_get_collection.Output
     ) throws -> AppStoreConnectError {
         switch response {
         case .badRequest(let result):
             return AppStoreConnectError.badRequest(
-                errors: AppStoreConnectError.errorDescription(from: try result.body.json)
+                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
             )
         case .forbidden(let result):
             return AppStoreConnectError.forbidden(
-                errors: AppStoreConnectError.errorDescription(from: try result.body.json)
+                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
             )
         case .unauthorized(let result):
             return AppStoreConnectError.unauthorized(
-                errors: AppStoreConnectError.errorDescription(from: try result.body.json)
+                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
             )
         case .undocumented(let statusCode, _):
             return AppStoreConnectError.serverError(
