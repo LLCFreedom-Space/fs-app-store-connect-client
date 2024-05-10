@@ -29,6 +29,7 @@ import OpenAPIRuntime
 struct MockAPIClient: APIProtocol {
     var result: Result?
     let statusCode = 501
+    
     func apps_hyphen_appStoreVersions_hyphen_get_to_many_related(
         _ input: Operations.apps_hyphen_appStoreVersions_hyphen_get_to_many_related.Input
     ) async throws -> Operations.apps_hyphen_appStoreVersions_hyphen_get_to_many_related.Output {
@@ -36,13 +37,13 @@ struct MockAPIClient: APIProtocol {
         case .ok:
             return .ok(.init(body: .json(MockObjects.appStoreVersionsResponse)))
         case .badRequest:
-            return .badRequest(.init(body: .json(MockObjects.errorResponse)))
+            return .badRequest(.init(body: .json(MockObjects.errorBadRequest)))
         case .forbidden:
-            return .forbidden(.init(body: .json(MockObjects.errorResponse)))
+            return .forbidden(.init(body: .json(MockObjects.errorForbidden)))
         case .notFound:
-            return .notFound(.init(body: .json(MockObjects.errorResponse)))
+            return .notFound(.init(body: .json(MockObjects.errorNotFound)))
         case .unauthorized:
-            return .unauthorized(.init(body: .json(MockObjects.errorResponse)))
+            return .unauthorized(.init(body: .json(MockObjects.errorUnauthorized)))
         case .undocumented:
             return .undocumented(statusCode: statusCode, UndocumentedPayload())
         case .none:
@@ -59,11 +60,11 @@ struct MockAPIClient: APIProtocol {
         case .ok:
             return .ok(.init(body: .json(MockObjects.appsResponse)))
         case .badRequest:
-            return .badRequest(.init(body: .json(MockObjects.errorResponse)))
+            return .badRequest(.init(body: .json(MockObjects.errorBadRequest)))
         case .forbidden:
-            return .forbidden(.init(body: .json(MockObjects.errorResponse)))
+            return .forbidden(.init(body: .json(MockObjects.errorForbidden)))
         case .unauthorized:
-            return .unauthorized(.init(body: .json(MockObjects.errorResponse)))
+            return .unauthorized(.init(body: .json(MockObjects.errorUnauthorized)))
         case .undocumented:
             return .undocumented(statusCode: statusCode, UndocumentedPayload())
         case .none:

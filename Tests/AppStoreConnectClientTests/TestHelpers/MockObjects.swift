@@ -14,6 +14,7 @@
 //
 //  You should have received a copy of the GNU Affero General Public License
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 //
 //  MockObjects.swift
 //
@@ -26,11 +27,64 @@ import OpenAPIRuntime
 @testable import AppStoreConnectClient
 
 enum MockObjects {
-    static var errorResponse: Components.Schemas.ErrorResponse {
-        let response = Components.Schemas.ErrorResponse(
-            errors: Components.Schemas.ErrorResponse.errorsPayload()
+    static var errorBadRequest: Components.Schemas.ErrorResponse {
+        return (
+            .init(
+                errors: Components.Schemas.ErrorResponse.errorsPayload.init(
+                    arrayLiteral: .init(
+                        status: "400",
+                        code: "Foo",
+                        title: "Bar",
+                        detail: "Foo Bar"
+                    )
+                )
+            )
         )
-        return response
+    }
+    
+    static var errorForbidden: Components.Schemas.ErrorResponse {
+        return (
+            .init(
+                errors: Components.Schemas.ErrorResponse.errorsPayload.init(
+                    arrayLiteral: .init(
+                        status: "403",
+                        code: "Foo",
+                        title: "Bar",
+                        detail: "Foo Bar"
+                    )
+                )
+            )
+        )
+    }
+    
+    static var errorNotFound: Components.Schemas.ErrorResponse {
+        return (
+            .init(
+                errors: Components.Schemas.ErrorResponse.errorsPayload.init(
+                    arrayLiteral: .init(
+                        status: "404",
+                        code: "Foo",
+                        title: "Bar",
+                        detail: "Foo Bar"
+                    )
+                )
+            )
+        )
+    }
+    
+    static var errorUnauthorized: Components.Schemas.ErrorResponse {
+        return (
+            .init(
+                errors: Components.Schemas.ErrorResponse.errorsPayload.init(
+                    arrayLiteral: .init(
+                        status: "401",
+                        code: "Foo",
+                        title: "Bar",
+                        detail: "Foo Bar"
+                    )
+                )
+            )
+        )
     }
     
     static var appStoreVersionsResponse: Components.Schemas.AppStoreVersionsResponse {
@@ -63,7 +117,7 @@ enum MockObjects {
             _type: .appStoreVersions,
             id: app.id,
             attributes: Components.Schemas.AppStoreVersion.attributesPayload(
-                versionString: "1.1.1",
+                versionString: "Foo.Bar.Baz",
                 appStoreState: .ACCEPTED
             )
         )
