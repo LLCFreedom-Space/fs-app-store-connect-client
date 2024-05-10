@@ -43,7 +43,6 @@ final class AppStoreConnectClientTests: XCTestCase {
         do {
             _ = try await client.fetchApps()
             XCTFail("Expected error not thrown")
-            /// Expected behavior
         } catch AppStoreConnectError.badRequest {
         } catch {
             XCTFail("Unexpected error: \(error)")
@@ -57,7 +56,6 @@ final class AppStoreConnectClientTests: XCTestCase {
         do {
             _ = try await client.fetchApps()
             XCTFail("Expected error not thrown")
-            /// Expected behavior
         } catch AppStoreConnectError.forbidden {
         } catch {
             XCTFail("Unexpected error: \(error)")
@@ -71,7 +69,6 @@ final class AppStoreConnectClientTests: XCTestCase {
         do {
             _ = try await client.fetchApps()
             XCTFail("Expected error not thrown")
-            /// Expected behavior
         } catch AppStoreConnectError.unauthorized {
         } catch {
             XCTFail("Unexpected error: \(error)")
@@ -85,7 +82,6 @@ final class AppStoreConnectClientTests: XCTestCase {
         do {
             _ = try await client.fetchApps()
             XCTFail("Expected error not thrown")
-            /// Expected behavior
         } catch AppStoreConnectError.serverError {
         } catch {
             XCTFail("Unexpected error: \(error)")
@@ -111,7 +107,6 @@ final class AppStoreConnectClientTests: XCTestCase {
         do {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
-            /// Expected behavior
         } catch AppStoreConnectError.badRequest {
         } catch {
             XCTFail("Unexpected error: \(error)")
@@ -126,7 +121,6 @@ final class AppStoreConnectClientTests: XCTestCase {
         do {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
-            /// Expected behavior
         } catch AppStoreConnectError.forbidden {
         } catch {
             XCTFail("Unexpected error: \(error)")
@@ -141,7 +135,6 @@ final class AppStoreConnectClientTests: XCTestCase {
         do {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
-            /// Expected behavior
         } catch AppStoreConnectError.notFound {
         } catch {
             XCTFail("Unexpected error: \(error)")
@@ -156,7 +149,6 @@ final class AppStoreConnectClientTests: XCTestCase {
         do {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
-            /// Expected behavior
         } catch AppStoreConnectError.unauthorized {
         } catch {
             XCTFail("Unexpected error: \(error)")
@@ -171,7 +163,6 @@ final class AppStoreConnectClientTests: XCTestCase {
         do {
             _ = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown")
-            /// Expected behavior
         } catch AppStoreConnectError.serverError {
         } catch {
             XCTFail("Unexpected error: \(error)")
