@@ -82,7 +82,6 @@ final class AppStoreConnectClientTests: XCTestCase {
         var mockClient = MockAPIClient()
         mockClient.result = .undocumented
         let client = AppStoreConnectClient(client: mockClient)
-        
         do {
             _ = try await client.fetchApps()
             XCTFail("Expected error not thrown")
@@ -100,8 +99,8 @@ final class AppStoreConnectClientTests: XCTestCase {
         let app = Application(id: "", bundleId: "")
         let apps = try await client.fetchVersions(for: app)
         XCTAssertEqual(1, apps.count)
-        XCTAssertEqual(apps.first?.appStoreState, "ACCEPTED")
-        XCTAssertEqual(apps.first?.version, "Foo.Bar.Baz")
+        XCTAssertEqual(apps.first?.appStoreState, MockObjects.appStoreVersion.attributes?.appStoreState?.rawValue)
+        XCTAssertEqual(apps.first?.version, MockObjects.appStoreVersion.attributes?.versionString)
     }
     
     func testFetchVersionsBadRequest() async throws {
