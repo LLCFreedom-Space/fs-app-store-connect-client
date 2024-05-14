@@ -16,6 +16,7 @@ This Swift package provides a client library for interacting with the App Store 
 - Find and list your apps in App Store Connect using secure JWT-authenticated requests.
 - Get a list of all App Store versions of your app across all platforms using secure JWT-authenticated requests.
 - Handles JSON formats response.
+- Implemented control over the number of requests from users and handling of rate limit errors.
 - Throws informative errors for server errors and not found cases.
 - Ensure test coverage for code to guarantee robustness and reliability.
 
