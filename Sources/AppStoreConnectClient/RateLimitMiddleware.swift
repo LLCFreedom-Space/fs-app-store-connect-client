@@ -52,7 +52,7 @@ public struct RateLimitMiddleware: ClientMiddleware {
         let data = result.0
         let hourLimit = try extractHeaderValue(from: data, forKey: hourLimit)
         let remaining = try extractHeaderValue(from: data, forKey: remaining)
-        print("\nServer request limit per hour: \(hourLimit), remaining: \(remaining)")
+        debugPrint("\nServer request limit per hour: \(hourLimit), remaining: \(remaining)")
         return result
     }
     
@@ -73,9 +73,8 @@ public struct RateLimitMiddleware: ClientMiddleware {
                     .split(separator: ";", omittingEmptySubsequences: true)
                     .map { $0.trimmingCharacters(in: .whitespaces) }
             }
-        guard let rateLimitField = items.first(where: {
-            $0.contains(key)
-        })?.replacingOccurrences(of: " ", with: "") else {
+        guard let rateLimitField = items.first(where: { $0.contains(key) })?
+            .replacingOccurrences(of: " ", with: "") else {
             throw RateLimitError.missingSearchKey(header: key)
         }
         let components = rateLimitField.split(separator: ":")
