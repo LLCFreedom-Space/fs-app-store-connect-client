@@ -28,6 +28,10 @@ import HTTPTypes
 
 /// A middleware for retrying failed HTTP requests based on configurable signals and policies.
 package struct RetryingMiddleware {
+    /// Init errors
+    static let error429 = 429
+    static let error500 = 500
+    static let error600 = 600
     /// Signals that indicate when a retry should be attempted.
     package enum RetryableSignal: Hashable {
         case code(Int)
@@ -60,7 +64,7 @@ package struct RetryingMiddleware {
         ///   - policy: Retry policy. Defaults to retrying up to 3 attempts.
         ///   - delay: Delay policy between retry attempts. Defaults to a constant delay of 1 second.
     package init(
-        signals: Set<RetryableSignal> = [.code(429), .range(500..<600), .errorThrown],
+        signals: Set<RetryableSignal> = [.code(error429), .range(error500..<error600), .errorThrown],
         policy: RetryingPolicy = .upToAttempts(count: 3),
         delay: DelayPolicy = .constant(seconds: 1)
     ) {
@@ -136,8 +140,12 @@ extension Set where Element == RetryingMiddleware.RetryableSignal {
     func contains(_ code: Int) -> Bool {
         for signal in self {
             switch signal {
-            case .code(let int): if code == int { return true }
-            case .range(let range): if range.contains(code) { return true }
+            case .code(let int): if code == int {
+                return true
+            }
+            case .range(let range): if range.contains(code) {
+                return true
+            }
             case .errorThrown: break
             }
         }
