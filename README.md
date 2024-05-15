@@ -17,6 +17,7 @@ This Swift package provides a client library for interacting with the App Store 
 - Get a list of all App Store versions of your app across all platforms using secure JWT-authenticated requests.
 - Handles JSON formats response.
 - Implemented control over the number of requests from users and handling of rate limit errors.
+- Providing automatically retrying HTTP requests based on customizable retry failed signals and delay strategies.
 - Throws informative errors for server errors and not found cases.
 - Ensure test coverage for code to guarantee robustness and reliability.
 
