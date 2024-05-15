@@ -29,9 +29,9 @@ import HTTPTypes
 /// Middleware for handling rate limits from App Store Connect.
 public struct RateLimitMiddleware: ClientMiddleware {
     /// The key for the hourly request limit header.
-    public let hourLimit = "user-hour-lim"
+    private let hourLimit = "user-hour-lim"
     /// The key for the remaining request count header.
-    public let remaining = "user-hour-rem"
+    private let remaining = "user-hour-rem"
     
     /// Intercept and handle rate limit headers in the response.
     /// - Parameters:
@@ -52,7 +52,6 @@ public struct RateLimitMiddleware: ClientMiddleware {
         let data = result.0
         let hourLimit = try extractHeaderValue(from: data, forKey: hourLimit)
         let remaining = try extractHeaderValue(from: data, forKey: remaining)
-        debugPrint("\nServer request limit per hour: \(hourLimit), remaining: \(remaining)")
         return result
     }
     
