@@ -29,27 +29,9 @@ import HTTPTypes
 /// A middleware for retrying failed HTTP requests based on configurable signals and policies.
 package struct RetryingMiddleware {
     /// Init errors
-    static let error429 = 429
-    static let error500 = 500
-    static let error600 = 600
-    /// Signals that indicate when a retry should be attempted.
-    package enum RetryableSignal: Hashable {
-        case code(Int)
-        case range(Range<Int>)
-        case errorThrown
-    }
-    
-    /// Policies dictating when and how many times to retry requests.
-    package enum RetryingPolicy: Hashable {
-        case never
-        case upToAttempts(count: Int)
-    }
-    
-    /// Policies determining the delay between retries.
-    package enum DelayPolicy: Hashable {
-        case none
-        case constant(seconds: TimeInterval)
-    }
+    private static let tooManyRequests = 429
+    private static let internalServerError = 500
+    private static let logicError = 600
     
     /// Set of retryable signals triggering retries.
     package var signals: Set<RetryableSignal>
@@ -59,12 +41,18 @@ package struct RetryingMiddleware {
     package var delay: DelayPolicy
     
     /// Initializes the retrying middleware with default values.
-        /// - Parameters:
-        ///   - signals: Set of retryable signals. Defaults to common error codes and thrown errors.
-        ///   - policy: Retry policy. Defaults to retrying up to 3 attempts.
-        ///   - delay: Delay policy between retry attempts. Defaults to a constant delay of 1 second.
+    /// - Parameters:
+    ///   - signals: Set of retryable signals. Defaults to common error codes and thrown errors.
+    ///   - policy: Retry policy. Defaults to retrying up to 3 attempts.
+    ///   - delay: Delay policy between retry attempts. Defaults to a constant delay of 1 second.
     package init(
-        signals: Set<RetryableSignal> = [.code(error429), .range(error500..<error600), .errorThrown],
+        signals: Set<RetryableSignal> = [
+            .code(
+                tooManyRequests
+            ),
+            .range(internalServerError..<logicError),
+            .errorThrown
+        ],
         policy: RetryingPolicy = .upToAttempts(count: 3),
         delay: DelayPolicy = .constant(seconds: 1)
     ) {
@@ -99,13 +87,7 @@ extension RetryingMiddleware: ClientMiddleware {
                 return try await next(request, body, baseURL)
             }
         }
-        func willRetry() async throws {
-            switch delay {
-            case .none: return
-            case .constant(seconds: let seconds): 
-                try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
-            }
-        }
+        try await willRetry()
         for attempt in 1...maxAttemptCount {
             let (response, responseBody): (HTTPResponse, HTTPBody?)
             if signals.contains(.errorThrown) {
@@ -131,24 +113,12 @@ extension RetryingMiddleware: ClientMiddleware {
         }
         preconditionFailure("Unreachable")
     }
-}
-
-extension Set where Element == RetryingMiddleware.RetryableSignal {
-    /// Checks if the set contains a retryable signal corresponding to a given HTTP status code.
-    /// - Parameter code: The HTTP status code to check.
-    /// - Returns: `true` if the set contains a retryable signal for the code, `false` otherwise.
-    func contains(_ code: Int) -> Bool {
-        for signal in self {
-            switch signal {
-            case .code(let int): if code == int {
-                return true
-            }
-            case .range(let range): if range.contains(code) {
-                return true
-            }
-            case .errorThrown: break
-            }
+    
+    func willRetry() async throws {
+        switch delay {
+        case .none: return
+        case .constant(seconds: let seconds):
+            try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
         }
-        return false
     }
 }

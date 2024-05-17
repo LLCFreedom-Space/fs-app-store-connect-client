@@ -27,22 +27,24 @@ import HTTPTypes
 import OpenAPIRuntime
 @testable import AppStoreConnectClient
 
-class RetryingMiddlewareTests: XCTestCase {
+final class RetryingMiddlewareTests: XCTestCase {
     let sut = RetryingMiddleware()
-    let error429 = 429
-    let error500 = 500
-    let ok200 = 200
+    let tooManyRequests = 429
+    let internalServerError = 500
+    let logicError = 600
+    let ok = 200
+    
     func testRetryableSignalContainsCode() {
         let signals: Set<RetryingMiddleware.RetryableSignal> = [
-            .code(RetryingMiddleware.error429),
-            .range(RetryingMiddleware.error500..<RetryingMiddleware.error600)
+            .code(tooManyRequests),
+            .range(internalServerError..<logicError)
         ]
-        XCTAssertTrue(signals.contains(error429))
-        XCTAssertTrue(signals.contains(error500))
-        XCTAssertFalse(signals.contains(ok200))
+        XCTAssertTrue(sut.signals.contains(tooManyRequests))
+        XCTAssertTrue(sut.signals.contains(internalServerError))
+        XCTAssertFalse(sut.signals.contains(ok))
     }
     
-    func testMiddlewareShouldNotRetryWhenPolicyIsNever() async throws {
+    func testMiddlewareCheckPolicyStatusNever() async throws {
         let sut = RetryingMiddleware(policy: .never)
         let nextExpectation = expectation(description: "description: test")
         let next: @Sendable (
@@ -51,7 +53,7 @@ class RetryingMiddlewareTests: XCTestCase {
             URL
         ) async throws -> (HTTPResponse, HTTPBody?) = { _, _, _ in
             nextExpectation.fulfill()
-            let status = HTTPResponse.Status(code: self.error500)
+            let status = HTTPResponse.Status(code: self.tooManyRequests)
             return (HTTPResponse(status: status), nil)
         }
         guard let baseURL = URL(string: "http://example.com") else {
@@ -70,12 +72,12 @@ class RetryingMiddlewareTests: XCTestCase {
             next: next
         )
         await fulfillment(of: [nextExpectation])
-        XCTAssertEqual(response.status.code, error500)
+        XCTAssertEqual(response.status.code, tooManyRequests)
     }
     
     func testMiddlewareRetryWhenResponseMatchesRetryStatusCodes() async throws {
         let middleware = RetryingMiddleware(
-            signals: [.code(error500)],
+            signals: [.code(internalServerError)],
             policy: .upToAttempts(count: 3),
             delay: .none
         )
@@ -87,7 +89,7 @@ class RetryingMiddlewareTests: XCTestCase {
             URL
         ) async throws -> (HTTPResponse, HTTPBody?) = { _, _, _ in
             nextExpectation.fulfill()
-            let status = HTTPResponse.Status(code: self.error500)
+            let status = HTTPResponse.Status(code: self.internalServerError)
             return (HTTPResponse(status: status), nil)
         }
         guard let baseURL = URL(string: "http://example.com") else {
@@ -106,11 +108,11 @@ class RetryingMiddlewareTests: XCTestCase {
             next: next
         )
         await fulfillment(of: [nextExpectation])
-        XCTAssertEqual(response.status.code, error500)
+        XCTAssertEqual(response.status.code, internalServerError)
     }
     
-    func testMiddlewareRetryWhenErrorIsThrown() async throws {
-        let middleware = RetryingMiddleware(
+    func testCatchsErrorAndIsItAttemptToRestartTheRequest() async throws {
+        let sut = RetryingMiddleware(
             signals: [.errorThrown],
             policy: .upToAttempts(count: 3),
             delay: .none
@@ -129,7 +131,7 @@ class RetryingMiddlewareTests: XCTestCase {
             return
         }
         do {
-            _ = try await middleware.intercept(
+            try await sut.intercept(
                 HTTPRequest(
                     method: .get,
                     scheme: "http",
@@ -150,7 +152,7 @@ class RetryingMiddlewareTests: XCTestCase {
     
     func testMiddlewareNotRetryWhenBodyIterationBehaviorIsNotMultiple() async throws {
         let middleware = RetryingMiddleware(
-            signals: [.code(error500)],
+            signals: [.code(internalServerError)],
             policy: .upToAttempts(count: 3),
             delay: .none
         )
@@ -161,7 +163,7 @@ class RetryingMiddlewareTests: XCTestCase {
             URL
         ) async throws -> (HTTPResponse, HTTPBody?) = { _, _, _ in
             nextExpectation.fulfill()
-            let status = HTTPResponse.Status(code: self.error500)
+            let status = HTTPResponse.Status(code: self.internalServerError)
             return (HTTPResponse(status: status), nil)
         }
         guard let baseURL = URL(string: "http://example.com") else {
@@ -180,12 +182,12 @@ class RetryingMiddlewareTests: XCTestCase {
             next: next
         )
         await fulfillment(of: [nextExpectation])
-        XCTAssertEqual(response.status.code, error500)
+        XCTAssertEqual(response.status.code, internalServerError)
     }
     
     func testMiddlewareRetryWhenBodyIterationBehaviorIsMultiple() async throws {
         let middleware = RetryingMiddleware(
-            signals: [.code(error500)],
+            signals: [.code(internalServerError)],
             policy: .upToAttempts(count: 3),
             delay: .none
         )
@@ -197,7 +199,7 @@ class RetryingMiddlewareTests: XCTestCase {
             URL
         ) async throws -> (HTTPResponse, HTTPBody?) = { _, _, _ in
             nextExpectation.fulfill()
-            let status = HTTPResponse.Status(code: self.error500)
+            let status = HTTPResponse.Status(code: self.internalServerError)
             return (HTTPResponse(status: status), nil)
         }
         guard let baseURL = URL(string: "http://example.com") else {
@@ -216,12 +218,12 @@ class RetryingMiddlewareTests: XCTestCase {
             next: next
         )
         await fulfillment(of: [nextExpectation])
-        XCTAssertEqual(response.status.code, error500)
+        XCTAssertEqual(response.status.code, internalServerError)
     }
     
     func testMiddlewareDelayBetweenRetries() async throws {
         let middleware = RetryingMiddleware(
-            signals: [.code(error500)],
+            signals: [.code(internalServerError)],
             policy: .upToAttempts(count: 3),
             delay: .constant(seconds: 0.1)
         )
@@ -234,13 +236,13 @@ class RetryingMiddlewareTests: XCTestCase {
             URL
         ) async throws -> (HTTPResponse, HTTPBody?) = { _, _, _ in
             nextExpectation.fulfill()
-            let status = HTTPResponse.Status(code: self.error500)
+            let status = HTTPResponse.Status(code: self.internalServerError)
             return (HTTPResponse(status: status), nil)
         }
         guard let baseURL = URL(string: "http://example.com") else {
             return
         }
-        _ = try await middleware.intercept(
+        try await middleware.intercept(
             HTTPRequest(
                 method: .get,
                 scheme: "http",

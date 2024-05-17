@@ -52,7 +52,7 @@ public struct RateLimitMiddleware: ClientMiddleware {
     ) async throws -> (HTTPTypes.HTTPResponse, OpenAPIRuntime.HTTPBody?) {
         let result = try await next(request, body, baseURL)
         let data = result.0
-        _ = try extractHeaderValue(from: data, for: header)
+        try extractHeaderValue(from: data, for: header)
         return result
     }
     
@@ -61,14 +61,14 @@ public struct RateLimitMiddleware: ClientMiddleware {
     ///   - response: The HTTP response.
     ///   - header: The header for search.
     /// - Throws: An errors if the header, the keys is not found or if the values cannot be extracted.
-    func extractHeaderValue(
+    private func extractHeaderValue(
         from response: HTTPTypes.HTTPResponse,
         for header: String
     ) throws {
         guard let serverHeader = response.headerFields.first(where: {
             return $0.name.rawName == header
         }) else {
-            throw RateLimitError.invalidSearchingData(header: header)
+            throw RateLimitError.headerValidationFailed(header: header)
         }
         let dictionary = serverHeader.value.split(separator: ";").reduce(into: [String: Int]()) {
             let pair = $1.split(separator: ":")
@@ -82,17 +82,9 @@ public struct RateLimitMiddleware: ClientMiddleware {
                 throw RateLimitError.rateLimitExceeded(remaining: value, from: valueLimit)
             }
         } else {
-            throw RateLimitError.invalidExpectedValues
+            throw RateLimitError.invalidExpectedValues(
+                "hourLimit: \(String(describing: dictionary[hourLimit])), remaining: \(String(describing: dictionary[remaining]))"
+            )
         }
     }
-}
-
-/// Possible errors thrown by `RateLimitMiddleware`.
-public enum RateLimitError: Error, Equatable {
-    /// The specified search header was not found.
-    case invalidSearchingData(header: String?)
-    /// The client has exceeded the rate limit for the values.
-    case rateLimitExceeded(remaining: Int, from: Int)
-    /// Unable to extract values of rate limit.
-    case invalidExpectedValues
 }
