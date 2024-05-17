@@ -94,4 +94,47 @@ class RateLimitMiddlewareTests: XCTestCase {
             XCTFail("Unexpected error: \(error)")
         }
     }
+    
+    func testInterceptNotPassesThroughWithoutRateLimitHeader() async throws {
+        let sut = RateLimitMiddleware()
+        let ok200 = 200
+        let mockRequest = HTTPTypes.HTTPRequest(
+            method: .get,
+            scheme: "http",
+            authority: "example.com",
+            path: "/test"
+        )
+        var fields = HTTPFields()
+        let unwrap = try XCTUnwrap(HTTPField.Name("sdf"))
+        fields[unwrap] = "user-hour-lim: user-hour-rem: user-hour-rem:"
+        let mockResponse = HTTPTypes.HTTPResponse(
+            status: .accepted,
+            headerFields: HTTPFields(fields[fields: unwrap])
+        )
+        let mockBody = OpenAPIRuntime.HTTPBody()
+        let next: @Sendable (
+            HTTPRequest,
+            HTTPBody?,
+            URL
+        ) async throws -> (HTTPResponse, HTTPBody?) = { _, _, _ in
+            let status = HTTPResponse.Status(code: ok200)
+            return (HTTPResponse(status: status), nil)
+        }
+        guard let baseURL = URL(string: "http://example.com") else {
+            return
+        }
+        do {
+            let result = try await sut.intercept(
+                mockRequest,
+                body: mockBody,
+                baseURL: baseURL,
+                operationID: "mockOperationID",
+                next: next
+            )
+            XCTFail("Expected error not thrown")
+        } catch RateLimitError.invalidSearchingData(header: "x-rate-limit") {
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
 }
