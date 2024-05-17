@@ -59,6 +59,7 @@ class RateLimitMiddlewareTests: XCTestCase {
     }
     
     func testExtractHeaderValueRateLimitExceeded() throws {
+        let limit = 1111
         let sut = RateLimitMiddleware()
         var fields = HTTPFields()
         let unwrap = try XCTUnwrap(HTTPField.Name("x-rate-limit"))
@@ -70,7 +71,7 @@ class RateLimitMiddlewareTests: XCTestCase {
         do {
             _ = try sut.extractHeaderValue(from: mockResponse, for: "x-rate-limit")
             XCTFail("Expected error not thrown")
-        } catch RateLimitError.rateLimitExceeded(remaining: 0, from: 1111) {
+        } catch RateLimitError.rateLimitExceeded(remaining: 0, from: limit) {
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
@@ -80,7 +81,7 @@ class RateLimitMiddlewareTests: XCTestCase {
         let sut = RateLimitMiddleware()
         var fields = HTTPFields()
         let unwrap = try XCTUnwrap(HTTPField.Name("x-rate-limit"))
-        fields[unwrap] = "user-hour-lim:1111 user-hour-rem: 222 user-hour-rem: 33"
+        fields[unwrap] = "user-hour-lim: user-hour-rem: user-hour-rem:"
         let mockResponse = HTTPTypes.HTTPResponse(
             status: .accepted,
             headerFields: HTTPFields(fields[fields: unwrap])

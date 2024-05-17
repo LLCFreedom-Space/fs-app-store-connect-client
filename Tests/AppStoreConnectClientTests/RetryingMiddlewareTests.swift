@@ -54,6 +54,9 @@ class RetryingMiddlewareTests: XCTestCase {
             let status = HTTPResponse.Status(code: self.error500)
             return (HTTPResponse(status: status), nil)
         }
+        guard let baseURL = URL(string: "http://example.com") else {
+            return
+        }
         let (response, _) = try await sut.intercept(
             HTTPRequest(
                 method: .get,
@@ -62,7 +65,7 @@ class RetryingMiddlewareTests: XCTestCase {
                 path: "/test"
             ),
             body: nil,
-            baseURL: URL(string: "http://example.com")!,
+            baseURL: baseURL,
             operationID: "testOperation",
             next: next
         )
@@ -87,6 +90,9 @@ class RetryingMiddlewareTests: XCTestCase {
             let status = HTTPResponse.Status(code: self.error500)
             return (HTTPResponse(status: status), nil)
         }
+        guard let baseURL = URL(string: "http://example.com") else {
+            return
+        }
         let (response, _) = try await middleware.intercept(
             HTTPRequest(
                 method: .get,
@@ -95,7 +101,7 @@ class RetryingMiddlewareTests: XCTestCase {
                 path: "/test"
             ),
             body: nil,
-            baseURL: URL(string: "http://example.com")!,
+            baseURL: baseURL,
             operationID: "testOperation",
             next: next
         )
@@ -119,6 +125,9 @@ class RetryingMiddlewareTests: XCTestCase {
             nextExpectation.fulfill()
             throw NSError(domain: "testError", code: 1, userInfo: nil)
         }
+        guard let baseURL = URL(string: "http://example.com") else {
+            return
+        }
         do {
             _ = try await middleware.intercept(
                 HTTPRequest(
@@ -128,7 +137,7 @@ class RetryingMiddlewareTests: XCTestCase {
                     path: "/test"
                 ),
                 body: nil,
-                baseURL: URL(string: "http://example.com")!,
+                baseURL: baseURL,
                 operationID: "testOperation",
                 next: next
             )
@@ -155,6 +164,9 @@ class RetryingMiddlewareTests: XCTestCase {
             let status = HTTPResponse.Status(code: self.error500)
             return (HTTPResponse(status: status), nil)
         }
+        guard let baseURL = URL(string: "http://example.com") else {
+            return
+        }
         let (response, _) = try await middleware.intercept(
             HTTPRequest(
                 method: .get,
@@ -163,7 +175,7 @@ class RetryingMiddlewareTests: XCTestCase {
                 path: "/test"
             ),
             body: HTTPBody([1, 2, 3], length: .known(3), iterationBehavior: .single),
-            baseURL: URL(string: "http://example.com")!,
+            baseURL: baseURL,
             operationID: "testOperation",
             next: next
         )
@@ -188,6 +200,9 @@ class RetryingMiddlewareTests: XCTestCase {
             let status = HTTPResponse.Status(code: self.error500)
             return (HTTPResponse(status: status), nil)
         }
+        guard let baseURL = URL(string: "http://example.com") else {
+            return
+        }
         let (response, _) = try await middleware.intercept(
             HTTPRequest(
                 method: .get,
@@ -196,7 +211,7 @@ class RetryingMiddlewareTests: XCTestCase {
                 path: "/test"
             ),
             body: HTTPBody([1, 2, 3], length: .known(3), iterationBehavior: .multiple),
-            baseURL: URL(string: "http://example.com")!,
+            baseURL: baseURL,
             operationID: "testOperation",
             next: next
         )
@@ -222,6 +237,9 @@ class RetryingMiddlewareTests: XCTestCase {
             let status = HTTPResponse.Status(code: self.error500)
             return (HTTPResponse(status: status), nil)
         }
+        guard let baseURL = URL(string: "http://example.com") else {
+            return
+        }
         _ = try await middleware.intercept(
             HTTPRequest(
                 method: .get,
@@ -230,7 +248,7 @@ class RetryingMiddlewareTests: XCTestCase {
                 path: "/test"
             ),
             body: nil,
-            baseURL: URL(string: "http://example.com")!,
+            baseURL: baseURL,
             operationID: "testOperation",
             next: next
         )
