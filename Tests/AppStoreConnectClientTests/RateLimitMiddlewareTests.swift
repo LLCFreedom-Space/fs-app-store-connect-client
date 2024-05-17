@@ -129,6 +129,7 @@ class RateLimitMiddlewareTests: XCTestCase {
     }
     
     func testInterceptFailure() async throws {
+        let limit = 1111
         let request = HTTPTypes.HTTPRequest(
             method: .get,
             scheme: "http",
@@ -157,7 +158,7 @@ class RateLimitMiddlewareTests: XCTestCase {
             XCTFail("Expected rate limit exceeded error")
         } catch RateLimitError.rateLimitExceeded(let remaining, let from) {
             XCTAssertEqual(remaining, 0)
-            XCTAssertEqual(from, 1111)
+            XCTAssertEqual(from, limit)
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
