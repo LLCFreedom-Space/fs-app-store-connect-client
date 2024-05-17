@@ -28,12 +28,14 @@ import HTTPTypes
 
 /// Middleware for handling rate limits from App Store Connect.
 public struct RateLimitMiddleware: ClientMiddleware {
-    /// The key for the hourly request limit header.
+    /// The key for the hourly request limit.
     private let hourLimit = "user-hour-lim"
-    /// The key for the remaining request count header.
+    /// The key for the remaining request count.
     private let remaining = "user-hour-rem"
+    /// The header for rate limit.
+    private let header = "x-rate-limit"
     
-    /// Intercept and handle rate limit headers in the response.
+    /// Intercept and handle rate limit in the response.
     /// - Parameters:
     ///   - request: The HTTP request.
     ///   - body: The HTTP body.
@@ -50,58 +52,47 @@ public struct RateLimitMiddleware: ClientMiddleware {
     ) async throws -> (HTTPTypes.HTTPResponse, OpenAPIRuntime.HTTPBody?) {
         let result = try await next(request, body, baseURL)
         let data = result.0
-        let hourLimit = try extractHeaderValue(from: data, forKey: hourLimit)
-        let remaining = try extractHeaderValue(from: data, forKey: remaining)
+        _ = try extractHeaderValue(from: data, for: header)
         return result
     }
     
     /// Extracts the value of the specified header key from the HTTP response.
     /// - Parameters:
     ///   - response: The HTTP response.
-    ///   - key: The header key to extract.
-    /// - Returns: The value of the header key.
-    /// - Throws: An error if the key is not found or if the value cannot be extracted.
-    private func extractHeaderValue(
+    ///   - header: The header for search.
+    /// - Throws: An errors if the header, the keys is not found or if the values cannot be extracted.
+    func extractHeaderValue(
         from response: HTTPTypes.HTTPResponse,
-        forKey key: String
-    ) throws -> Int {
-        let items = String(describing: response.headerFields)
-            .split(separator: ",", omittingEmptySubsequences: true)
-            .flatMap {
-                $0.trimmingCharacters(in: .whitespaces)
-                    .split(separator: ";", omittingEmptySubsequences: true)
-                    .map { $0.trimmingCharacters(in: .whitespaces) }
-            }
-        guard let rateLimitField = items.first(where: { $0.contains(key) })?
-            .replacingOccurrences(of: " ", with: "") else {
-            throw RateLimitError.missingSearchKey(header: key)
+        for header: String
+    ) throws {
+        guard let serverHeader = response.headerFields.first(where: {
+            return $0.name.rawName == header
+        }) else {
+            throw RateLimitError.invalidSearchingData(header: header)
         }
-        let components = rateLimitField.split(separator: ":")
-        var intValue: [Int] = []
-        for component in components {
-            if let number = Int(component) {
-                intValue.append(number)
+        let dictionary = serverHeader.value.split(separator: ";").reduce(into: [String: Int]()) {
+            let pair = $1.split(separator: ":")
+            if let key = pair.first?.trimmingCharacters(in: .whitespaces),
+               let value = pair.last?.trimmingCharacters(in: .whitespaces) {
+                $0[String(key)] = Int(value)
             }
         }
-        guard intValue.count == 1 else {
-            throw RateLimitError.dataPreparationError(countOfArray: intValue.count)
-        }
-        let result = intValue[0]
-        if key == remaining {
-            guard result > 0 else {
-                throw RateLimitError.rateLimitExceeded(remaining: result)
+        if let valueLimit = dictionary[hourLimit], let value = dictionary[remaining] {
+            guard value > 0 else {
+                throw RateLimitError.rateLimitExceeded(remaining: value, from: valueLimit)
             }
+        } else {
+            throw RateLimitError.invalidExpectedValues
         }
-        return result
     }
 }
 
 /// Possible errors thrown by `RateLimitMiddleware`.
-public enum RateLimitError: Error {
-    /// The specified search key was not found.
-    case missingSearchKey(header: String?)
-    /// An error occurred while preparing the data.
-    case dataPreparationError(countOfArray: Int?)
-    /// The client has exceeded the rate limit for the current period.
-    case rateLimitExceeded(remaining: Int?)
+public enum RateLimitError: Error, Equatable {
+    /// The specified search header was not found.
+    case invalidSearchingData(header: String?)
+    /// The client has exceeded the rate limit for the values.
+    case rateLimitExceeded(remaining: Int, from: Int)
+    /// Unable to extract values of rate limit.
+    case invalidExpectedValues
 }
