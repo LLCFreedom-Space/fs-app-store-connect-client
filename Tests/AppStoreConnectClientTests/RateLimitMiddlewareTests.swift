@@ -119,9 +119,10 @@ class RateLimitMiddlewareTests: XCTestCase {
                 request,
                 body: nil,
                 baseURL: baseURL,
-                operationID: "someOperationID",
-                next: { _, _, _ in return (httpResponse, nil) }
-            )
+                operationID: "someOperationID"
+            ) { _, _, _ in
+                return (httpResponse, nil)
+            }
             XCTAssertEqual(interceptedResponse.0.status, .accepted)
         } catch {
             XCTFail("Unexpected error: \(error)")
@@ -148,13 +149,14 @@ class RateLimitMiddlewareTests: XCTestCase {
         )
         let sut = RateLimitMiddleware()
         do {
-            _ = try await sut.intercept(
+            let interceptedResponse = try await sut.intercept(
                 request,
                 body: nil,
                 baseURL: baseURL,
-                operationID: "someOperationID",
-                next: { _, _, _ in return (httpResponse, nil) }
-            )
+                operationID: "someOperationID"
+            ) { _, _, _ in
+                return (httpResponse, nil)
+            }
             XCTFail("Expected rate limit exceeded error")
         } catch RateLimitError.rateLimitExceeded(let remaining, let from) {
             XCTAssertEqual(remaining, 0)
