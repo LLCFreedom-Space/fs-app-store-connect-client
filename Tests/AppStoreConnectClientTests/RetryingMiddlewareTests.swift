@@ -28,10 +28,11 @@ import OpenAPIRuntime
 @testable import AppStoreConnectClient
 
 final class RetryingMiddlewareTests: XCTestCase {
+    let ok = 200
+    let notFound = 404
     let tooManyRequests = 429
     let internalServerError = 500
     let logicError = 600
-    let ok = 200
     
     func testRetryableSignalContainsCode() {
         let sut = RetryingMiddleware()
@@ -72,9 +73,7 @@ final class RetryingMiddlewareTests: XCTestCase {
             operationID: "testOperation",
             next: next
         )
-        let rateLimitHeaderExists = response.headerFields.first(where: {
-            $0.name.rawName == "x-rate-limit"
-        }) != nil
+        let rateLimitHeaderExists = response.headerFields.first { $0.name.rawName == "x-rate-limit" } != nil
         XCTAssertEqual(response.status.code, ok)
         XCTAssertTrue(rateLimitHeaderExists, "Header 'x-rate-limit' should exist")
     }
@@ -225,6 +224,7 @@ final class RetryingMiddlewareTests: XCTestCase {
             policy: .upToAttempts(count: 3)
         )
         var attemptCount = 0
+        let baseURL = try XCTUnwrap(URL(string: "http://example.com"), "Unwrap fail")
         do {
             let result = try await sut.intercept(
                 HTTPRequest(
@@ -234,11 +234,11 @@ final class RetryingMiddlewareTests: XCTestCase {
                     path: "/test"
                 ),
                 body: nil,
-                baseURL: URL(string: "http://example.com")!,
+                baseURL: baseURL,
                 operationID: "testOperation"
             ) { _, _, _ in
                 attemptCount += 1
-                throw URLError(URLError.Code(rawValue: 404))
+                throw URLError(URLError.Code(rawValue: notFound))
             }
             XCTAssertNil(result)
         } catch {
