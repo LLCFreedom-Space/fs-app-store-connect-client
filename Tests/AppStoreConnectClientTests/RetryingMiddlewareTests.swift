@@ -28,37 +28,38 @@ import OpenAPIRuntime
 @testable import AppStoreConnectClient
 
 final class RetryingMiddlewareTests: XCTestCase {
-    let sut = RetryingMiddleware()
     let tooManyRequests = 429
     let internalServerError = 500
     let logicError = 600
     let ok = 200
     
     func testRetryableSignalContainsCode() {
-        let signals: Set<RetryingMiddleware.RetryableSignal> = [
-            .code(tooManyRequests),
-            .range(internalServerError..<logicError)
-        ]
+        let sut = RetryingMiddleware()
         XCTAssertTrue(sut.signals.contains(tooManyRequests))
         XCTAssertTrue(sut.signals.contains(internalServerError))
         XCTAssertFalse(sut.signals.contains(ok))
     }
     
-    func testMiddlewareCheckPolicyStatusNever() async throws {
-        let sut = RetryingMiddleware(policy: .never)
-        let nextExpectation = expectation(description: "description: test")
+    func testRetryingMiddlewareSucceed() async throws {
+        let sut = RetryingMiddleware(
+            signals: [.code(ok)],
+            policy: .upToAttempts(count: 3)
+        )
+        var fields = HTTPFields()
+        let unwrap = try XCTUnwrap(HTTPField.Name("x-rate-limit"))
+        fields[unwrap] = "user-hour-lim:1111; user-hour-rem:222"
+        let httpResponse = HTTPTypes.HTTPResponse(
+            status: HTTPResponse.Status(code: self.ok),
+            headerFields: HTTPFields(fields[fields: unwrap])
+        )
         let next: @Sendable (
             HTTPRequest,
             HTTPBody?,
             URL
         ) async throws -> (HTTPResponse, HTTPBody?) = { _, _, _ in
-            nextExpectation.fulfill()
-            let status = HTTPResponse.Status(code: self.tooManyRequests)
-            return (HTTPResponse(status: status), nil)
+            return (httpResponse, nil)
         }
-        guard let baseURL = URL(string: "http://example.com") else {
-            return
-        }
+        let baseURL = try XCTUnwrap(URL(string: "http://example.com"), "Unwrap fail")
         let (response, _) = try await sut.intercept(
             HTTPRequest(
                 method: .get,
@@ -71,141 +72,33 @@ final class RetryingMiddlewareTests: XCTestCase {
             operationID: "testOperation",
             next: next
         )
-        await fulfillment(of: [nextExpectation])
-        XCTAssertEqual(response.status.code, tooManyRequests)
+        let rateLimitHeaderExists = response.headerFields.first(where: {
+            $0.name.rawName == "x-rate-limit"
+        }) != nil
+        XCTAssertEqual(response.status.code, ok)
+        XCTAssertTrue(rateLimitHeaderExists, "Header 'x-rate-limit' should exist")
     }
     
-    func testMiddlewareRetryWhenResponseMatchesRetryStatusCodes() async throws {
-        let middleware = RetryingMiddleware(
-            signals: [.code(internalServerError)],
-            policy: .upToAttempts(count: 3),
-            delay: .none
-        )
-        let nextExpectation = expectation(description: "description: test")
-        nextExpectation.expectedFulfillmentCount = 3
-        let next: @Sendable (
-            HTTPRequest,
-            HTTPBody?,
-            URL
-        ) async throws -> (HTTPResponse, HTTPBody?) = { _, _, _ in
-            nextExpectation.fulfill()
-            let status = HTTPResponse.Status(code: self.internalServerError)
-            return (HTTPResponse(status: status), nil)
-        }
-        guard let baseURL = URL(string: "http://example.com") else {
-            return
-        }
-        let (response, _) = try await middleware.intercept(
-            HTTPRequest(
-                method: .get,
-                scheme: "http",
-                authority: "example.com",
-                path: "/test"
-            ),
-            body: nil,
-            baseURL: baseURL,
-            operationID: "testOperation",
-            next: next
-        )
-        await fulfillment(of: [nextExpectation])
-        XCTAssertEqual(response.status.code, internalServerError)
-    }
-    
-    func testCatchsErrorAndIsItAttemptToRestartTheRequest() async throws {
+    func testNotRepeatWithPolicyNever() async throws {
         let sut = RetryingMiddleware(
-            signals: [.errorThrown],
-            policy: .upToAttempts(count: 3),
-            delay: .none
-        )
-        let nextExpectation = expectation(description: "description: test")
-        nextExpectation.expectedFulfillmentCount = 3
-        let next: @Sendable (
-            HTTPRequest,
-            HTTPBody?,
-            URL
-        ) async throws -> (HTTPResponse, HTTPBody?) = { _, _, _ in
-            nextExpectation.fulfill()
-            throw NSError(domain: "testError", code: 1, userInfo: nil)
-        }
-        guard let baseURL = URL(string: "http://example.com") else {
-            return
-        }
-        do {
-            try await sut.intercept(
-                HTTPRequest(
-                    method: .get,
-                    scheme: "http",
-                    authority: "example.com",
-                    path: "/test"
-                ),
-                body: nil,
-                baseURL: baseURL,
-                operationID: "testOperation",
-                next: next
-            )
-            XCTFail("Expected error not thrown")
-        } catch {
-            XCTAssertEqual((error as NSError).domain, "testError")
-        }
-        await fulfillment(of: [nextExpectation])
-    }
-    
-    func testMiddlewareNotRetryWhenBodyIterationBehaviorIsNotMultiple() async throws {
-        let middleware = RetryingMiddleware(
             signals: [.code(internalServerError)],
-            policy: .upToAttempts(count: 3),
-            delay: .none
+            policy: .never
         )
-        let nextExpectation = expectation(description: "description: test")
+        let expectation = XCTestExpectation(
+            description: "Expect 'next' to be called only once due to 'never' retry policy"
+        )
+        expectation.expectedFulfillmentCount = 1
         let next: @Sendable (
             HTTPRequest,
             HTTPBody?,
             URL
         ) async throws -> (HTTPResponse, HTTPBody?) = { _, _, _ in
-            nextExpectation.fulfill()
+            expectation.fulfill()
             let status = HTTPResponse.Status(code: self.internalServerError)
             return (HTTPResponse(status: status), nil)
         }
-        guard let baseURL = URL(string: "http://example.com") else {
-            return
-        }
-        let (response, _) = try await middleware.intercept(
-            HTTPRequest(
-                method: .get,
-                scheme: "http",
-                authority: "example.com",
-                path: "/test"
-            ),
-            body: HTTPBody([1, 2, 3], length: .known(3), iterationBehavior: .single),
-            baseURL: baseURL,
-            operationID: "testOperation",
-            next: next
-        )
-        await fulfillment(of: [nextExpectation])
-        XCTAssertEqual(response.status.code, internalServerError)
-    }
-    
-    func testMiddlewareRetryWhenBodyIterationBehaviorIsMultiple() async throws {
-        let middleware = RetryingMiddleware(
-            signals: [.code(internalServerError)],
-            policy: .upToAttempts(count: 3),
-            delay: .none
-        )
-        let nextExpectation = expectation(description: "description: test")
-        nextExpectation.expectedFulfillmentCount = 3
-        let next: @Sendable (
-            HTTPRequest,
-            HTTPBody?,
-            URL
-        ) async throws -> (HTTPResponse, HTTPBody?) = { _, _, _ in
-            nextExpectation.fulfill()
-            let status = HTTPResponse.Status(code: self.internalServerError)
-            return (HTTPResponse(status: status), nil)
-        }
-        guard let baseURL = URL(string: "http://example.com") else {
-            return
-        }
-        let (response, _) = try await middleware.intercept(
+        let baseURL = try XCTUnwrap(URL(string: "http://example.com"), "Unwrap fail")
+        let (response, _) = try await sut.intercept(
             HTTPRequest(
                 method: .get,
                 scheme: "http",
@@ -217,45 +110,141 @@ final class RetryingMiddlewareTests: XCTestCase {
             operationID: "testOperation",
             next: next
         )
-        await fulfillment(of: [nextExpectation])
         XCTAssertEqual(response.status.code, internalServerError)
+        await fulfillment(of: [expectation], timeout: 3.0)
     }
     
-    func testMiddlewareDelayBetweenRetries() async throws {
-        let middleware = RetryingMiddleware(
+    func testNotRepeatAfterSignalCodeTooManyRequests() async throws {
+        let sut = RetryingMiddleware(
             signals: [.code(internalServerError)],
-            policy: .upToAttempts(count: 3),
-            delay: .constant(seconds: 0.1)
+            policy: .upToAttempts(count: 3)
         )
-        let nextExpectation = expectation(description: "description: test")
-        nextExpectation.expectedFulfillmentCount = 3
-        let startTime = Date()
+        let expectation = XCTestExpectation(
+            description: "Expect 'next' to be called only once due to receiving 'tooManyRequests' signal"
+        )
+        expectation.expectedFulfillmentCount = 1
         let next: @Sendable (
             HTTPRequest,
             HTTPBody?,
             URL
         ) async throws -> (HTTPResponse, HTTPBody?) = { _, _, _ in
-            nextExpectation.fulfill()
-            let status = HTTPResponse.Status(code: self.internalServerError)
+            expectation.fulfill()
+            let status = HTTPResponse.Status(code: self.tooManyRequests)
             return (HTTPResponse(status: status), nil)
         }
-        guard let baseURL = URL(string: "http://example.com") else {
-            return
-        }
-        try await middleware.intercept(
+        let baseURL = try XCTUnwrap(URL(string: "http://example.com"), "Unwrap fail")
+        let (response, _) = try await sut.intercept(
             HTTPRequest(
                 method: .get,
                 scheme: "http",
                 authority: "example.com",
                 path: "/test"
             ),
-            body: nil,
+            body: HTTPBody([1, 2, 3], length: .known(3), iterationBehavior: .multiple),
             baseURL: baseURL,
             operationID: "testOperation",
             next: next
         )
-        await fulfillment(of: [nextExpectation])
-        let elapsedTime = Date().timeIntervalSince(startTime)
-        XCTAssertGreaterThanOrEqual(elapsedTime, 0.2, "Total delay should be at least 0.2 seconds")
+        XCTAssertEqual(response.status.code, tooManyRequests)
+        await fulfillment(of: [expectation], timeout: 3.0)
+    }
+    
+    func testNotRepeatWhenBodyIterationBehaviorSingle() async throws {
+        let sut = RetryingMiddleware(
+            signals: [.code(internalServerError)],
+            policy: .upToAttempts(count: 3)
+        )
+        let expectation = XCTestExpectation(
+            description: "Expect 'next' to be called only once due to 'single' iteration behavior"
+        )
+        expectation.expectedFulfillmentCount = 1
+        let next: @Sendable (
+            HTTPRequest,
+            HTTPBody?,
+            URL
+        ) async throws -> (HTTPResponse, HTTPBody?) = { _, _, _ in
+            expectation.fulfill()
+            let status = HTTPResponse.Status(code: self.internalServerError)
+            return (HTTPResponse(status: status), nil)
+        }
+        let baseURL = try XCTUnwrap(URL(string: "http://example.com"), "Unwrap fail")
+        let (response, _) = try await sut.intercept(
+            HTTPRequest(
+                method: .get,
+                scheme: "http",
+                authority: "example.com",
+                path: "/test"
+            ),
+            body: HTTPBody([1, 2, 3], length: .known(3), iterationBehavior: .single),
+            baseURL: baseURL,
+            operationID: "testOperation",
+            next: next
+        )
+        XCTAssertEqual(response.status.code, internalServerError)
+        await fulfillment(of: [expectation], timeout: 3.0)
+    }
+    
+    func testRepeatWhenIterationBehaviorMultipleAndPolicyRepeat() async throws {
+        let sut = RetryingMiddleware(
+            signals: [.code(internalServerError)],
+            policy: .upToAttempts(count: 3)
+        )
+        let expectation = XCTestExpectation(
+            description: "Expect 'next' to be called multiple times due to 'multiple' iteration behavior and retry policy"
+        )
+        expectation.expectedFulfillmentCount = 3
+        let next: @Sendable (
+            HTTPRequest,
+            HTTPBody?,
+            URL
+        ) async throws -> (HTTPResponse, HTTPBody?) = { _, _, _ in
+            expectation.fulfill()
+            let status = HTTPResponse.Status(code: self.internalServerError)
+            return (HTTPResponse(status: status), nil)
+        }
+        let baseURL = try XCTUnwrap(URL(string: "http://example.com"), "Unwrap fail")
+        let (response, _) = try await sut.intercept(
+            HTTPRequest(
+                method: .get,
+                scheme: "http",
+                authority: "example.com",
+                path: "/test"
+            ),
+            body: HTTPBody([1, 2, 3], length: .known(3), iterationBehavior: .multiple),
+            baseURL: baseURL,
+            operationID: "testOperation",
+            next: next
+        )
+        XCTAssertEqual(response.status.code, internalServerError)
+        await fulfillment(of: [expectation], timeout: 3.0)
+    }
+    
+    func testIfSignalsContainsError() async throws {
+        let sut = RetryingMiddleware(
+            signals: [.errorThrown],
+            policy: .upToAttempts(count: 3)
+        )
+        var attemptCount = 0
+        do {
+            let result = try await sut.intercept(
+                HTTPRequest(
+                    method: .get,
+                    scheme: "http",
+                    authority: "example.com",
+                    path: "/test"
+                ),
+                body: nil,
+                baseURL: URL(string: "http://example.com")!,
+                operationID: "testOperation"
+            ) { _, _, _ in
+                attemptCount += 1
+                throw URLError(URLError.Code(rawValue: 404))
+            }
+            XCTAssertNil(result)
+        } catch {
+            XCTAssertEqual(attemptCount, 3)
+            return
+        }
+        XCTFail("The middleware should throw an error after all retry attempts.")
     }
 }

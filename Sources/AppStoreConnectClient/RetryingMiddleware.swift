@@ -34,32 +34,17 @@ package struct RetryingMiddleware {
     private static let logicError = 600
     
     /// Set of retryable signals triggering retries.
-    package var signals: Set<RetryableSignal>
+    package var signals: Set<RetryableSignal> = [
+        .code(
+            RetryingMiddleware.tooManyRequests
+        ),
+        .range(RetryingMiddleware.internalServerError..<RetryingMiddleware.logicError),
+        .errorThrown
+    ]
     /// Retry policy for the middleware.
-    package var policy: RetryingPolicy
+    package var policy: RetryingPolicy = .upToAttempts(count: 3)
     /// Delay policy for the middleware.
-    package var delay: DelayPolicy
-    
-    /// Initializes the retrying middleware with default values.
-    /// - Parameters:
-    ///   - signals: Set of retryable signals. Defaults to common error codes and thrown errors.
-    ///   - policy: Retry policy. Defaults to retrying up to 3 attempts.
-    ///   - delay: Delay policy between retry attempts. Defaults to a constant delay of 1 second.
-    package init(
-        signals: Set<RetryableSignal> = [
-            .code(
-                tooManyRequests
-            ),
-            .range(internalServerError..<logicError),
-            .errorThrown
-        ],
-        policy: RetryingPolicy = .upToAttempts(count: 3),
-        delay: DelayPolicy = .constant(seconds: 1)
-    ) {
-        self.signals = signals
-        self.policy = policy
-        self.delay = delay
-    }
+    package var delay: DelayPolicy = .constant(seconds: 1)
 }
 
 extension RetryingMiddleware: ClientMiddleware {
@@ -114,6 +99,7 @@ extension RetryingMiddleware: ClientMiddleware {
         preconditionFailure("Unreachable")
     }
     
+    /// Pauses execution based on the specified delay policy before retrying an operation.
     func willRetry() async throws {
         switch delay {
         case .none: return

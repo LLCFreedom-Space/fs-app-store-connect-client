@@ -16,20 +16,30 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-//  RateLimitMiddlewareError.swift
-//  
+//  Set+Extensions.swift
+//
 //
 //  Created by Mykola Vasyk on 17.05.2024.
 //
 
 import Foundation
 
-/// Possible errors thrown by `RateLimitMiddleware`.
-public enum RateLimitError: Error, Equatable {
-    /// The specified search header was not found.
-    case headerNotFound(expected: String?)
-    /// The client has exceeded the rate limit for the values.
-    case rateLimitExceeded(remaining: Int, from: Int)
-    /// Unable to extract values of rate limit.
-    case invalidExpectedValues(String?)
+extension Set where Element == RetryingMiddleware.RetryableSignal {
+    /// Checks if the set contains a retryable signal corresponding to a given HTTP status code.
+    /// - Parameter code: The HTTP status code to check.
+    /// - Returns: `true` if the set contains a retryable signal for the code, `false` otherwise.
+    func contains(_ code: Int) -> Bool {
+        for signal in self {
+            switch signal {
+            case .code(let int): if code == int {
+                return true
+            }
+            case .range(let range): if range.contains(code) {
+                return true
+            }
+            case .errorThrown: break
+            }
+        }
+        return false
+    }
 }

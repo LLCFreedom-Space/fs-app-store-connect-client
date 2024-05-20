@@ -16,7 +16,7 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-//  RateLimitMiddlewareTests 2.swift
+//  RateLimitMiddlewareTests.swift
 //
 //
 //  Created by Mykola Vasyk on 15.05.2024.
@@ -81,7 +81,7 @@ final class RateLimitMiddlewareTests: XCTestCase {
         )
         let sut = RateLimitMiddleware()
         do {
-            try await sut.intercept(
+            let result = try await sut.intercept(
                 request,
                 body: nil,
                 baseURL: baseURL,
@@ -89,6 +89,7 @@ final class RateLimitMiddlewareTests: XCTestCase {
             ) { _, _, _ in
                 return (httpResponse, nil)
             }
+            XCTAssertNotNil(result)
             XCTFail("Expected rate limit exceeded error")
         } catch RateLimitError.rateLimitExceeded(let remaining, let from) {
             XCTAssertEqual(remaining, 0)
@@ -117,7 +118,7 @@ final class RateLimitMiddlewareTests: XCTestCase {
         )
         let sut = RateLimitMiddleware()
         do {
-            try await sut.intercept(
+            let result = try await sut.intercept(
                 request,
                 body: nil,
                 baseURL: baseURL,
@@ -125,8 +126,9 @@ final class RateLimitMiddlewareTests: XCTestCase {
             ) { _, _, _ in
                 return (httpResponse, nil)
             }
+            XCTAssertNotNil(result)
             XCTFail("Expected error not thrown")
-        } catch RateLimitError.headerValidationFailed(header: "x-rate-limit") {
+        } catch RateLimitError.headerNotFound(expected: "x-rate-limit") {
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
@@ -152,7 +154,7 @@ final class RateLimitMiddlewareTests: XCTestCase {
         )
         let sut = RateLimitMiddleware()
         do {
-            try await sut.intercept(
+            let result = try await sut.intercept(
                 request,
                 body: nil,
                 baseURL: baseURL,
@@ -160,6 +162,7 @@ final class RateLimitMiddlewareTests: XCTestCase {
             ) { _, _, _ in
                 return (httpResponse, nil)
             }
+            XCTAssertNotNil(result)
             XCTFail("Expected error not thrown")
         } catch RateLimitError.rateLimitExceeded(remaining: 0, from: limit) {
         } catch {
@@ -186,7 +189,7 @@ final class RateLimitMiddlewareTests: XCTestCase {
         )
         let sut = RateLimitMiddleware()
         do {
-            try await sut.intercept(
+            let result = try await sut.intercept(
                 request,
                 body: nil,
                 baseURL: baseURL,
@@ -194,6 +197,7 @@ final class RateLimitMiddlewareTests: XCTestCase {
             ) { _, _, _ in
                 return (httpResponse, nil)
             }
+            XCTAssertNotNil(result)
             XCTFail("Expected error not thrown")
         } catch RateLimitError.invalidExpectedValues {
         } catch {

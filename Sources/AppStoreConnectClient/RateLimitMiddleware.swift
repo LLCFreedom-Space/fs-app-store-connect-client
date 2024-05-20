@@ -68,7 +68,7 @@ public struct RateLimitMiddleware: ClientMiddleware {
         guard let serverHeader = response.headerFields.first(where: {
             return $0.name.rawName == header
         }) else {
-            throw RateLimitError.headerValidationFailed(header: header)
+            throw RateLimitError.headerNotFound(expected: header)
         }
         let dictionary = serverHeader.value.split(separator: ";").reduce(into: [String: Int]()) {
             let pair = $1.split(separator: ":")

@@ -44,24 +44,3 @@ extension RetryingMiddleware {
         case constant(seconds: TimeInterval)
     }
 }
-
-
-extension Set where Element == RetryingMiddleware.RetryableSignal {
-    /// Checks if the set contains a retryable signal corresponding to a given HTTP status code.
-    /// - Parameter code: The HTTP status code to check.
-    /// - Returns: `true` if the set contains a retryable signal for the code, `false` otherwise.
-    func contains(_ code: Int) -> Bool {
-        for signal in self {
-            switch signal {
-            case .code(let int): if code == int {
-                return true
-            }
-            case .range(let range): if range.contains(code) {
-                return true
-            }
-            case .errorThrown: break
-            }
-        }
-        return false
-    }
-}
