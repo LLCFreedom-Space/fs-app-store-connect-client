@@ -31,5 +31,5 @@ public enum RateLimitError: Error, Equatable {
     /// The client has exceeded the rate limit for the values.
     case rateLimitExceeded(remaining: Int, from: Int)
     /// Unable to extract values of rate limit.
-    case invalidExpectedValues(String?)
+    case unexpectedValues(String?)
 }

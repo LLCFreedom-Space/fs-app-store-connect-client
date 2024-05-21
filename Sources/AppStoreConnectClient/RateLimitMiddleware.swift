@@ -67,7 +67,7 @@ package struct RateLimitMiddleware: ClientMiddleware {
             }
             return result
         } else {
-            throw RateLimitError.invalidExpectedValues(
+            throw RateLimitError.unexpectedValues(
                 "hourLimit: \(String(describing: dictionary[hourLimit])), remaining: \(String(describing: dictionary[remaining]))"
             )
         }

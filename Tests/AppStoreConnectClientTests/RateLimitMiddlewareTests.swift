@@ -59,8 +59,9 @@ final class RateLimitMiddlewareTests: XCTestCase {
         }
     }
     
-    func testThrowRateLimitExceeded() async throws {
-        let limit = 1111
+    func testRateLimitExceededError() async throws {
+        let expectedLimit = 1111
+        let expectedRemaining = 0
         let request = HTTPTypes.HTTPRequest(
             method: .get,
             scheme: "http",
@@ -69,7 +70,7 @@ final class RateLimitMiddlewareTests: XCTestCase {
         )
         var fields = HTTPFields()
         let unwrap = try XCTUnwrap(HTTPField.Name("x-rate-limit"))
-        fields[unwrap] = "user-hour-lim:1111; user-hour-rem:0"
+        fields[unwrap] = "user-hour-lim:\(expectedLimit); user-hour-rem:\(expectedRemaining)"
         let baseURL = try XCTUnwrap(URL(string: "http://example.com"), "Unwrap fail")
         let httpResponse = HTTPTypes.HTTPResponse(
             status: .accepted,
@@ -86,20 +87,18 @@ final class RateLimitMiddlewareTests: XCTestCase {
                 return (httpResponse, nil)
             }
             XCTFail("Expected error not thrown, nevertheless got result: \(result)")
-        } catch RateLimitError.rateLimitExceeded(let remaining, let from) {
-            XCTAssertEqual(remaining, 0)
-            XCTAssertEqual(from, limit)
+        } catch RateLimitError.rateLimitExceeded(let remaining, let limit) {
+            XCTAssertEqual(remaining, expectedRemaining)
+            XCTAssertEqual(limit, expectedLimit)
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
     }
     
-    func testHeaderValidationFailed() async throws {
-        let incorrectHeader = "x"
+    func testHeaderNotFoundError() async throws {
         let correctHeader = "x-rate-limit"
-        let unwrapCorrectHeader = try XCTUnwrap(HTTPField.Name("x-rate-limit"))
         var fields = HTTPFields()
-        let unwrapIncorrectHeader = try XCTUnwrap(HTTPField.Name(incorrectHeader))
+        let unwrapIncorrectHeader = try XCTUnwrap(HTTPField.Name("x"))
         fields[unwrapIncorrectHeader] = "user-hour-lim:1111; user-hour-rem:222"
         let baseURL = try XCTUnwrap(URL(string: "http://example.com"), "Unwrap fail")
         let request = HTTPTypes.HTTPRequest(
@@ -123,14 +122,13 @@ final class RateLimitMiddlewareTests: XCTestCase {
                 return (httpResponse, nil)
             }
             XCTFail("Expected error not thrown, nevertheless got result: \(result)")
-        } catch RateLimitError.headerNotFound(expected: correctHeader) {
-            XCTAssertNotEqual(unwrapIncorrectHeader, unwrapCorrectHeader)
         } catch {
-            XCTFail("Unexpected error: \(error)")
+            XCTAssertEqual(error as? RateLimitError, .headerNotFound(expected: correctHeader))
         }
     }
     
-    func testHandlingInvalidExpectedValues() async throws {
+    func testUnexpectedValuesError() async throws {
+        var result: (HTTPResponse, HTTPBody?)?
         let request = HTTPTypes.HTTPRequest(
             method: .get,
             scheme: "http",
@@ -147,7 +145,7 @@ final class RateLimitMiddlewareTests: XCTestCase {
         )
         let sut = RateLimitMiddleware()
         do {
-            let result = try await sut.intercept(
+            result = try await sut.intercept(
                 request,
                 body: nil,
                 baseURL: baseURL,
@@ -155,11 +153,14 @@ final class RateLimitMiddlewareTests: XCTestCase {
             ) { _, _, _ in
                 return (httpResponse, nil)
             }
-            XCTFail("Expected error not thrown, nevertheless got result: \(result)")
-        } catch RateLimitError.invalidExpectedValues {
-            XCTAssert(true, "RateLimitError.invalidExpectedValues was thrown as expected")
+            XCTFail("Expected error not thrown, nevertheless got result: \(String(describing: result))")
         } catch {
-            XCTFail("Unexpected error: \(error)")
+            XCTAssertEqual(
+                error as? RateLimitError,
+                .unexpectedValues(
+                    "hourLimit: \(String(describing: result?.0)), remaining: \(String(describing: result?.0))"
+                )
+            )
         }
     }
 }

@@ -28,6 +28,4 @@ import Foundation
 public enum RetryingMiddlewareError: Error, Equatable {
     /// An error indicating that the operation has reached the maximum number of retry attempts.
     case maxAttemptsReached
-    /// An error indicating that the operation has failed and triggered a retry.
-    case error
 }
