@@ -27,13 +27,13 @@ import Foundation
 import HTTPTypes
 
 /// Middleware for handling rate limits from App Store Connect.
-public struct RateLimitMiddleware: ClientMiddleware {
+package struct RateLimitMiddleware: ClientMiddleware {
     /// The key for the hourly request limit.
     private let hourLimit = "user-hour-lim"
     /// The key for the remaining request count.
     private let remaining = "user-hour-rem"
     /// The header for rate limit.
-    private let header = "x-rate-limit"
+    private let rateLimitHeader = "x-rate-limit"
     
     /// Intercept and handle rate limit in the response.
     /// - Parameters:
@@ -43,7 +43,7 @@ public struct RateLimitMiddleware: ClientMiddleware {
     ///   - operationID: The operation ID.
     ///   - next: The next middleware.
     /// - Returns: A tuple containing the HTTP response and body.
-    public func intercept(
+    package func intercept(
         _ request: HTTPTypes.HTTPRequest,
         body: OpenAPIRuntime.HTTPBody?,
         baseURL: URL,
@@ -51,36 +51,21 @@ public struct RateLimitMiddleware: ClientMiddleware {
         next: @Sendable (HTTPTypes.HTTPRequest, OpenAPIRuntime.HTTPBody?, URL) async throws -> (HTTPTypes.HTTPResponse, OpenAPIRuntime.HTTPBody?)
     ) async throws -> (HTTPTypes.HTTPResponse, OpenAPIRuntime.HTTPBody?) {
         let result = try await next(request, body, baseURL)
-        let data = result.0
-        try extractHeaderValue(from: data, for: header)
-        return result
-    }
-    
-    /// Extracts the value of the specified header key from the HTTP response.
-    /// - Parameters:
-    ///   - response: The HTTP response.
-    ///   - header: The header for search.
-    /// - Throws: An errors if the header, the keys is not found or if the values cannot be extracted.
-    private func extractHeaderValue(
-        from response: HTTPTypes.HTTPResponse,
-        for header: String
-    ) throws {
-        guard let serverHeader = response.headerFields.first(where: {
-            return $0.name.rawName == header
-        }) else {
-            throw RateLimitError.headerNotFound(expected: header)
+        guard let header = result.0.headerFields.first(where: { $0.name.rawName == rateLimitHeader }) else {
+            throw RateLimitError.headerNotFound(expected: rateLimitHeader)
         }
-        let dictionary = serverHeader.value.split(separator: ";").reduce(into: [String: Int]()) {
+        let dictionary = header.value.split(separator: ";").reduce(into: [String: Int]()) {
             let pair = $1.split(separator: ":")
             if let key = pair.first?.trimmingCharacters(in: .whitespaces),
                let value = pair.last?.trimmingCharacters(in: .whitespaces) {
                 $0[String(key)] = Int(value)
             }
         }
-        if let valueLimit = dictionary[hourLimit], let value = dictionary[remaining] {
-            guard value > 0 else {
-                throw RateLimitError.rateLimitExceeded(remaining: value, from: valueLimit)
+        if let hourLimit = dictionary[hourLimit], let remaining = dictionary[remaining] {
+            guard remaining > 0 else {
+                throw RateLimitError.rateLimitExceeded(remaining: remaining, from: hourLimit)
             }
+            return result
         } else {
             throw RateLimitError.invalidExpectedValues(
                 "hourLimit: \(String(describing: dictionary[hourLimit])), remaining: \(String(describing: dictionary[remaining]))"

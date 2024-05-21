@@ -28,9 +28,11 @@ import HTTPTypes
 
 /// A middleware for retrying failed HTTP requests based on configurable signals and policies.
 package struct RetryingMiddleware {
-    /// Init errors
+    /// Initialization HTTP errors with a code of 429
     private static let tooManyRequests = 429
+    /// Initialization HTTP errors with a code of 500
     private static let internalServerError = 500
+    /// Initialization HTTP errors with a code of 600
     private static let logicError = 600
     
     /// Set of retryable signals triggering retries.
@@ -64,24 +66,33 @@ extension RetryingMiddleware: ClientMiddleware {
         operationID: String,
         next: (HTTPRequest, HTTPBody?, URL) async throws -> (HTTPResponse, HTTPBody?)
     ) async throws -> (HTTPResponse, HTTPBody?) {
+        // Check if the retry policy is set to number of attempts
         guard case .upToAttempts(count: let maxAttemptCount) = policy else {
             return try await next(request, body, baseURL)
         }
+        // Check if there is a body to the request
         if let body {
+            // Ensure the request body can be sent multiple times
             guard body.iterationBehavior == .multiple else {
                 return try await next(request, body, baseURL)
             }
         }
+        // Perform an initial retry delay if necessary
         try await willRetry()
+        // Loop for the maximum number of attempts
         for attempt in 1...maxAttemptCount {
+            // Initialize variables for response and response body
             let (response, responseBody): (HTTPResponse, HTTPBody?)
+            // Check if should retry after an error
             if signals.contains(.errorThrown) {
                 do {
                     (response, responseBody) = try await next(request, body, baseURL)
                 } catch {
+                    // If the final attempt fails, throw the error
                     if attempt == maxAttemptCount {
                         throw error
                     } else {
+                        // Wait before retrying the operation
                         try await willRetry()
                         continue
                     }
@@ -89,6 +100,7 @@ extension RetryingMiddleware: ClientMiddleware {
             } else {
                 (response, responseBody) = try await next(request, body, baseURL)
             }
+            // Check if the response status code indicates a retry and if max attempts are not reached
             if signals.contains(response.status.code) && attempt < maxAttemptCount {
                 try await willRetry()
                 continue
@@ -96,15 +108,18 @@ extension RetryingMiddleware: ClientMiddleware {
                 return (response, responseBody)
             }
         }
-        preconditionFailure("Unreachable")
+        throw RetryingMiddlewareError.maxAttemptsReached
     }
     
     /// Pauses execution based on the specified delay policy before retrying an operation.
-    func willRetry() async throws {
+    private func willRetry() async throws {
+        let nanosecondsPerSecond: TimeInterval = 1_000_000_000
         switch delay {
+            /// No delay before retrying the operation.
         case .none: return
+            /// Constant delay before retrying the operation.
         case .constant(seconds: let seconds):
-            try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+            try await Task.sleep(nanoseconds: UInt64(seconds * nanosecondsPerSecond))
         }
     }
 }

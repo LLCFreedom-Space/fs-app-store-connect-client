@@ -28,7 +28,7 @@ import OpenAPIRuntime
 @testable import AppStoreConnectClient
 
 final class RateLimitMiddlewareTests: XCTestCase {
-    func testInterceptSuccess() async throws {
+    func testRateLimitAllowsRequests() async throws {
         let request = HTTPTypes.HTTPRequest(
             method: .get,
             scheme: "http",
@@ -38,43 +38,7 @@ final class RateLimitMiddlewareTests: XCTestCase {
         var fields = HTTPFields()
         let unwrap = try XCTUnwrap(HTTPField.Name("x-rate-limit"))
         fields[unwrap] = "user-hour-lim:1111; user-hour-rem:222"
-        guard let baseURL = URL(string: "http://example.com") else {
-            return
-        }
-        let httpResponse = HTTPTypes.HTTPResponse(
-            status: .accepted,
-            headerFields: HTTPFields(fields[fields: unwrap])
-        )
-        let sut = RateLimitMiddleware()
-        do {
-            let interceptedResponse = try await sut.intercept(
-                request,
-                body: nil,
-                baseURL: baseURL,
-                operationID: "someOperationID"
-            ) { _, _, _ in
-                return (httpResponse, nil)
-            }
-            XCTAssertEqual(interceptedResponse.0.status, .accepted)
-        } catch {
-            XCTFail("Unexpected error: \(error)")
-        }
-    }
-    
-    func testInterceptFailure() async throws {
-        let limit = 1111
-        let request = HTTPTypes.HTTPRequest(
-            method: .get,
-            scheme: "http",
-            authority: "example.com",
-            path: "/test"
-        )
-        var fields = HTTPFields()
-        let unwrap = try XCTUnwrap(HTTPField.Name("x-rate-limit"))
-        fields[unwrap] = "user-hour-lim:1111; user-hour-rem:0"
-        guard let baseURL = URL(string: "http://example.com") else {
-            return
-        }
+        let baseURL = try XCTUnwrap(URL(string: "http://example.com"), "Unwrap fail")
         let httpResponse = HTTPTypes.HTTPResponse(
             status: .accepted,
             headerFields: HTTPFields(fields[fields: unwrap])
@@ -89,8 +53,39 @@ final class RateLimitMiddlewareTests: XCTestCase {
             ) { _, _, _ in
                 return (httpResponse, nil)
             }
-            XCTAssertNotNil(result)
-            XCTFail("Expected rate limit exceeded error")
+            XCTAssertEqual(result.0.status, .accepted)
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testThrowRateLimitExceeded() async throws {
+        let limit = 1111
+        let request = HTTPTypes.HTTPRequest(
+            method: .get,
+            scheme: "http",
+            authority: "example.com",
+            path: "/test"
+        )
+        var fields = HTTPFields()
+        let unwrap = try XCTUnwrap(HTTPField.Name("x-rate-limit"))
+        fields[unwrap] = "user-hour-lim:1111; user-hour-rem:0"
+        let baseURL = try XCTUnwrap(URL(string: "http://example.com"), "Unwrap fail")
+        let httpResponse = HTTPTypes.HTTPResponse(
+            status: .accepted,
+            headerFields: HTTPFields(fields[fields: unwrap])
+        )
+        let sut = RateLimitMiddleware()
+        do {
+            let result = try await sut.intercept(
+                request,
+                body: nil,
+                baseURL: baseURL,
+                operationID: "someOperationID"
+            ) { _, _, _ in
+                return (httpResponse, nil)
+            }
+            XCTFail("Expected error not thrown, nevertheless got result: \(result)")
         } catch RateLimitError.rateLimitExceeded(let remaining, let from) {
             XCTAssertEqual(remaining, 0)
             XCTAssertEqual(from, limit)
@@ -100,21 +95,22 @@ final class RateLimitMiddlewareTests: XCTestCase {
     }
     
     func testHeaderValidationFailed() async throws {
+        let incorrectHeader = "x"
+        let correctHeader = "x-rate-limit"
+        let unwrapCorrectHeader = try XCTUnwrap(HTTPField.Name("x-rate-limit"))
+        var fields = HTTPFields()
+        let unwrapIncorrectHeader = try XCTUnwrap(HTTPField.Name(incorrectHeader))
+        fields[unwrapIncorrectHeader] = "user-hour-lim:1111; user-hour-rem:222"
+        let baseURL = try XCTUnwrap(URL(string: "http://example.com"), "Unwrap fail")
         let request = HTTPTypes.HTTPRequest(
             method: .get,
             scheme: "http",
             authority: "example.com",
             path: "/test"
         )
-        var fields = HTTPFields()
-        let unwrap = try XCTUnwrap(HTTPField.Name("x"))
-        fields[unwrap] = "user-hour-lim:1111; user-hour-rem:222"
-        guard let baseURL = URL(string: "http://example.com") else {
-            return
-        }
         let httpResponse = HTTPTypes.HTTPResponse(
             status: .accepted,
-            headerFields: HTTPFields(fields[fields: unwrap])
+            headerFields: HTTPFields(fields[fields: unwrapIncorrectHeader])
         )
         let sut = RateLimitMiddleware()
         do {
@@ -126,51 +122,15 @@ final class RateLimitMiddlewareTests: XCTestCase {
             ) { _, _, _ in
                 return (httpResponse, nil)
             }
-            XCTAssertNotNil(result)
-            XCTFail("Expected error not thrown")
-        } catch RateLimitError.headerNotFound(expected: "x-rate-limit") {
+            XCTFail("Expected error not thrown, nevertheless got result: \(result)")
+        } catch RateLimitError.headerNotFound(expected: correctHeader) {
+            XCTAssertNotEqual(unwrapIncorrectHeader, unwrapCorrectHeader)
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
     }
     
-    func testRateLimitExceeded() async throws {
-        let limit = 1111
-        let request = HTTPTypes.HTTPRequest(
-            method: .get,
-            scheme: "http",
-            authority: "example.com",
-            path: "/test"
-        )
-        var fields = HTTPFields()
-        let unwrap = try XCTUnwrap(HTTPField.Name("x-rate-limit"))
-        fields[unwrap] = "user-hour-lim:1111; user-hour-rem:0"
-        guard let baseURL = URL(string: "http://example.com") else {
-            return
-        }
-        let httpResponse = HTTPTypes.HTTPResponse(
-            status: .accepted,
-            headerFields: HTTPFields(fields[fields: unwrap])
-        )
-        let sut = RateLimitMiddleware()
-        do {
-            let result = try await sut.intercept(
-                request,
-                body: nil,
-                baseURL: baseURL,
-                operationID: "someOperationID"
-            ) { _, _, _ in
-                return (httpResponse, nil)
-            }
-            XCTAssertNotNil(result)
-            XCTFail("Expected error not thrown")
-        } catch RateLimitError.rateLimitExceeded(remaining: 0, from: limit) {
-        } catch {
-            XCTFail("Unexpected error: \(error)")
-        }
-    }
-    
-    func testExtractHeaderInvalidExpectedValues() async throws {
+    func testHandlingInvalidExpectedValues() async throws {
         let request = HTTPTypes.HTTPRequest(
             method: .get,
             scheme: "http",
@@ -180,9 +140,7 @@ final class RateLimitMiddlewareTests: XCTestCase {
         var fields = HTTPFields()
         let unwrap = try XCTUnwrap(HTTPField.Name("x-rate-limit"))
         fields[unwrap] = "user-hour-lim: user-hour-rem: user-hour-rem:"
-        guard let baseURL = URL(string: "http://example.com") else {
-            return
-        }
+        let baseURL = try XCTUnwrap(URL(string: "http://example.com"), "Unwrap fail")
         let httpResponse = HTTPTypes.HTTPResponse(
             status: .accepted,
             headerFields: HTTPFields(fields[fields: unwrap])
@@ -197,9 +155,9 @@ final class RateLimitMiddlewareTests: XCTestCase {
             ) { _, _, _ in
                 return (httpResponse, nil)
             }
-            XCTAssertNotNil(result)
-            XCTFail("Expected error not thrown")
+            XCTFail("Expected error not thrown, nevertheless got result: \(result)")
         } catch RateLimitError.invalidExpectedValues {
+            XCTAssert(true, "RateLimitError.invalidExpectedValues was thrown as expected")
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
