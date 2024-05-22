@@ -43,7 +43,9 @@ public struct AppStoreConnectClient {
             serverURL: Servers.server1(),
             transport: URLSessionTransport(),
             middlewares: [
-                AuthenticationMiddleware(credentials: credentials)
+                AuthenticationMiddleware(credentials: credentials),
+                RetryingMiddleware(),
+                RateLimitMiddleware()
             ]
         )
     }
