@@ -16,7 +16,7 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 //
-//  RetryingMiddlewareError.swift
+//  RetryingError.swift
 //  
 //
 //  Created by Mykola Vasyk on 21.05.2024.
@@ -25,7 +25,7 @@
 import Foundation
 
 /// Possible errors thrown by `RetryingMiddleware`.
-public enum RetryingMiddlewareError: Error, Equatable {
+public enum RetryingError: Error, Equatable {
     /// An error indicating that the operation has reached the maximum number of retry attempts.
     case maxAttemptsReached
 }

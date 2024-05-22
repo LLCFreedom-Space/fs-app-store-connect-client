@@ -90,7 +90,7 @@ extension RetryingMiddleware: ClientMiddleware {
                 } catch {
                     // If the final attempt fails, throw the error
                     if attempt == maxAttemptCount {
-                        throw RetryingMiddlewareError.maxAttemptsReached
+                        throw RetryingError.maxAttemptsReached
                     } else {
                         // Wait before retrying the operation
                         try await willRetry()
@@ -108,6 +108,7 @@ extension RetryingMiddleware: ClientMiddleware {
                 return (response, responseBody)
             }
         }
+        // This point should never be reached
         preconditionFailure("Unreachable")
     }
     

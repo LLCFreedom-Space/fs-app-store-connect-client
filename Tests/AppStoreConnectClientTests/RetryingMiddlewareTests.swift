@@ -198,12 +198,12 @@ final class RetryingMiddlewareTests: XCTestCase {
                 operationID: "testOperation"
             ) { _, _, _ in
                 attemptCount += 1
-                throw RetryingMiddlewareError.maxAttemptsReached
+                throw RetryingError.maxAttemptsReached
             }
             XCTFail("Expected error not thrown, nevertheless got result: \(result)")
         } catch {
             XCTAssertEqual(attemptCount, 3)
-            XCTAssertEqual(error as? RetryingMiddlewareError, .maxAttemptsReached)
+            XCTAssertEqual(error as? RetryingError, .maxAttemptsReached)
         }
     }
 }

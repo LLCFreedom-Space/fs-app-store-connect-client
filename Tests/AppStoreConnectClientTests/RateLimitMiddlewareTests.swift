@@ -87,11 +87,11 @@ final class RateLimitMiddlewareTests: XCTestCase {
                 return (httpResponse, nil)
             }
             XCTFail("Expected error not thrown, nevertheless got result: \(result)")
-        } catch RateLimitError.rateLimitExceeded(let remaining, let limit) {
-            XCTAssertEqual(remaining, expectedRemaining)
-            XCTAssertEqual(limit, expectedLimit)
         } catch {
-            XCTFail("Unexpected error: \(error)")
+            XCTAssertEqual(
+                error as? RateLimitError,
+                .rateLimitExceeded(remaining: expectedRemaining, from: expectedLimit)
+            )
         }
     }
     
