@@ -34,4 +34,22 @@ public struct Credentials {
     public let privateKey: String
     /// The duration until the token expires.
     public let expireDuration: TimeInterval
+    
+    /// Initializes a new instance of `Credentials` with the provided values.
+    /// - Parameters:
+    ///   - issuerId: The issuer identifier for the JWT.
+    ///   - keyId: The private key identifier.
+    ///   - privateKey: The private key used for signing the JWT.
+    ///   - expireDuration: The duration until the token expires, in seconds.
+    public init(
+        issuerId: String,
+        keyId: String,
+        privateKey: String,
+        expireDuration: TimeInterval
+    ) {
+        self.issuerId = issuerId
+        self.keyId = keyId
+        self.privateKey = privateKey
+        self.expireDuration = expireDuration
+    }
 }
