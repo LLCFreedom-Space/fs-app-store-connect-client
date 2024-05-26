@@ -25,7 +25,7 @@
 import XCTest
 @testable import AppStoreConnectClient
 
-class ApplicationTests: XCTestCase {
+final class ApplicationTests: XCTestCase {
     func testInitWithValidSchema() {
         let schema = Components.Schemas.App(
             _type: .apps,
