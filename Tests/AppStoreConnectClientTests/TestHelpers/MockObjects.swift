@@ -87,6 +87,40 @@ enum MockObjects {
         )
     }
     
+    static var ok: Components.Schemas.BuildsResponse {
+        let response = Components.Schemas.BuildsResponse(
+            data: .init(
+                arrayLiteral: .init(
+                    _type: .builds,
+                    id: "FooBarBaz",
+                    attributes: .none,
+                    relationships: .none,
+                    links: .none
+                )
+            ),
+            included: .none,
+            links: .init(_self: "FooBarBazLink"),
+            meta: .none
+        )
+        return response
+    }
+    
+    static var prereleaseVersion: Components.Schemas.PrereleaseVersion {
+        let response = Components.Schemas.PrereleaseVersion(
+            _type: .preReleaseVersions,
+            id: app.id,
+            attributes: Components.Schemas.PrereleaseVersion.attributesPayload?(
+                Components.Schemas.PrereleaseVersion.attributesPayload(
+                    version: "Foo.Bar.Baz",
+                    platform: .IOS
+                )
+            ),
+            relationships: .none,
+            links: .none
+        )
+        return response
+    }
+    
     static var appStoreVersionsResponse: Components.Schemas.AppStoreVersionsResponse {
         let response = Components.Schemas.AppStoreVersionsResponse(
             data: [appStoreVersion],

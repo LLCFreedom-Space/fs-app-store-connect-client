@@ -87,6 +87,10 @@ print("Error fetching: \(error)")
 }
 ```
 
+## added endpoints??? read markdown
+
+## Generation???
+
 ## Contributions
 
 We welcome contributions to this project! Please feel free to open issues or pull requests to help improve the package.
@@ -103,4 +107,3 @@ Distributed under the GNU AFFERO GENERAL PUBLIC LICENSE Version 3. See [LICENSE.
 [swift-url]: https://swift.org/
 [license-image]: https://img.shields.io/badge/License-GPLv3-blue.svg
 [license-url]: LICENSE
-

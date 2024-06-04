@@ -39,4 +39,6 @@ public protocol AppStoreConnectClientProtocol {
     ///   - AppStoreConnectClientError: An error that may occur during the fetch process.
     /// - Returns: An array of `Release` objects containing details about the retrieved versions.
     func fetchVersions(for app: Application) async throws -> [Release]
+    
+    func fetchBuildVersions() async throws -> [PrereleaseVersion]
 }
