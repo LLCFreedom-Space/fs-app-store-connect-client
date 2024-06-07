@@ -59,7 +59,7 @@ public struct AppStoreConnectClient {
         let result: [Application]
         switch response {
         case .ok(let okResponse):
-            result = try okResponse.body.json.data.compactMap({ Application(schema: $0) })
+            result = try okResponse.body.json.data.compactMap { Application(schema: $0) }
         default:
             let error = try handleErrors(from: response)
             throw error
@@ -79,7 +79,7 @@ public struct AppStoreConnectClient {
         let result: [Release]
         switch response {
         case .ok(let okResponse):
-            result = try okResponse.body.json.data.compactMap({ Release(schema: $0) })
+            result = try okResponse.body.json.data.compactMap { Release(schema: $0) }
         default:
             let error = try handleErrors(from: response)
             throw error
@@ -111,7 +111,7 @@ public struct AppStoreConnectClient {
             let error = try handleErrors(from: response)
             throw error
         }
-        result = responseJson.data.compactMap({ Build(schema: $0) })
+        result = responseJson.data.compactMap { Build(schema: $0) }
         return result
     }
     
