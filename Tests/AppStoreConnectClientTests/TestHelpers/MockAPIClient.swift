@@ -27,23 +27,6 @@ import OpenAPIRuntime
 @testable import AppStoreConnectClient
 
 struct MockAPIClient: APIProtocol {
-    func builds_hyphen_get_collection(_ input: Operations.builds_hyphen_get_collection.Input) async throws -> Operations.builds_hyphen_get_collection.Output {
-        switch result {
-        case .ok:
-            return .ok(.init(body: .json(MockObjects.ok)))
-        case .badRequest:
-            return .badRequest(.init(body: .json(MockObjects.errorBadRequest)))
-        case .forbidden:
-            return .forbidden(.init(body: .json(MockObjects.errorForbidden)))
-        case .unauthorized:
-            return .unauthorized(.init(body: .json(MockObjects.errorUnauthorized)))
-        case .none:
-            return .undocumented(statusCode: statusCode, UndocumentedPayload())
-        case .some:
-            return .undocumented(statusCode: statusCode, UndocumentedPayload())
-        }
-    }
-    
     var result: Result?
     let statusCode = 501
     
@@ -84,6 +67,42 @@ struct MockAPIClient: APIProtocol {
             return .unauthorized(.init(body: .json(MockObjects.errorUnauthorized)))
         case .undocumented:
             return .undocumented(statusCode: statusCode, UndocumentedPayload())
+        case .none:
+            return .undocumented(statusCode: statusCode, UndocumentedPayload())
+        case .some:
+            return .undocumented(statusCode: statusCode, UndocumentedPayload())
+        }
+    }
+    
+    func builds_hyphen_get_collection(_ input: Operations.builds_hyphen_get_collection.Input) async throws -> Operations.builds_hyphen_get_collection.Output {
+        switch result {
+        case .ok:
+            return .ok(.init(body: .json(MockObjects.ok)))
+        case .badRequest:
+            return .badRequest(.init(body: .json(MockObjects.errorBadRequest)))
+        case .forbidden:
+            return .forbidden(.init(body: .json(MockObjects.errorForbidden)))
+        case .unauthorized:
+            return .unauthorized(.init(body: .json(MockObjects.errorUnauthorized)))
+        case .none:
+            return .undocumented(statusCode: statusCode, UndocumentedPayload())
+        case .some:
+            return .undocumented(statusCode: statusCode, UndocumentedPayload())
+        }
+    }
+    
+    func builds_hyphen_preReleaseVersion_hyphen_get_to_one_related(
+        _ input: Operations.builds_hyphen_preReleaseVersion_hyphen_get_to_one_related.Input
+    ) async throws -> Operations.builds_hyphen_preReleaseVersion_hyphen_get_to_one_related.Output {
+        switch result {
+        case .ok:
+            return .ok(.init(body: .json(MockObjects.okPrereleaseVersion)))
+        case .badRequest:
+            return .badRequest(.init(body: .json(MockObjects.errorBadRequest)))
+        case .forbidden:
+            return .forbidden(.init(body: .json(MockObjects.errorForbidden)))
+        case .unauthorized:
+            return .unauthorized(.init(body: .json(MockObjects.errorUnauthorized)))
         case .none:
             return .undocumented(statusCode: statusCode, UndocumentedPayload())
         case .some:

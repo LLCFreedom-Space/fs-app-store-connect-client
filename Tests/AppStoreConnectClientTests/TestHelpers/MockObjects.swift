@@ -105,22 +105,6 @@ enum MockObjects {
         return response
     }
     
-    static var prereleaseVersion: Components.Schemas.PrereleaseVersion {
-        let response = Components.Schemas.PrereleaseVersion(
-            _type: .preReleaseVersions,
-            id: app.id,
-            attributes: Components.Schemas.PrereleaseVersion.attributesPayload?(
-                Components.Schemas.PrereleaseVersion.attributesPayload(
-                    version: "Foo.Bar.Baz",
-                    platform: .IOS
-                )
-            ),
-            relationships: .none,
-            links: .none
-        )
-        return response
-    }
-    
     static var appStoreVersionsResponse: Components.Schemas.AppStoreVersionsResponse {
         let response = Components.Schemas.AppStoreVersionsResponse(
             data: [appStoreVersion],
@@ -154,6 +138,36 @@ enum MockObjects {
                 versionString: "Foo.Bar.Baz",
                 appStoreState: .ACCEPTED
             )
+        )
+        return response
+    }
+    
+    static var okPrereleaseVersion: Components.Schemas.PrereleaseVersionWithoutIncludesResponse {
+        let response = Components.Schemas.PrereleaseVersionWithoutIncludesResponse(
+            data: .init(
+                _type: .builds,
+                id: "FooBarBaz",
+                attributes: .none,
+                relationships: .none,
+                links: .init(_self: "FooBarBazLink1")
+            ),
+            links: .init(_self: "FooBarBazLink2")
+        )
+        return response
+    }
+    
+    static var prereleaseVersion: Components.Schemas.PrereleaseVersion {
+        let response = Components.Schemas.PrereleaseVersion(
+            _type: .preReleaseVersions,
+            id: app.id,
+            attributes: Components.Schemas.PrereleaseVersion.attributesPayload?(
+                Components.Schemas.PrereleaseVersion.attributesPayload(
+                    version: "Foo.Bar.Baz",
+                    platform: .IOS
+                )
+            ),
+            relationships: .none,
+            links: .none
         )
         return response
     }

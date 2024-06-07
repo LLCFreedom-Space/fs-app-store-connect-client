@@ -96250,7 +96250,7 @@
         "properties" : {
           "type" : {
             "type" : "string",
-            "enum" : [ "builds" ]
+            "enum" : [ "builds", "preReleaseVersions" ]
           },
           "id" : {
             "type" : "string"
@@ -96260,6 +96260,9 @@
             "properties" : {
               "version" : {
                 "type" : "string"
+              },
+              "platform" : {
+                "$ref" : "#/components/schemas/Platform"
               },
               "uploadedDate" : {
                 "type" : "string",

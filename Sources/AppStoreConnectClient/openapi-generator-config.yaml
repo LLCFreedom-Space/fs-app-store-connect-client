@@ -7,6 +7,4 @@ filter:
     - v1/apps
     - v1/apps/{id}/appStoreVersions
     - v1/builds
-#    - v1/builds/{id}/preReleaseVersion
-#    - v1/apps/{id}/builds -
-#    - v1/apps/{id}/preReleaseVersions
+    - v1/builds/{id}/preReleaseVersion

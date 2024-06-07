@@ -50,7 +50,8 @@ public struct AppStoreConnectClient {
         )
     }
     
-    /// Fetches collection of apps from the App Store Connect API.
+    /// Fetches collection of apps from the App Store Connect API,
+    /// end-point: v1/apps
     /// - Returns: An array of `App` objects.
     /// - Throws: An error if the fetch operation fails.
     public func fetchApps() async throws -> [Application] {
@@ -67,6 +68,7 @@ public struct AppStoreConnectClient {
     }
     
     /// Fetches a collection of versions for a specified app from the App Store Connect API.
+    /// end-point: v1/apps/{id}/appStoreVersions
     /// - Parameter app: The app for which to fetch versions.
     /// - Returns: An array of `Release` objects.
     /// - Throws: An error of type `AppStoreConnectError` if the fetch operation fails.
@@ -85,23 +87,22 @@ public struct AppStoreConnectClient {
         return result
     }
     
-    func fetchBuildVersions() async throws -> [Components.Schemas.Build] {
+    /// Fetches a collection of TestFlight builds for a specified app from the App Store Connect API.
+    /// end-point: v1/builds
+    /// - Parameter app: The app for which to fetch builds.
+    /// - Returns: An array of `Build` objects.
+    /// - Throws: An error of type `AppStoreConnectError` if the fetch operation fails.
+    func fetchBuilds(for app: Application) async throws -> [Build] {
         let response = try await client.builds_hyphen_get_collection(
             query: .init(
-                fields_lbrack_builds_rbrack_: .init(arrayLiteral: .version),
-                fields_lbrack_diagnosticSignatures_rbrack_: .init(arrayLiteral: .diagnosticType),
-                fields_lbrack_buildBetaDetails_rbrack_: .init(arrayLiteral: .externalBuildState),
-                fields_lbrack_betaAppReviewSubmissions_rbrack_: .init(arrayLiteral: .betaReviewState),
-                fields_lbrack_appStoreVersions_rbrack_: .init(arrayLiteral: .versionString),
-                fields_lbrack_betaBuildLocalizations_rbrack_: .init(arrayLiteral: .build),
-                fields_lbrack_preReleaseVersions_rbrack_: .init(arrayLiteral: .version),
-                fields_lbrack_appEncryptionDeclarations_rbrack_: .init(arrayLiteral: .app),
-                fields_lbrack_apps_rbrack_: .init(arrayLiteral: .bundleId),
-                fields_lbrack_perfPowerMetrics_rbrack_: .init(arrayLiteral: .platform)
+                filter_lbrack_app_rbrack_: [app.id],
+                sort: Operations.builds_hyphen_get_collection.Input.Query.sortPayload?.init([._hyphen_version]),
+                fields_lbrack_builds_rbrack_: Operations.builds_hyphen_get_collection.Input.Query.fields_lbrack_builds_rbrack_Payload?.init(
+                    [.version, .uploadedDate, .minOsVersion]
+                )
             )
         )
-        print("\n<<< response = \(response)")
-        let result: [Components.Schemas.Build]
+        let result: [Build]
         var responseJson: Components.Schemas.BuildsResponse
         switch response {
         case .ok(let okResponse):
@@ -110,7 +111,32 @@ public struct AppStoreConnectClient {
             let error = try handleErrors(from: response)
             throw error
         }
-        result = responseJson.data
+        result = responseJson.data.compactMap({ Build(schema: $0) })
+        return result
+    }
+    
+    /// Fetches the pre-release version associated with a specific TestFlight's build from the App Store Connect API.
+    /// end-point: v1/builds/{id}/preReleaseVersion
+    /// - Parameter id: The build-id for which to fetch the pre-release version.
+    /// - Returns: A `PreReleaseVersion` object.
+    /// - Throws: `PreReleaseVersionError.idIsNil` if the build's id is nil, 
+    /// or an error of type `AppStoreConnectError` if the fetch operation fails.
+    func fetchPreReleaseVersion(by id: Build) async throws -> PreReleaseVersion {
+        guard let valueId = id.id else {
+            throw PreReleaseVersionError.idIsNil
+        }
+        let response = try await client.builds_hyphen_preReleaseVersion_hyphen_get_to_one_related(
+            path: .init(id: valueId)
+        )
+        var responseJson: Components.Schemas.PrereleaseVersionWithoutIncludesResponse
+        switch response {
+        case .ok(let okResponse):
+            responseJson = try okResponse.body.json
+        default:
+            let error = try handleErrors(from: response)
+            throw error
+        }
+        let result = PreReleaseVersion(schema: responseJson)
         return result
     }
     
@@ -152,19 +178,19 @@ public struct AppStoreConnectClient {
         case .badRequest(let result):
             return AppStoreConnectError.badRequest(
                 errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
-                )
+            )
         case .forbidden(let result):
             return AppStoreConnectError.forbidden(
                 errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
-                )
+            )
         case .notFound(let result):
             return AppStoreConnectError.notFound(
                 errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
-                )
+            )
         case .unauthorized(let result):
             return AppStoreConnectError.unauthorized(
                 errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
-                )
+            )
         case .undocumented(let statusCode, _):
             return AppStoreConnectError.serverError(errorCode: statusCode)
             
@@ -173,7 +199,7 @@ public struct AppStoreConnectClient {
         }
     }
     
-    /// Handles error responses returned by the App Store Connect API when fetching app store prerelease versions.
+    /// Handles error responses returned by the App Store Connect API when fetching TestFlight's builds versions.
     /// - Parameter response: The response received from the API.
     /// - Throws: An error of type `AppStoreConnectError` if the response indicates an error.
     private func handleErrors(
@@ -183,15 +209,43 @@ public struct AppStoreConnectClient {
         case .badRequest(let result):
             return AppStoreConnectError.badRequest(
                 errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
-                )
+            )
         case .unauthorized(let result):
             return AppStoreConnectError.unauthorized(
                 errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
-                )
+            )
         case .forbidden(let result):
             return AppStoreConnectError.forbidden(
                 errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
-                )
+            )
+        default:
+            return AppStoreConnectError.unexpectedError(errors: "\(response)")
+        }
+    }
+    
+    /// Handles error responses returned by the App Store Connect API when fetching TestFlight's pre-release versions.
+    /// - Parameter response: The response received from the API.
+    /// - Throws: An error of type `AppStoreConnectError` if the response indicates an error.
+    private func handleErrors(
+        from response: Operations.builds_hyphen_preReleaseVersion_hyphen_get_to_one_related.Output
+    ) throws -> AppStoreConnectError {
+        switch response {
+        case .badRequest(let result):
+            return AppStoreConnectError.badRequest(
+                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
+            )
+        case .unauthorized(let result):
+            return AppStoreConnectError.unauthorized(
+                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
+            )
+        case .forbidden(let result):
+            return AppStoreConnectError.forbidden(
+                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
+            )
+        case .notFound(let result):
+            return AppStoreConnectError.notFound(
+                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
+            )
         default:
             return AppStoreConnectError.unexpectedError(errors: "\(response)")
         }
