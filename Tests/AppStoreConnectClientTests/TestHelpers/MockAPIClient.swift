@@ -74,7 +74,9 @@ struct MockAPIClient: APIProtocol {
         }
     }
     
-    func builds_hyphen_get_collection(_ input: Operations.builds_hyphen_get_collection.Input) async throws -> Operations.builds_hyphen_get_collection.Output {
+    func builds_hyphen_get_collection(
+        _ input: Operations.builds_hyphen_get_collection.Input
+    ) async throws -> Operations.builds_hyphen_get_collection.Output {
         switch result {
         case .ok:
             return .ok(.init(body: .json(MockObjects.ok)))

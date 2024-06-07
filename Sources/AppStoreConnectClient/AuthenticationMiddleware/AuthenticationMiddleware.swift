@@ -57,7 +57,6 @@ package actor AuthenticationMiddleware: ClientMiddleware {
         var request = request
         let jwt = try getToken()
         request.headerFields[.authorization] = "Bearer \(jwt)"
-        print("<<< \(request.headerFields[.authorization])")
         return try await next(request, body, baseURL)
     }
     
