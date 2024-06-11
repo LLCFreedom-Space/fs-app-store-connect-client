@@ -178,58 +178,12 @@ enum MockObjects {
         return response
     }
     
-//    static var withoutIdPrereleaseVersion: Components.Schemas.PrereleaseVersionWithoutIncludesResponse {
-//        let dateFormatter = DateFormatter()
-//        let mockData = dateFormatter.date(from: "2011-11-11 11:11:11 +0000")
-//        let response = Components.Schemas.PrereleaseVersionWithoutIncludesResponse(
-//            data: .init(
-//                _type: .preReleaseVersions,
-//                id: "",
-//                attributes: .init(
-//                    version: "FooBarVersion",
-//                    platform: .IOS,
-//                    uploadedDate: mockData,
-//                    expirationDate: mockData,
-//                    expired: true,
-//                    minOsVersion: "FooMinOs",
-//                    lsMinimumSystemVersion: "BarMinSysVer",
-//                    computedMinMacOsVersion: "BazCompMinMacOsVer",
-//                    iconAssetToken: .none,
-//                    processingState: .PROCESSING,
-//                    buildAudienceType: .APP_STORE_ELIGIBLE,
-//                    usesNonExemptEncryption: false
-//                ),
-//                relationships: .none,
-//                links: .init(_self: "FooBarBazLink1")
-//            ),
-//            links: .init(_self: "FooBarBazLink2")
-//        )
-//        return response
-//    }
-    
     static var schema: Components.Schemas.Build {
         let dateFormatter = DateFormatter()
         let mockData = dateFormatter.date(from: "2011-11-11 11:11:11 +0000")
-        let schema = Components.Schemas.Build (
+        let schema = Components.Schemas.Build(
             _type: .builds,
             id: "FooBarBazId",
-            attributes: .init(
-                version: "FooBarBazVersion",
-                uploadedDate: mockData,
-                minOsVersion: "FooBarBazMinOs"
-            ),
-            relationships: .none,
-            links: .none
-        )
-        return schema
-    }
-    
-    static var schemaWithoutId: Components.Schemas.Build {
-        let dateFormatter = DateFormatter()
-        let mockData = dateFormatter.date(from: "2011-11-11 11:11:11 +0000")
-        let schema = Components.Schemas.Build (
-            _type: .builds,
-            id: "mockId",
             attributes: .init(
                 version: "FooBarBazVersion",
                 uploadedDate: mockData,
