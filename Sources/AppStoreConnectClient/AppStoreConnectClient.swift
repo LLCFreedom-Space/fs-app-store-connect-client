@@ -51,48 +51,77 @@ public struct AppStoreConnectClient {
     }
     
     /// Fetches collection of apps from the App Store Connect API,
-    /// end-point: v1/apps
+    /// handles error responses returned by the App Store Connect API when fetching app collections.
+    /// End-point: v1/apps
     /// - Returns: An array of `App` objects.
-    /// - Throws: An error if the fetch operation fails.
+    /// - Throws: An error of type `AppStoreConnectError` if the response indicates an error.
     public func fetchApps() async throws -> [Application] {
         let response = try await client.apps_hyphen_get_collection()
-        let result: [Application]
         switch response {
         case .ok(let okResponse):
-            result = try okResponse.body.json.data.compactMap { Application(schema: $0) }
-        default:
-            let error = try handleErrors(from: response)
-            throw error
+            let result = try okResponse.body.json.data.compactMap { Application(schema: $0) }
+            return result
+        case .badRequest(let result):
+            throw AppStoreConnectError.badRequest(
+                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
+            )
+        case .forbidden(let result):
+            throw AppStoreConnectError.forbidden(
+                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
+            )
+        case .unauthorized(let result):
+            throw AppStoreConnectError.unauthorized(
+                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
+            )
+        case .undocumented(let statusCode, _):
+            throw AppStoreConnectError.serverError(
+                errorCode: statusCode
+            )
         }
-        return result
     }
     
-    /// Fetches a collection of versions for a specified app from the App Store Connect API.
-    /// end-point: v1/apps/{id}/appStoreVersions
+    /// Fetches a collection of versions for a specified app from the App Store Connect API,
+    /// handles error responses returned by the App Store Connect API when fetching App Store version by app-id.
+    /// End-point: v1/apps/{id}/appStoreVersions
     /// - Parameter app: The app for which to fetch versions.
     /// - Returns: An array of `Release` objects.
-    /// - Throws: An error of type `AppStoreConnectError` if the fetch operation fails.
+    /// - Throws: An error of type `AppStoreConnectError` if the response indicates an error.
     public func fetchVersions(for app: Application) async throws -> [Release] {
         let response = try await client.apps_hyphen_appStoreVersions_hyphen_get_to_many_related(
             path: .init(id: app.id)
         )
-        let result: [Release]
         switch response {
         case .ok(let okResponse):
-            result = try okResponse.body.json.data.compactMap { Release(schema: $0) }
-        default:
-            let error = try handleErrors(from: response)
-            throw error
+            let result = try okResponse.body.json.data.compactMap { Release(schema: $0) }
+            return result
+        case .badRequest(let result):
+            throw AppStoreConnectError.badRequest(
+                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
+            )
+        case .forbidden(let result):
+            throw AppStoreConnectError.forbidden(
+                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
+            )
+        case .notFound(let result):
+            throw AppStoreConnectError.notFound(
+                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
+            )
+        case .unauthorized(let result):
+            throw AppStoreConnectError.unauthorized(
+                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
+            )
+        case .undocumented(let statusCode, _):
+            throw AppStoreConnectError.serverError(errorCode: statusCode)
         }
-        return result
     }
     
-    /// Fetches a collection of TestFlight builds for a specified app from the App Store Connect API.
-    /// end-point: v1/builds
+    /// Fetches a collection of TestFlight builds for a specified app from the App Store Connect API,
+    /// handles error responses returned by the App Store Connect API when fetching TestFlight builds.
+    /// End-point: v1/builds
     /// - Parameter app: The app for which to fetch builds.
     /// - Returns: An array of `Build` objects.
-    /// - Throws: An error of type `AppStoreConnectError` if the fetch operation fails.
-    func fetchBuilds(for app: Application) async throws -> [Build] {
+    /// - Throws: An error of type `AppStoreConnectError` if the response indicates an error.
+    public func fetchBuilds(for app: Application) async throws -> [Build] {
         let response = try await client.builds_hyphen_get_collection(
             query: .init(
                 filter_lbrack_app_rbrack_: [app.id],
@@ -102,152 +131,60 @@ public struct AppStoreConnectClient {
                 )
             )
         )
-        let result: [Build]
-        var responseJson: Components.Schemas.BuildsResponse
         switch response {
         case .ok(let okResponse):
-            responseJson = try okResponse.body.json
-        default:
-            let error = try handleErrors(from: response)
-            throw error
+            let result = try okResponse.body.json.data.compactMap { Build(schema: $0) }
+            return result
+        case .badRequest(let result):
+            throw AppStoreConnectError.badRequest(
+                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
+            )
+        case .unauthorized(let result):
+            throw AppStoreConnectError.unauthorized(
+                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
+            )
+        case .forbidden(let result):
+            throw AppStoreConnectError.forbidden(
+                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
+            )
+        case .undocumented(let statusCode, _):
+            throw AppStoreConnectError.serverError(errorCode: statusCode)
         }
-        result = responseJson.data.compactMap { Build(schema: $0) }
-        return result
     }
     
-    /// Fetches the pre-release version associated with a specific TestFlight's build from the App Store Connect API.
-    /// end-point: v1/builds/{id}/preReleaseVersion
+    /// Fetches the pre-release version associated with a specific TestFlight's build from the App Store Connect API,
+    /// Handles error responses returned by the App Store Connect API when fetching TestFlight's pre-release versions.
+    /// End-point: v1/builds/{id}/preReleaseVersion
     /// - Parameter id: The build-id for which to fetch the pre-release version.
     /// - Returns: A `PreReleaseVersion` object.
-    /// - Throws: `PreReleaseVersionError.idIsNil` if the build's id is nil, 
-    /// or an error of type `AppStoreConnectError` if the fetch operation fails.
-    func fetchPreReleaseVersion(by id: Build) async throws -> PreReleaseVersion {
-        guard let valueId = id.id else {
-            throw PreReleaseVersionError.idIsNil
-        }
+    /// - Throws: An error of type `AppStoreConnectError` if the response indicates an error.
+    public func fetchPreReleaseVersion(by id: Build) async throws -> PreReleaseVersion {
+        let id = id.id
         let response = try await client.builds_hyphen_preReleaseVersion_hyphen_get_to_one_related(
-            path: .init(id: valueId)
+            path: .init(id: id)
         )
-        var responseJson: Components.Schemas.PrereleaseVersionWithoutIncludesResponse
         switch response {
         case .ok(let okResponse):
-            responseJson = try okResponse.body.json
-        default:
-            let error = try handleErrors(from: response)
-            throw error
-        }
-        let result = PreReleaseVersion(schema: responseJson)
-        return result
-    }
-    
-    /// Handles error responses returned by the App Store Connect API when fetching app collections.
-    /// - Parameter response: The response received from the API.
-    /// - Throws: An error of type `AppStoreConnectError` if the response indicates an error.
-    private func handleErrors(
-        from response: Operations.apps_hyphen_get_collection.Output
-    ) throws -> AppStoreConnectError {
-        switch response {
+            let json = try okResponse.body.json
+            return PreReleaseVersion(schema: json)
         case .badRequest(let result):
-            return AppStoreConnectError.badRequest(
-                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
-            )
-        case .forbidden(let result):
-            return AppStoreConnectError.forbidden(
+            throw AppStoreConnectError.badRequest(
                 errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
             )
         case .unauthorized(let result):
-            return AppStoreConnectError.unauthorized(
-                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
-            )
-        case .undocumented(let statusCode, _):
-            return AppStoreConnectError.serverError(
-                errorCode: statusCode
-            )
-        default:
-            return AppStoreConnectError.unexpectedError(errors: "\(response)")
-        }
-    }
-    
-    /// Handles error responses returned by the App Store Connect API when fetching app store versions.
-    /// - Parameter response: The response received from the API.
-    /// - Throws: An error of type `AppStoreConnectError` if the response indicates an error.
-    private func handleErrors(
-        from response: Operations.apps_hyphen_appStoreVersions_hyphen_get_to_many_related.Output
-    ) throws -> AppStoreConnectError {
-        switch response {
-        case .badRequest(let result):
-            return AppStoreConnectError.badRequest(
+            throw AppStoreConnectError.unauthorized(
                 errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
             )
         case .forbidden(let result):
-            return AppStoreConnectError.forbidden(
+            throw AppStoreConnectError.forbidden(
                 errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
             )
         case .notFound(let result):
-            return AppStoreConnectError.notFound(
-                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
-            )
-        case .unauthorized(let result):
-            return AppStoreConnectError.unauthorized(
+            throw AppStoreConnectError.notFound(
                 errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
             )
         case .undocumented(let statusCode, _):
-            return AppStoreConnectError.serverError(errorCode: statusCode)
-            
-        default:
-            return AppStoreConnectError.unexpectedError(errors: "\(response)")
-        }
-    }
-    
-    /// Handles error responses returned by the App Store Connect API when fetching TestFlight's builds versions.
-    /// - Parameter response: The response received from the API.
-    /// - Throws: An error of type `AppStoreConnectError` if the response indicates an error.
-    private func handleErrors(
-        from response: Operations.builds_hyphen_get_collection.Output
-    ) throws -> AppStoreConnectError {
-        switch response {
-        case .badRequest(let result):
-            return AppStoreConnectError.badRequest(
-                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
-            )
-        case .unauthorized(let result):
-            return AppStoreConnectError.unauthorized(
-                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
-            )
-        case .forbidden(let result):
-            return AppStoreConnectError.forbidden(
-                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
-            )
-        default:
-            return AppStoreConnectError.unexpectedError(errors: "\(response)")
-        }
-    }
-    
-    /// Handles error responses returned by the App Store Connect API when fetching TestFlight's pre-release versions.
-    /// - Parameter response: The response received from the API.
-    /// - Throws: An error of type `AppStoreConnectError` if the response indicates an error.
-    private func handleErrors(
-        from response: Operations.builds_hyphen_preReleaseVersion_hyphen_get_to_one_related.Output
-    ) throws -> AppStoreConnectError {
-        switch response {
-        case .badRequest(let result):
-            return AppStoreConnectError.badRequest(
-                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
-            )
-        case .unauthorized(let result):
-            return AppStoreConnectError.unauthorized(
-                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
-            )
-        case .forbidden(let result):
-            return AppStoreConnectError.forbidden(
-                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
-            )
-        case .notFound(let result):
-            return AppStoreConnectError.notFound(
-                errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
-            )
-        default:
-            return AppStoreConnectError.unexpectedError(errors: "\(response)")
+            throw AppStoreConnectError.serverError(errorCode: statusCode)
         }
     }
 }

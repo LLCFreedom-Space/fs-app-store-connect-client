@@ -87,20 +87,27 @@ enum MockObjects {
         )
     }
     
-    static var ok: Components.Schemas.BuildsResponse {
-        let response = Components.Schemas.BuildsResponse(
-            data: .init(
-                arrayLiteral: .init(
-                    _type: .builds,
-                    id: "FooBarBaz",
-                    attributes: .none,
-                    relationships: .none,
-                    links: .none
-                )
-            ),
-            included: .none,
-            links: .init(_self: "FooBarBazLink"),
-            meta: .none
+    static var okBuild: Components.Schemas.Build {
+        let dateFormatter = DateFormatter()
+        let mockData = dateFormatter.date(from: "2011-11-11 11:11:11 +0000")
+        let response = Components.Schemas.Build(
+            _type: .preReleaseVersions,
+            id: "FooBarBazId",
+            attributes: .init(
+                version: "FooBarBazVersion",
+                platform: .IOS,
+                uploadedDate: mockData,
+                expirationDate: mockData,
+                expired: true,
+                minOsVersion: "FooBarBazMinOs",
+                lsMinimumSystemVersion: "FooMinSysVer",
+                computedMinMacOsVersion: "BarCompMinMacOsVer",
+                iconAssetToken: .none,
+                processingState: .PROCESSING,
+                buildAudienceType: .APP_STORE_ELIGIBLE,
+                usesNonExemptEncryption: true),
+            relationships: .none,
+            links: .none
         )
         return response
     }
@@ -143,11 +150,26 @@ enum MockObjects {
     }
     
     static var okPrereleaseVersion: Components.Schemas.PrereleaseVersionWithoutIncludesResponse {
+        let dateFormatter = DateFormatter()
+        let mockData = dateFormatter.date(from: "2011-11-11 11:11:11 +0000")
         let response = Components.Schemas.PrereleaseVersionWithoutIncludesResponse(
             data: .init(
-                _type: .builds,
-                id: "FooBarBaz",
-                attributes: .none,
+                _type: .preReleaseVersions,
+                id: "FooBarId",
+                attributes: .init(
+                    version: "FooBarVersion",
+                    platform: .IOS,
+                    uploadedDate: mockData,
+                    expirationDate: mockData,
+                    expired: true,
+                    minOsVersion: "FooMinOs",
+                    lsMinimumSystemVersion: "BarMinSysVer",
+                    computedMinMacOsVersion: "BazCompMinMacOsVer",
+                    iconAssetToken: .none,
+                    processingState: .PROCESSING,
+                    buildAudienceType: .APP_STORE_ELIGIBLE,
+                    usesNonExemptEncryption: false
+                ),
                 relationships: .none,
                 links: .init(_self: "FooBarBazLink1")
             ),
@@ -156,19 +178,66 @@ enum MockObjects {
         return response
     }
     
-    static var prereleaseVersion: Components.Schemas.PrereleaseVersion {
-        let response = Components.Schemas.PrereleaseVersion(
-            _type: .preReleaseVersions,
-            id: app.id,
-            attributes: Components.Schemas.PrereleaseVersion.attributesPayload?(
-                Components.Schemas.PrereleaseVersion.attributesPayload(
-                    version: "Foo.Bar.Baz",
-                    platform: .IOS
-                )
+//    static var withoutIdPrereleaseVersion: Components.Schemas.PrereleaseVersionWithoutIncludesResponse {
+//        let dateFormatter = DateFormatter()
+//        let mockData = dateFormatter.date(from: "2011-11-11 11:11:11 +0000")
+//        let response = Components.Schemas.PrereleaseVersionWithoutIncludesResponse(
+//            data: .init(
+//                _type: .preReleaseVersions,
+//                id: "",
+//                attributes: .init(
+//                    version: "FooBarVersion",
+//                    platform: .IOS,
+//                    uploadedDate: mockData,
+//                    expirationDate: mockData,
+//                    expired: true,
+//                    minOsVersion: "FooMinOs",
+//                    lsMinimumSystemVersion: "BarMinSysVer",
+//                    computedMinMacOsVersion: "BazCompMinMacOsVer",
+//                    iconAssetToken: .none,
+//                    processingState: .PROCESSING,
+//                    buildAudienceType: .APP_STORE_ELIGIBLE,
+//                    usesNonExemptEncryption: false
+//                ),
+//                relationships: .none,
+//                links: .init(_self: "FooBarBazLink1")
+//            ),
+//            links: .init(_self: "FooBarBazLink2")
+//        )
+//        return response
+//    }
+    
+    static var schema: Components.Schemas.Build {
+        let dateFormatter = DateFormatter()
+        let mockData = dateFormatter.date(from: "2011-11-11 11:11:11 +0000")
+        let schema = Components.Schemas.Build (
+            _type: .builds,
+            id: "FooBarBazId",
+            attributes: .init(
+                version: "FooBarBazVersion",
+                uploadedDate: mockData,
+                minOsVersion: "FooBarBazMinOs"
             ),
             relationships: .none,
             links: .none
         )
-        return response
+        return schema
+    }
+    
+    static var schemaWithoutId: Components.Schemas.Build {
+        let dateFormatter = DateFormatter()
+        let mockData = dateFormatter.date(from: "2011-11-11 11:11:11 +0000")
+        let schema = Components.Schemas.Build (
+            _type: .builds,
+            id: "mockId",
+            attributes: .init(
+                version: "FooBarBazVersion",
+                uploadedDate: mockData,
+                minOsVersion: "FooBarBazMinOs"
+            ),
+            relationships: .none,
+            links: .none
+        )
+        return schema
     }
 }

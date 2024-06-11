@@ -34,7 +34,7 @@ import Foundation
 /// It contains metadata such as the build version, upload date, and minimum supported OS version.
 public struct Build {
     /// The unique identifier of the build.
-    public let id: String?
+    public let id: String
     /// The version string of the build.
     public let version: String?
     /// The date and time when this build was uploaded to App Store Connect.
@@ -48,7 +48,7 @@ public struct Build {
     /// - Returns: A new `Build` instance if initialization is successful, nil otherwise.
     /// - Note: This initializer extracts the build metadata from the provided schema and constructs a `Build` instance.
     /// - Warning: If the schema does not contain valid metadata, some properties of the `Build` instance may be nil.
-    init?(schema: Components.Schemas.Build) {
+    init(schema: Components.Schemas.Build) {
         self.id = schema.id
         self.version = schema.attributes?.version
         self.uploadedDate = schema.attributes?.uploadedDate

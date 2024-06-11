@@ -182,13 +182,13 @@ vertical_whitespace:
   max_empty_lines: 2
 
 type_body_length:
-  warning: 300
-  error: 400
+  warning: 400
+  error: 500
 
 # or they can set both explicitly
 file_length:
-  warning: 400
-  error: 500
+  warning: 450
+  error: 550
 
 function_body_length: # Functions bodies should not span too many lines.
   warning: 60

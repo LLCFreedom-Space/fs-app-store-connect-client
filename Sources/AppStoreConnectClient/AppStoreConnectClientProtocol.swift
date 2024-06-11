@@ -27,33 +27,28 @@ import Foundation
 /// A protocol defining the interface for interacting with the App Store Connect API.
 public protocol AppStoreConnectClientProtocol {
     /// Fetches a list of applications from App Store Connect.
-    /// - Throws:
-    ///   - AppStoreConnectClientError: An error that may occur during the fetch process.
+    /// - Throws: AppStoreConnectClientError: An error that may occur during the fetch process.
     /// - Returns: An array of `Application` objects representing the retrieved applications.
     func fetchApps() async throws -> [Application]
     
     /// Fetches a list of versions for a specific application from App Store Connect.
     /// - Parameters:
     ///   - app: The `Application` object representing the app whose versions are to be fetched.
-    /// - Throws:
-    ///   - AppStoreConnectClientError: An error that may occur during the fetch process.
+    /// - Throws: AppStoreConnectClientError: An error that may occur during the fetch process.
     /// - Returns: An array of `Release` objects containing details about the retrieved versions.
     func fetchVersions(for app: Application) async throws -> [Release]
     
     /// Fetches a list of testFlight's builds from App Store Connect.
     /// - Returns: An array of `Build` objects representing the retrieved builds.
-    /// - Throws:
-    ///   - AppStoreConnectClientError: An error that may occur during the fetch process.
+    /// - Throws: AppStoreConnectClientError: An error that may occur during the fetch process.
     /// - Note: Builds are specific versions of an app that have been uploaded to App Store Connect.
     func fetchBuildVersions() async throws -> [Build]
     
     /// Fetches the pre-release testFlight's version associated with a specific build from App Store Connect.
     /// - Parameters:
-    ///   - id: The `Build` object representing the build whose pre-release version is to be fetched.
-    /// - Returns: A `PreReleaseVersion` object containing details about the retrieved pre-release version.
-    /// - Throws:
-    ///   - PreReleaseVersionError.idIsNil: If the provided build's id is nil.
-    ///   - AppStoreConnectClientError: An error that may occur during the fetch process.
+    ///   - id: the `Build` object representing the build whose pre-release version is to be fetched.
+    /// - Returns: a `PreReleaseVersion` object containing details about the retrieved pre-release version.
+    /// - Throws:AppStoreConnectClientError: An error that may occur during the fetch process.
     /// - Note: Pre-release versions are used for beta testing or/and internal reviews before an app is published on the App Store.
     func fetchPreReleaseVersion(by id: Build) async throws -> PreReleaseVersion
 }

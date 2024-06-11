@@ -79,7 +79,7 @@ struct MockAPIClient: APIProtocol {
     ) async throws -> Operations.builds_hyphen_get_collection.Output {
         switch result {
         case .ok:
-            return .ok(.init(body: .json(MockObjects.ok)))
+            return .ok(.init(body: .json(.init(data: [MockObjects.okBuild], links: .init(_self: "https://mockLink")))))
         case .badRequest:
             return .badRequest(.init(body: .json(MockObjects.errorBadRequest)))
         case .forbidden:
@@ -105,6 +105,8 @@ struct MockAPIClient: APIProtocol {
             return .forbidden(.init(body: .json(MockObjects.errorForbidden)))
         case .unauthorized:
             return .unauthorized(.init(body: .json(MockObjects.errorUnauthorized)))
+        case .notFound:
+            return .notFound(.init(body: .json(MockObjects.errorNotFound)))
         case .none:
             return .undocumented(statusCode: statusCode, UndocumentedPayload())
         case .some:

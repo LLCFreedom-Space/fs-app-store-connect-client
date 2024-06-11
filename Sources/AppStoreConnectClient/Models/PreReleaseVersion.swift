@@ -49,9 +49,3 @@ public struct PreReleaseVersion {
         self.platform = schema.data.attributes?.platform?.rawValue
     }
 }
-
-/// Enumerates possible errors that can occur when working with `PreReleaseVersion`.
-public enum PreReleaseVersionError: Error {
-    /// Indicates that the ID of a build is `nil` when it's expected to have a value.
-    case idIsNil
-}

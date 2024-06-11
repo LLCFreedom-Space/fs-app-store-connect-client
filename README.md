@@ -23,6 +23,7 @@ This Swift package provides a client library for interacting with the App Store 
 - Providing automatically retrying HTTP requests based on customizable retry failed signals and delay strategies.
 - Throws informative errors for server errors and not found cases.
 - Ensure test coverage for code to guarantee robustness and reliability.
+- Updated openapi file to "3.4.2" version.
 
 ## Installation
 

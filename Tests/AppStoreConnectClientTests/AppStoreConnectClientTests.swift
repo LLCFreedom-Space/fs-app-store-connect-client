@@ -168,4 +168,155 @@ final class AppStoreConnectClientTests: XCTestCase {
             XCTFail("Unexpected error: \(error)")
         }
     }
+    
+    func testFetchBuildsSuccess() async throws {
+        var mockClient = MockAPIClient()
+        mockClient.result = .ok
+        let client = AppStoreConnectClient(client: mockClient)
+        let app = Application(id: "Foo", bundleId: "Bar")
+        let expectedBuilds = [Build(schema: MockObjects.schema)]
+        let build = try await client.fetchBuilds(for: app)
+        XCTAssertEqual(build.first?.id, expectedBuilds.first?.id)
+        XCTAssertEqual(build.first?.version, expectedBuilds.first?.version)
+        XCTAssertEqual(build.first?.uploadedDate, expectedBuilds.first?.uploadedDate)
+        XCTAssertEqual(build.first?.minOsVersion, expectedBuilds.first?.minOsVersion)
+    }
+    
+    func testFetchBuildsBadRequest() async throws {
+        var mockClient = MockAPIClient()
+        mockClient.result = .badRequest
+        let client = AppStoreConnectClient(client: mockClient)
+        let app = Application(id: "Foo", bundleId: "Bar")
+        do {
+            _ = try await client.fetchBuilds(for: app)
+            XCTFail("Expected error not thrown")
+        } catch AppStoreConnectError.badRequest {
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testFetchBuildsUnauthorized() async throws {
+        var mockClient = MockAPIClient()
+        mockClient.result = .unauthorized
+        let client = AppStoreConnectClient(client: mockClient)
+        let app = Application(id: "Foo", bundleId: "Bar")
+        do {
+            _ = try await client.fetchBuilds(for: app)
+            XCTFail("Expected error not thrown")
+        } catch AppStoreConnectError.unauthorized {
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testFetchBuildsForbidden() async throws {
+        var mockClient = MockAPIClient()
+        mockClient.result = .forbidden
+        let client = AppStoreConnectClient(client: mockClient)
+        let app = Application(id: "Foo", bundleId: "Bar")
+        do {
+            _ = try await client.fetchBuilds(for: app)
+            XCTFail("Expected error not thrown")
+        } catch AppStoreConnectError.forbidden {
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testFetchBuildsUndocumented() async throws {
+        var mockClient = MockAPIClient()
+        mockClient.result = .undocumented
+        let client = AppStoreConnectClient(client: mockClient)
+        let app = Application(id: "Foo", bundleId: "Bar")
+        do {
+            _ = try await client.fetchBuilds(for: app)
+            XCTFail("Expected error not thrown")
+        } catch AppStoreConnectError.serverError {
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testFetchPreReleaseVersionSuccess() async throws {
+        var mockClient = MockAPIClient()
+        mockClient.result = .ok
+        let client = AppStoreConnectClient(client: mockClient)
+        let build = Build(schema: MockObjects.schema)
+        let preReleaseVersion = try await client.fetchPreReleaseVersion(by: build)
+        XCTAssertEqual(preReleaseVersion.id, "FooBarId")
+        XCTAssertEqual(preReleaseVersion.version, "FooBarVersion")
+        XCTAssertEqual(preReleaseVersion.platform, "IOS")
+    }
+    
+    
+    func testFetchPreReleaseVersionBadRequest() async throws {
+        var mockClient = MockAPIClient()
+        mockClient.result = .badRequest
+        let client = AppStoreConnectClient(client: mockClient)
+        let build = Build(schema: MockObjects.schema)
+        do {
+            _ = try await client.fetchPreReleaseVersion(by: build)
+            XCTFail("Expected error not thrown")
+        } catch AppStoreConnectError.badRequest {
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testFetchPreReleaseVersionUnauthorized() async throws {
+        var mockClient = MockAPIClient()
+        mockClient.result = .unauthorized
+        let client = AppStoreConnectClient(client: mockClient)
+        let build = Build(schema: MockObjects.schema)
+        do {
+            _ = try await client.fetchPreReleaseVersion(by: build)
+            XCTFail("Expected error not thrown")
+        } catch AppStoreConnectError.unauthorized {
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testFetchPreReleaseVersionNotFound() async throws {
+        var mockClient = MockAPIClient()
+        mockClient.result = .notFound
+        let client = AppStoreConnectClient(client: mockClient)
+        let build = Build(schema: MockObjects.schema)
+        do {
+            _ = try await client.fetchPreReleaseVersion(by: build)
+            XCTFail("Expected error not thrown")
+        } catch AppStoreConnectError.notFound {
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testFetchPreReleaseVersionForbidden() async throws {
+        var mockClient = MockAPIClient()
+        mockClient.result = .forbidden
+        let client = AppStoreConnectClient(client: mockClient)
+        let build = Build(schema: MockObjects.schema)
+        do {
+            _ = try await client.fetchPreReleaseVersion(by: build)
+            XCTFail("Expected error not thrown")
+        } catch AppStoreConnectError.forbidden {
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+    
+    func testFetchPreReleaseVersionUndocumented() async throws {
+        var mockClient = MockAPIClient()
+        mockClient.result = .undocumented
+        let client = AppStoreConnectClient(client: mockClient)
+        let build = Build(schema: MockObjects.schema)
+        do {
+            _ = try await client.fetchPreReleaseVersion(by: build)
+            XCTFail("Expected error not thrown")
+        } catch AppStoreConnectError.serverError {
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
 }
