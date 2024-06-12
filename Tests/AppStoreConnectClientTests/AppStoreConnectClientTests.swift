@@ -26,6 +26,10 @@ import XCTest
 @testable import AppStoreConnectClient
 
 final class AppStoreConnectClientTests: XCTestCase {
+    let badRequest = 400
+    let unauthorized = 401
+    let forbidden = 403
+    let notFound = 404
     func testFetchAppsSuccess() async throws {
         var mockClient = MockAPIClient()
         mockClient.result = .ok
@@ -40,7 +44,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         var mockClient = MockAPIClient()
         mockClient.result = .badRequest
         let client = AppStoreConnectClient(client: mockClient)
-        let expectedError = "\nFailed with: 400, Foo, Bar, Baz."
+        let expectedError = "\nFailed with: \(badRequest), Foo, Bar, Baz."
         do {
             let result = try await client.fetchApps()
             XCTFail("Expected error not thrown, got result: \(result)")
@@ -55,7 +59,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         var mockClient = MockAPIClient()
         mockClient.result = .forbidden
         let client = AppStoreConnectClient(client: mockClient)
-        let expectedError = "\nFailed with: 403, Foo, Bar, Baz."
+        let expectedError = "\nFailed with: \(forbidden), Foo, Bar, Baz."
         do {
             let result = try await client.fetchApps()
             XCTFail("Expected error not thrown, got result: \(result)")
@@ -70,7 +74,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         var mockClient = MockAPIClient()
         mockClient.result = .unauthorized
         let client = AppStoreConnectClient(client: mockClient)
-        let expectedError = "\nFailed with: 401, Foo, Bar, Baz."
+        let expectedError = "\nFailed with: \(unauthorized), Foo, Bar, Baz."
         do {
             let result = try await client.fetchApps()
             XCTFail("Expected error not thrown, got result: \(result)")
@@ -112,7 +116,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         mockClient.result = .badRequest
         let client = AppStoreConnectClient(client: mockClient)
         let app = Application(id: "", bundleId: "")
-        let expectedError = "\nFailed with: 400, Foo, Bar, Baz."
+        let expectedError = "\nFailed with: \(badRequest), Foo, Bar, Baz."
         do {
             let result = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown, got result: \(result)")
@@ -128,7 +132,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         mockClient.result = .forbidden
         let client = AppStoreConnectClient(client: mockClient)
         let app = Application(id: "", bundleId: "")
-        let expectedError = "\nFailed with: 403, Foo, Bar, Baz."
+        let expectedError = "\nFailed with: \(forbidden), Foo, Bar, Baz."
         do {
             let result = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown, got result: \(result)")
@@ -144,7 +148,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         mockClient.result = .notFound
         let client = AppStoreConnectClient(client: mockClient)
         let app = Application(id: "", bundleId: "")
-        let expectedError = "\nFailed with: 404, Foo, Bar, Baz."
+        let expectedError = "\nFailed with: \(notFound), Foo, Bar, Baz."
         do {
             let result = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown, got result: \(result)")
@@ -160,7 +164,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         mockClient.result = .unauthorized
         let client = AppStoreConnectClient(client: mockClient)
         let app = Application(id: "", bundleId: "")
-        let expectedError = "\nFailed with: 401, Foo, Bar, Baz."
+        let expectedError = "\nFailed with: \(unauthorized), Foo, Bar, Baz."
         do {
             let result = try await client.fetchVersions(for: app)
             XCTFail("Expected error not thrown, got result: \(result)")
@@ -209,7 +213,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         mockClient.result = .badRequest
         let client = AppStoreConnectClient(client: mockClient)
         let app = Application(id: "Foo", bundleId: "Bar")
-        let expectedError = "\nFailed with: 400, Foo, Bar, Baz."
+        let expectedError = "\nFailed with: \(badRequest), Foo, Bar, Baz."
         do {
             let result = try await client.fetchBuilds(
                 for: app,
@@ -229,7 +233,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         mockClient.result = .unauthorized
         let client = AppStoreConnectClient(client: mockClient)
         let app = Application(id: "Foo", bundleId: "Bar")
-        let expectedError = "\nFailed with: 401, Foo, Bar, Baz."
+        let expectedError = "\nFailed with: \(unauthorized), Foo, Bar, Baz."
         do {
             let result = try await client.fetchBuilds(
                 for: app,
@@ -249,7 +253,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         mockClient.result = .forbidden
         let client = AppStoreConnectClient(client: mockClient)
         let app = Application(id: "Foo", bundleId: "Bar")
-        let expectedError = "\nFailed with: 403, Foo, Bar, Baz."
+        let expectedError = "\nFailed with: \(forbidden), Foo, Bar, Baz."
         do {
             let result = try await client.fetchBuilds(
                 for: app,
@@ -301,7 +305,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         mockClient.result = .badRequest
         let client = AppStoreConnectClient(client: mockClient)
         let build = Build(schema: MockObjects.schema)
-        let expectedError = "\nFailed with: 400, Foo, Bar, Baz."
+        let expectedError = "\nFailed with: \(badRequest), Foo, Bar, Baz."
         do {
             let result = try await client.fetchPreReleaseVersion(by: build)
             XCTFail("Expected error not thrown, got result: \(result)")
@@ -317,7 +321,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         mockClient.result = .unauthorized
         let client = AppStoreConnectClient(client: mockClient)
         let build = Build(schema: MockObjects.schema)
-        let expectedError = "\nFailed with: 401, Foo, Bar, Baz."
+        let expectedError = "\nFailed with: \(unauthorized), Foo, Bar, Baz."
         do {
             let result = try await client.fetchPreReleaseVersion(by: build)
             XCTFail("Expected error not thrown, got result: \(result)")
@@ -333,7 +337,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         mockClient.result = .notFound
         let client = AppStoreConnectClient(client: mockClient)
         let build = Build(schema: MockObjects.schema)
-        let expectedError = "\nFailed with: 404, Foo, Bar, Baz."
+        let expectedError = "\nFailed with: \(notFound), Foo, Bar, Baz."
         do {
             let result = try await client.fetchPreReleaseVersion(by: build)
             XCTFail("Expected error not thrown, got result: \(result)")
@@ -349,7 +353,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         mockClient.result = .forbidden
         let client = AppStoreConnectClient(client: mockClient)
         let build = Build(schema: MockObjects.schema)
-        let expectedError = "\nFailed with: 403, Foo, Bar, Baz."
+        let expectedError = "\nFailed with: \(forbidden), Foo, Bar, Baz."
         do {
             let result = try await client.fetchPreReleaseVersion(by: build)
             XCTFail("Expected error not thrown, got result: \(result)")
