@@ -24,7 +24,7 @@
 
 import Foundation
 
-/// A protocol defining the interface for interacting with the App Store Connect API.
+/// A protocol that defines the interaction with the acquisition of programs, versions, builds, and previous versions.
 public protocol AppStoreConnectClientProtocol {
     /// Fetches a list of applications from App Store Connect.
     /// - Throws: AppStoreConnectClientError: An error that may occur during the fetch process.
@@ -38,11 +38,19 @@ public protocol AppStoreConnectClientProtocol {
     /// - Returns: An array of `Release` objects containing details about the retrieved versions.
     func fetchVersions(for app: Application) async throws -> [Release]
     
-    /// Fetches a list of testFlight's builds from App Store Connect.
+    /// Fetches a list of TestFlight builds for a specified app from the App Store Connect API.
+    /// - Parameters:
+    ///   - app: The app for which to fetch builds.
+    ///   - sortOptions: The sorting options to be applied to the fetched builds.
+    ///   - fieldsOptions: The fields to be included in the fetched builds.
     /// - Returns: An array of `Build` objects representing the retrieved builds.
     /// - Throws: AppStoreConnectClientError: An error that may occur during the fetch process.
     /// - Note: Builds are specific versions of an app that have been uploaded to App Store Connect.
-    func fetchBuildVersions() async throws -> [Build]
+    func fetchBuilds(
+        for app: Application,
+        sortBy sortOptions: PublicSortPayload,
+        fieldsOptions: PublicFieldsPayload
+    ) async throws -> [Build]
     
     /// Fetches the pre-release testFlight's version associated with a specific build from App Store Connect.
     /// - Parameters:

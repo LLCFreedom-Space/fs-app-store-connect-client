@@ -35,7 +35,7 @@ enum MockObjects {
                         status: "400",
                         code: "Foo",
                         title: "Bar",
-                        detail: "Foo Bar"
+                        detail: "Baz"
                     )
                 )
             )
@@ -50,7 +50,7 @@ enum MockObjects {
                         status: "403",
                         code: "Foo",
                         title: "Bar",
-                        detail: "Foo Bar"
+                        detail: "Baz"
                     )
                 )
             )
@@ -65,7 +65,7 @@ enum MockObjects {
                         status: "404",
                         code: "Foo",
                         title: "Bar",
-                        detail: "Foo Bar"
+                        detail: "Baz"
                     )
                 )
             )
@@ -80,7 +80,7 @@ enum MockObjects {
                         status: "401",
                         code: "Foo",
                         title: "Bar",
-                        detail: "Foo Bar"
+                        detail: "Baz"
                     )
                 )
             )

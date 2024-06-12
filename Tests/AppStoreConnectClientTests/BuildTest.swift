@@ -47,7 +47,7 @@ final class BuildTest: XCTestCase {
         XCTAssertEqual(build.uploadedDate, mockData)
     }
     
-    func testBuildNil() {
+    func testBuildInitializationWithNilAttributes() {
         let schema = Components.Schemas.Build(
             _type: .builds,
             id: "1111-111111-11111111",

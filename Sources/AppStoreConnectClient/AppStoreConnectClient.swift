@@ -59,8 +59,7 @@ public struct AppStoreConnectClient {
         let response = try await client.apps_hyphen_get_collection()
         switch response {
         case .ok(let okResponse):
-            let result = try okResponse.body.json.data.compactMap { Application(schema: $0) }
-            return result
+            return try okResponse.body.json.data.compactMap { Application(schema: $0) }
         case .badRequest(let result):
             throw AppStoreConnectError.badRequest(
                 errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
@@ -92,8 +91,7 @@ public struct AppStoreConnectClient {
         )
         switch response {
         case .ok(let okResponse):
-            let result = try okResponse.body.json.data.compactMap { Release(schema: $0) }
-            return result
+            return try okResponse.body.json.data.compactMap { Release(schema: $0) }
         case .badRequest(let result):
             throw AppStoreConnectError.badRequest(
                 errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
@@ -118,23 +116,27 @@ public struct AppStoreConnectClient {
     /// Fetches a collection of TestFlight builds for a specified app from the App Store Connect API,
     /// handles error responses returned by the App Store Connect API when fetching TestFlight builds.
     /// End-point: v1/builds
-    /// - Parameter app: The app for which to fetch builds.
+    /// - Parameters:
+    ///   - app: The app for which to fetch builds.
+    ///   - sortOptions: The sorting options to be applied to the fetched builds.
+    ///   - fieldsOptions: The fields to be included in the fetched builds.
     /// - Returns: An array of `Build` objects.
     /// - Throws: An error of type `AppStoreConnectError` if the response indicates an error.
-    public func fetchBuilds(for app: Application) async throws -> [Build] {
+    public func fetchBuilds(
+        for app: Application,
+        sortBy sortOptions: PublicSortPayload,
+        fieldsOptions: PublicFieldsPayload
+    ) async throws -> [Build] {
         let response = try await client.builds_hyphen_get_collection(
             query: .init(
                 filter_lbrack_app_rbrack_: [app.id],
-                sort: Operations.builds_hyphen_get_collection.Input.Query.sortPayload?.init([._hyphen_version]),
-                fields_lbrack_builds_rbrack_: Operations.builds_hyphen_get_collection.Input.Query.fields_lbrack_builds_rbrack_Payload?.init(
-                    [.version, .uploadedDate, .minOsVersion]
-                )
+                sort: sortOptions.internalPayload,
+                fields_lbrack_builds_rbrack_: fieldsOptions.internalPayload
             )
         )
         switch response {
         case .ok(let okResponse):
-            let result = try okResponse.body.json.data.compactMap { Build(schema: $0) }
-            return result
+            return try okResponse.body.json.data.compactMap { Build(schema: $0) }
         case .badRequest(let result):
             throw AppStoreConnectError.badRequest(
                 errors: AppStoreConnectError.parseErrorDescription(from: try result.body.json)
