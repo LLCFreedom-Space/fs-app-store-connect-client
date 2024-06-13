@@ -37,11 +37,11 @@ struct MockAPIClient: APIProtocol {
         case .ok:
             return .ok(.init(body: .json(MockObjects.appsResponse)))
         case .badRequest:
-            return .badRequest(.init(body: .json(MockObjects.errorBadRequest)))
+            return .badRequest(.init(body: .json(MockObjects.badRequest)))
         case .forbidden:
-            return .forbidden(.init(body: .json(MockObjects.errorForbidden)))
+            return .forbidden(.init(body: .json(MockObjects.forbidden)))
         case .unauthorized:
-            return .unauthorized(.init(body: .json(MockObjects.errorUnauthorized)))
+            return .unauthorized(.init(body: .json(MockObjects.unauthorized)))
         case .undocumented:
             return .undocumented(statusCode: statusCode, UndocumentedPayload())
         case .none:
@@ -58,13 +58,13 @@ struct MockAPIClient: APIProtocol {
         case .ok:
             return .ok(.init(body: .json(MockObjects.appStoreVersionsResponse)))
         case .badRequest:
-            return .badRequest(.init(body: .json(MockObjects.errorBadRequest)))
+            return .badRequest(.init(body: .json(MockObjects.badRequest)))
         case .forbidden:
-            return .forbidden(.init(body: .json(MockObjects.errorForbidden)))
+            return .forbidden(.init(body: .json(MockObjects.forbidden)))
         case .notFound:
-            return .notFound(.init(body: .json(MockObjects.errorNotFound)))
+            return .notFound(.init(body: .json(MockObjects.notFound)))
         case .unauthorized:
-            return .unauthorized(.init(body: .json(MockObjects.errorUnauthorized)))
+            return .unauthorized(.init(body: .json(MockObjects.unauthorized)))
         case .undocumented:
             return .undocumented(statusCode: statusCode, UndocumentedPayload())
         case .none:
@@ -79,13 +79,13 @@ struct MockAPIClient: APIProtocol {
     ) async throws -> Operations.builds_hyphen_get_collection.Output {
         switch result {
         case .ok:
-            return .ok(.init(body: .json(.init(data: [MockObjects.okBuild], links: .init(_self: "https://mockLink")))))
+            return .ok(.init(body: .json(.init(data: [MockObjects.buildOkResponse], links: .init(_self: "https://mockLink")))))
         case .badRequest:
-            return .badRequest(.init(body: .json(MockObjects.errorBadRequest)))
+            return .badRequest(.init(body: .json(MockObjects.badRequest)))
         case .forbidden:
-            return .forbidden(.init(body: .json(MockObjects.errorForbidden)))
+            return .forbidden(.init(body: .json(MockObjects.forbidden)))
         case .unauthorized:
-            return .unauthorized(.init(body: .json(MockObjects.errorUnauthorized)))
+            return .unauthorized(.init(body: .json(MockObjects.unauthorized)))
         case .none:
             return .undocumented(statusCode: statusCode, UndocumentedPayload())
         case .some:
@@ -98,15 +98,15 @@ struct MockAPIClient: APIProtocol {
     ) async throws -> Operations.builds_hyphen_preReleaseVersion_hyphen_get_to_one_related.Output {
         switch result {
         case .ok:
-            return .ok(.init(body: .json(MockObjects.okPrereleaseVersion)))
+            return .ok(.init(body: .json(MockObjects.prereleaseVersion)))
         case .badRequest:
-            return .badRequest(.init(body: .json(MockObjects.errorBadRequest)))
+            return .badRequest(.init(body: .json(MockObjects.badRequest)))
         case .forbidden:
-            return .forbidden(.init(body: .json(MockObjects.errorForbidden)))
+            return .forbidden(.init(body: .json(MockObjects.forbidden)))
         case .unauthorized:
-            return .unauthorized(.init(body: .json(MockObjects.errorUnauthorized)))
+            return .unauthorized(.init(body: .json(MockObjects.unauthorized)))
         case .notFound:
-            return .notFound(.init(body: .json(MockObjects.errorNotFound)))
+            return .notFound(.init(body: .json(MockObjects.notFound)))
         case .none:
             return .undocumented(statusCode: statusCode, UndocumentedPayload())
         case .some:

@@ -27,7 +27,7 @@ import OpenAPIRuntime
 @testable import AppStoreConnectClient
 
 enum MockObjects {
-    static var errorBadRequest: Components.Schemas.ErrorResponse {
+    static var badRequest: Components.Schemas.ErrorResponse {
         return (
             .init(
                 errors: Components.Schemas.ErrorResponse.errorsPayload.init(
@@ -42,7 +42,7 @@ enum MockObjects {
         )
     }
     
-    static var errorForbidden: Components.Schemas.ErrorResponse {
+    static var forbidden: Components.Schemas.ErrorResponse {
         return (
             .init(
                 errors: Components.Schemas.ErrorResponse.errorsPayload.init(
@@ -57,7 +57,7 @@ enum MockObjects {
         )
     }
     
-    static var errorNotFound: Components.Schemas.ErrorResponse {
+    static var notFound: Components.Schemas.ErrorResponse {
         return (
             .init(
                 errors: Components.Schemas.ErrorResponse.errorsPayload.init(
@@ -72,7 +72,7 @@ enum MockObjects {
         )
     }
     
-    static var errorUnauthorized: Components.Schemas.ErrorResponse {
+    static var unauthorized: Components.Schemas.ErrorResponse {
         return (
             .init(
                 errors: Components.Schemas.ErrorResponse.errorsPayload.init(
@@ -87,7 +87,7 @@ enum MockObjects {
         )
     }
     
-    static var okBuild: Components.Schemas.Build {
+    static var buildOkResponse: Components.Schemas.Build {
         let dateFormatter = DateFormatter()
         let mockData = dateFormatter.date(from: "2011-11-11 11:11:11 +0000")
         let response = Components.Schemas.Build(
@@ -149,7 +149,7 @@ enum MockObjects {
         return response
     }
     
-    static var okPrereleaseVersion: Components.Schemas.PrereleaseVersionWithoutIncludesResponse {
+    static var prereleaseVersion: Components.Schemas.PrereleaseVersionWithoutIncludesResponse {
         let dateFormatter = DateFormatter()
         let mockData = dateFormatter.date(from: "2011-11-11 11:11:11 +0000")
         let response = Components.Schemas.PrereleaseVersionWithoutIncludesResponse(
@@ -178,7 +178,7 @@ enum MockObjects {
         return response
     }
     
-    static var schema: Components.Schemas.Build {
+    static var buildSchema: Components.Schemas.Build {
         let dateFormatter = DateFormatter()
         let mockData = dateFormatter.date(from: "2011-11-11 11:11:11 +0000")
         let schema = Components.Schemas.Build(
