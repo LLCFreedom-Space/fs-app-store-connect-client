@@ -48,8 +48,7 @@ public protocol AppStoreConnectClientProtocol {
     /// - Note: Builds are specific versions of an app that have been uploaded to App Store Connect.
     func fetchBuilds(
         for app: Application,
-        sortBy sortOptions: PublicSortPayload,
-        fieldsOptions: PublicFieldsPayload
+        with query: BuildsQuery
     ) async throws -> [Build]
     
     /// Fetches the pre-release testFlight's version associated with a specific build from App Store Connect.

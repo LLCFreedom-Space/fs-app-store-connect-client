@@ -94,12 +94,12 @@ enum MockObjects {
             _type: .preReleaseVersions,
             id: "FooBarBazId",
             attributes: .init(
-                version: "FooBarBazVersion",
+                version: "Foo",
                 platform: .IOS,
                 uploadedDate: mockData,
                 expirationDate: mockData,
                 expired: true,
-                minOsVersion: "FooBarBazMinOs",
+                minOsVersion: "Foo",
                 lsMinimumSystemVersion: "FooMinSysVer",
                 computedMinMacOsVersion: "BarCompMinMacOsVer",
                 iconAssetToken: .none,
@@ -157,7 +157,7 @@ enum MockObjects {
                 _type: .preReleaseVersions,
                 id: "FooBarId",
                 attributes: .init(
-                    version: "FooBarVersion",
+                    version: "Foo",
                     platform: .IOS,
                     uploadedDate: mockData,
                     expirationDate: mockData,
@@ -185,9 +185,9 @@ enum MockObjects {
             _type: .builds,
             id: "FooBarBazId",
             attributes: .init(
-                version: "FooBarBazVersion",
+                version: "Foo",
                 uploadedDate: mockData,
-                minOsVersion: "FooBarBazMinOs"
+                minOsVersion: "Foo"
             ),
             relationships: .none,
             links: .none

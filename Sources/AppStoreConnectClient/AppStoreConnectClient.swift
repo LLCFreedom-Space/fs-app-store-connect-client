@@ -124,14 +124,18 @@ public struct AppStoreConnectClient {
     /// - Throws: An error of type `AppStoreConnectError` if the response indicates an error.
     public func fetchBuilds(
         for app: Application,
-        sortBy sortOptions: PublicSortPayload,
-        fieldsOptions: PublicFieldsPayload
+        with query: BuildsQuery
     ) async throws -> [Build] {
         let response = try await client.builds_hyphen_get_collection(
             query: .init(
                 filter_lbrack_app_rbrack_: [app.id],
-                sort: sortOptions.internalPayload,
-                fields_lbrack_builds_rbrack_: fieldsOptions.internalPayload
+                sort: type(of: query.sort).init(arrayLiteral: ._hyphen_version),
+                fields_lbrack_builds_rbrack_: type(of: query.fields).init(
+                    arrayLiteral: 
+                    .version,
+                    .minOsVersion,
+                    .uploadedDate
+                )
             )
         )
         switch response {
@@ -160,8 +164,8 @@ public struct AppStoreConnectClient {
     /// - Parameter id: The build-id for which to fetch the pre-release version.
     /// - Returns: A `PreReleaseVersion` object.
     /// - Throws: An error of type `AppStoreConnectError` if the response indicates an error.
-    public func fetchPreReleaseVersion(by id: Build) async throws -> PreReleaseVersion {
-        let id = id.id
+    public func fetchPreReleaseVersion(for build: Build) async throws -> PreReleaseVersion {
+        let id = build.id
         let response = try await client.builds_hyphen_preReleaseVersion_hyphen_get_to_one_related(
             path: .init(id: id)
         )
