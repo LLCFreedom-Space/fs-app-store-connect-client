@@ -27,7 +27,7 @@ import OpenAPIRuntime
 @testable import AppStoreConnectClient
 
 enum MockObjects {
-    static var errorBadRequest: Components.Schemas.ErrorResponse {
+    static var badRequest: Components.Schemas.ErrorResponse {
         return (
             .init(
                 errors: Components.Schemas.ErrorResponse.errorsPayload.init(
@@ -35,14 +35,14 @@ enum MockObjects {
                         status: "400",
                         code: "Foo",
                         title: "Bar",
-                        detail: "Foo Bar"
+                        detail: "Baz"
                     )
                 )
             )
         )
     }
     
-    static var errorForbidden: Components.Schemas.ErrorResponse {
+    static var forbidden: Components.Schemas.ErrorResponse {
         return (
             .init(
                 errors: Components.Schemas.ErrorResponse.errorsPayload.init(
@@ -50,14 +50,14 @@ enum MockObjects {
                         status: "403",
                         code: "Foo",
                         title: "Bar",
-                        detail: "Foo Bar"
+                        detail: "Baz"
                     )
                 )
             )
         )
     }
     
-    static var errorNotFound: Components.Schemas.ErrorResponse {
+    static var notFound: Components.Schemas.ErrorResponse {
         return (
             .init(
                 errors: Components.Schemas.ErrorResponse.errorsPayload.init(
@@ -65,14 +65,14 @@ enum MockObjects {
                         status: "404",
                         code: "Foo",
                         title: "Bar",
-                        detail: "Foo Bar"
+                        detail: "Baz"
                     )
                 )
             )
         )
     }
     
-    static var errorUnauthorized: Components.Schemas.ErrorResponse {
+    static var unauthorized: Components.Schemas.ErrorResponse {
         return (
             .init(
                 errors: Components.Schemas.ErrorResponse.errorsPayload.init(
@@ -80,11 +80,36 @@ enum MockObjects {
                         status: "401",
                         code: "Foo",
                         title: "Bar",
-                        detail: "Foo Bar"
+                        detail: "Baz"
                     )
                 )
             )
         )
+    }
+    
+    static var build: Components.Schemas.Build {
+        let dateFormatter = DateFormatter()
+        let mockData = dateFormatter.date(from: "2011-11-11 11:11:11 +0000")
+        let response = Components.Schemas.Build(
+            _type: .preReleaseVersions,
+            id: "FooBarBazId",
+            attributes: .init(
+                version: "Foo",
+                platform: .IOS,
+                uploadedDate: mockData,
+                expirationDate: mockData,
+                expired: true,
+                minOsVersion: "Foo",
+                lsMinimumSystemVersion: "FooMinSysVer",
+                computedMinMacOsVersion: "BarCompMinMacOsVer",
+                iconAssetToken: .none,
+                processingState: .PROCESSING,
+                buildAudienceType: .APP_STORE_ELIGIBLE,
+                usesNonExemptEncryption: true),
+            relationships: .none,
+            links: .none
+        )
+        return response
     }
     
     static var appStoreVersionsResponse: Components.Schemas.AppStoreVersionsResponse {
@@ -120,6 +145,35 @@ enum MockObjects {
                 versionString: "Foo.Bar.Baz",
                 appStoreState: .ACCEPTED
             )
+        )
+        return response
+    }
+    
+    static var prereleaseVersionWithoutIncludesResponse: Components.Schemas.PrereleaseVersionWithoutIncludesResponse {
+        let dateFormatter = DateFormatter()
+        let mockData = dateFormatter.date(from: "2011-11-11 11:11:11 +0000")
+        let response = Components.Schemas.PrereleaseVersionWithoutIncludesResponse(
+            data: .init(
+                _type: .preReleaseVersions,
+                id: "FooBarId",
+                attributes: .init(
+                    version: "Foo",
+                    platform: .IOS,
+                    uploadedDate: mockData,
+                    expirationDate: mockData,
+                    expired: true,
+                    minOsVersion: "FooMinOs",
+                    lsMinimumSystemVersion: "BarMinSysVer",
+                    computedMinMacOsVersion: "BazCompMinMacOsVer",
+                    iconAssetToken: .none,
+                    processingState: .PROCESSING,
+                    buildAudienceType: .APP_STORE_ELIGIBLE,
+                    usesNonExemptEncryption: false
+                ),
+                relationships: .none,
+                links: .init(_self: "FooBarBazLink1")
+            ),
+            links: .init(_self: "FooBarBazLink2")
         )
         return response
     }

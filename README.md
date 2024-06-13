@@ -13,13 +13,17 @@ This Swift package provides a client library for interacting with the App Store 
 
 ## Features
 
-- Find and list your apps in App Store Connect using secure JWT-authenticated requests.
-- Get a list of all App Store versions of your app across all platforms using secure JWT-authenticated requests.
+- Find and list your apps in App Store Connect.
+- Get a list of all App Store versions of your app across all platforms.
+- Get a list of all build TestFlight versions of your app.
+- Retrieve the TestFlight prerelease version and the platform for which the prerelease version is intended.
+- Using secure JWT-authenticated requests.
 - Handles JSON formats response.
 - Implemented control over the number of requests from users and handling of rate limit errors.
 - Providing automatically retrying HTTP requests based on customizable retry failed signals and delay strategies.
 - Throws informative errors for server errors and not found cases.
 - Ensure test coverage for code to guarantee robustness and reliability.
+- Updated openapi file to "3.4.2" version.
 
 ## Installation
 
@@ -27,7 +31,7 @@ This Swift package provides a client library for interacting with the App Store 
 
 ```swift
 dependencies: [
-.package(url: "https://github.com/LLCFreedom-Space/fs-app-store-connect-client", from: "1.0.0")
+.package(url: "https://github.com/LLCFreedom-Space/fs-app-store-connect-client", from: "1.0.2")
 ]
 ```
 
@@ -87,6 +91,15 @@ print("Error fetching: \(error)")
 }
 ```
 
+## Implemented Endpoints
+
+To enable automatic code generation, add the Web Service Endpoint to the openapi-generator-config.yaml file."
+Currently, the following endpoints are implemented:
+    - v1/apps
+    - v1/apps/{id}/appStoreVersions
+    - v1/builds
+    - v1/builds/{id}/preReleaseVersion
+
 ## Contributions
 
 We welcome contributions to this project! Please feel free to open issues or pull requests to help improve the package.
@@ -103,4 +116,3 @@ Distributed under the GNU AFFERO GENERAL PUBLIC LICENSE Version 3. See [LICENSE.
 [swift-url]: https://swift.org/
 [license-image]: https://img.shields.io/badge/License-GPLv3-blue.svg
 [license-url]: LICENSE
-
