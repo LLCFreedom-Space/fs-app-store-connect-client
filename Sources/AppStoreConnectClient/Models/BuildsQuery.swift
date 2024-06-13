@@ -30,16 +30,4 @@ public struct BuildsQuery {
     let sort: Operations.builds_hyphen_get_collection.Input.Query.sortPayload
     /// The fields payload for the query.
     let fields: Operations.builds_hyphen_get_collection.Input.Query.fields_lbrack_builds_rbrack_Payload
-
-    /// Initializes a new BuildsQuery with the given sort and fields parameters.
-    /// - Parameters:
-    ///   - sort: The sort payload for the query.
-    ///   - fields: The fields payload for the query.
-    init(
-        sort: Operations.builds_hyphen_get_collection.Input.Query.sortPayload,
-        fields: Operations.builds_hyphen_get_collection.Input.Query.fields_lbrack_builds_rbrack_Payload
-    ) {
-        self.sort = sort
-        self.fields = fields
-    }
 }
