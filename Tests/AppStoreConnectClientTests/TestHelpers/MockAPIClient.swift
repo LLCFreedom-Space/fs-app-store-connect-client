@@ -79,7 +79,7 @@ struct MockAPIClient: APIProtocol {
     ) async throws -> Operations.builds_hyphen_get_collection.Output {
         switch result {
         case .ok:
-            return .ok(.init(body: .json(.init(data: [MockObjects.buildOkResponse], links: .init(_self: "https://mockLink")))))
+            return .ok(.init(body: .json(.init(data: [MockObjects.build], links: .init(_self: "https://mockLink")))))
         case .badRequest:
             return .badRequest(.init(body: .json(MockObjects.badRequest)))
         case .forbidden:
@@ -98,7 +98,7 @@ struct MockAPIClient: APIProtocol {
     ) async throws -> Operations.builds_hyphen_preReleaseVersion_hyphen_get_to_one_related.Output {
         switch result {
         case .ok:
-            return .ok(.init(body: .json(MockObjects.prereleaseVersion)))
+            return .ok(.init(body: .json(MockObjects.prereleaseVersionWithoutIncludesResponse)))
         case .badRequest:
             return .badRequest(.init(body: .json(MockObjects.badRequest)))
         case .forbidden:

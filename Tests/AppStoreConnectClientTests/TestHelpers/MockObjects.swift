@@ -87,7 +87,7 @@ enum MockObjects {
         )
     }
     
-    static var buildOkResponse: Components.Schemas.Build {
+    static var build: Components.Schemas.Build {
         let dateFormatter = DateFormatter()
         let mockData = dateFormatter.date(from: "2011-11-11 11:11:11 +0000")
         let response = Components.Schemas.Build(
@@ -149,7 +149,7 @@ enum MockObjects {
         return response
     }
     
-    static var prereleaseVersion: Components.Schemas.PrereleaseVersionWithoutIncludesResponse {
+    static var prereleaseVersionWithoutIncludesResponse: Components.Schemas.PrereleaseVersionWithoutIncludesResponse {
         let dateFormatter = DateFormatter()
         let mockData = dateFormatter.date(from: "2011-11-11 11:11:11 +0000")
         let response = Components.Schemas.PrereleaseVersionWithoutIncludesResponse(
@@ -176,22 +176,5 @@ enum MockObjects {
             links: .init(_self: "FooBarBazLink2")
         )
         return response
-    }
-    
-    static var buildSchema: Components.Schemas.Build {
-        let dateFormatter = DateFormatter()
-        let mockData = dateFormatter.date(from: "2011-11-11 11:11:11 +0000")
-        let schema = Components.Schemas.Build(
-            _type: .builds,
-            id: "FooBarBazId",
-            attributes: .init(
-                version: "Foo",
-                uploadedDate: mockData,
-                minOsVersion: "Foo"
-            ),
-            relationships: .none,
-            links: .none
-        )
-        return schema
     }
 }

@@ -196,7 +196,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         mockClient.result = .ok
         let client = AppStoreConnectClient(client: mockClient)
         let app = Application(id: "Foo", bundleId: "Bar")
-        let expectedBuilds = [Build(schema: MockObjects.buildSchema)]
+        let expectedBuilds = [Build(schema: MockObjects.build)]
         let build = try await client.fetchBuilds(
             for: app,
             with: BuildsQuery.init(
@@ -302,7 +302,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         var mockClient = MockAPIClient()
         mockClient.result = .ok
         let client = AppStoreConnectClient(client: mockClient)
-        let build = Build(schema: MockObjects.buildSchema)
+        let build = Build(schema: MockObjects.build)
         let preReleaseVersion = try await client.fetchPreReleaseVersion(for: build)
         XCTAssertEqual(preReleaseVersion.id, "FooBarId")
         XCTAssertEqual(preReleaseVersion.version, "Foo")
@@ -314,7 +314,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         var mockClient = MockAPIClient()
         mockClient.result = .badRequest
         let client = AppStoreConnectClient(client: mockClient)
-        let build = Build(schema: MockObjects.buildSchema)
+        let build = Build(schema: MockObjects.build)
         let expectedError = "\nFailed with: \(badRequest), Foo, Bar, Baz."
         do {
             let result = try await client.fetchPreReleaseVersion(for: build)
@@ -330,7 +330,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         var mockClient = MockAPIClient()
         mockClient.result = .unauthorized
         let client = AppStoreConnectClient(client: mockClient)
-        let build = Build(schema: MockObjects.buildSchema)
+        let build = Build(schema: MockObjects.build)
         let expectedError = "\nFailed with: \(unauthorized), Foo, Bar, Baz."
         do {
             let result = try await client.fetchPreReleaseVersion(for: build)
@@ -346,7 +346,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         var mockClient = MockAPIClient()
         mockClient.result = .notFound
         let client = AppStoreConnectClient(client: mockClient)
-        let build = Build(schema: MockObjects.buildSchema)
+        let build = Build(schema: MockObjects.build)
         let expectedError = "\nFailed with: \(notFound), Foo, Bar, Baz."
         do {
             let result = try await client.fetchPreReleaseVersion(for: build)
@@ -362,7 +362,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         var mockClient = MockAPIClient()
         mockClient.result = .forbidden
         let client = AppStoreConnectClient(client: mockClient)
-        let build = Build(schema: MockObjects.buildSchema)
+        let build = Build(schema: MockObjects.build)
         let expectedError = "\nFailed with: \(forbidden), Foo, Bar, Baz."
         do {
             let result = try await client.fetchPreReleaseVersion(for: build)
@@ -378,7 +378,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         var mockClient = MockAPIClient()
         mockClient.result = .undocumented
         let client = AppStoreConnectClient(client: mockClient)
-        let build = Build(schema: MockObjects.buildSchema)
+        let build = Build(schema: MockObjects.build)
         let expectedError = 501
         do {
             let result = try await client.fetchPreReleaseVersion(for: build)
