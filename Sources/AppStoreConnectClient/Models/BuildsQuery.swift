@@ -27,7 +27,74 @@ import Foundation
 /// A structure representing a query for builds with specified sort and fields parameters.
 public struct BuildsQuery {
     /// The sort payload for the query.
-    let sort: Operations.builds_hyphen_get_collection.Input.Query.sortPayload
+    public let sort: Sort?
     /// The fields payload for the query.
-    let fields: Operations.builds_hyphen_get_collection.Input.Query.fields_lbrack_builds_rbrack_Payload
+    public let fields: [Fields]?
+    
+    /// Converts the Sort enum to the appropriate payload type used in the query.
+    /// - Parameter from: The Sort enum value to convert.
+    /// - Returns: The converted sort payload.
+    func convertSort(_ from: Sort) -> Operations.builds_hyphen_get_collection.Input.Query.sortPayloadPayload {
+        switch from {
+        case .preReleaseVersion:
+            return .preReleaseVersion
+        case .hyphenPreReleaseVersion:
+            return ._hyphen_preReleaseVersion
+        case .uploadedDate:
+            return .uploadedDate
+        case .hyphenUploadedDate:
+            return ._hyphen_uploadedDate
+        case .version:
+            return .version
+        case .hyphenVersion:
+            return ._hyphen_version
+        }
+    }
+    
+    /// Converts the Fields enum array to the appropriate payload type used in the query.
+    /// - Parameter from: The array of Fields enum values to convert.
+    /// - Returns: An array of converted field payloads.
+    func convertFields(_ from: [Fields]) -> [Operations.builds_hyphen_get_collection.Input.Query.fields_lbrack_builds_rbrack_PayloadPayload] {
+        return from.compactMap { field in
+            return Operations.builds_hyphen_get_collection.Input.Query.fields_lbrack_builds_rbrack_PayloadPayload(rawValue: field.rawValue)
+        }
+    }
+}
+
+/// An enumeration representing the possible sort options for the query.
+public enum Sort: String {
+    case preReleaseVersion = "preReleaseVersion"
+    case hyphenPreReleaseVersion = "-preReleaseVersion"
+    case uploadedDate = "uploadedDate"
+    case hyphenUploadedDate = "-uploadedDate"
+    case version = "version"
+    case hyphenVersion = "-version"
+}
+
+/// An enumeration representing the possible fields that can be included in the query.
+public enum Fields: String {
+    case app = "app"
+    case appEncryptionDeclaration = "appEncryptionDeclaration"
+    case appStoreVersion = "appStoreVersion"
+    case betaAppReviewSubmission = "betaAppReviewSubmission"
+    case betaBuildLocalizations = "betaBuildLocalizations"
+    case betaGroups = "betaGroups"
+    case buildAudienceType = "buildAudienceType"
+    case buildBetaDetail = "buildBetaDetail"
+    case buildBundles = "buildBundles"
+    case computedMinMacOsVersion = "computedMinMacOsVersion"
+    case diagnosticSignatures = "diagnosticSignatures"
+    case expirationDate = "expirationDate"
+    case expired = "expired"
+    case iconAssetToken = "iconAssetToken"
+    case icons = "icons"
+    case individualTesters = "individualTesters"
+    case lsMinimumSystemVersion = "lsMinimumSystemVersion"
+    case minOsVersion = "minOsVersion"
+    case perfPowerMetrics = "perfPowerMetrics"
+    case preReleaseVersion = "preReleaseVersion"
+    case processingState = "processingState"
+    case uploadedDate = "uploadedDate"
+    case usesNonExemptEncryption = "usesNonExemptEncryption"
+    case version = "version"
 }

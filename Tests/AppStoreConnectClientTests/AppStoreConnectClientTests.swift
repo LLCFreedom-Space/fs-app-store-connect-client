@@ -200,14 +200,14 @@ final class AppStoreConnectClientTests: XCTestCase {
         let build = try await client.fetchBuilds(
             for: app,
             with: BuildsQuery.init(
-                sort: .init(arrayLiteral: ._hyphen_version),
-                fields: .init(arrayLiteral: .version, .minOsVersion, .uploadedDate)
+                sort: .hyphenVersion,
+                fields: [.version, .minOsVersion, .uploadedDate]
             )
         )
-        XCTAssertEqual(build.first?.id, expectedBuilds.first?.id)
-        XCTAssertEqual(build.first?.version, expectedBuilds.first?.version)
-        XCTAssertEqual(build.first?.uploadedDate, expectedBuilds.first?.uploadedDate)
-        XCTAssertEqual(build.first?.minOsVersion, expectedBuilds.first?.minOsVersion)
+        XCTAssertEqual(build?.first?.id, expectedBuilds.first?.id)
+        XCTAssertEqual(build?.first?.version, expectedBuilds.first?.version)
+        XCTAssertEqual(build?.first?.uploadedDate, expectedBuilds.first?.uploadedDate)
+        XCTAssertEqual(build?.first?.minOsVersion, expectedBuilds.first?.minOsVersion)
     }
     
     func testFetchBuildsBadRequest() async throws {
@@ -220,11 +220,11 @@ final class AppStoreConnectClientTests: XCTestCase {
             let result = try await client.fetchBuilds(
                 for: app,
                 with: BuildsQuery.init(
-                    sort: .init(arrayLiteral: ._hyphen_version),
-                    fields: .init(arrayLiteral: .version, .minOsVersion, .uploadedDate)
+                    sort: .hyphenVersion,
+                    fields: [.version, .minOsVersion, .uploadedDate]
                 )
             )
-            XCTFail("Expected error not thrown, got result: \(result)")
+            XCTFail("Expected error not thrown, got result: \(String(describing: result))")
         } catch AppStoreConnectError.badRequest(let error) {
             XCTAssertEqual(error, expectedError)
         } catch {
@@ -242,11 +242,11 @@ final class AppStoreConnectClientTests: XCTestCase {
             let result = try await client.fetchBuilds(
                 for: app,
                 with: BuildsQuery.init(
-                    sort: .init(arrayLiteral: ._hyphen_version),
-                    fields: .init(arrayLiteral: .version, .minOsVersion, .uploadedDate)
+                    sort: .hyphenVersion,
+                    fields: [.version, .minOsVersion, .uploadedDate]
                 )
             )
-            XCTFail("Expected error not thrown, got result: \(result)")
+            XCTFail("Expected error not thrown, got result: \(String(describing: result))")
         } catch AppStoreConnectError.unauthorized(let error) {
             XCTAssertEqual(error, expectedError)
         } catch {
@@ -264,11 +264,11 @@ final class AppStoreConnectClientTests: XCTestCase {
             let result = try await client.fetchBuilds(
                 for: app,
                 with: BuildsQuery.init(
-                    sort: .init(arrayLiteral: ._hyphen_version),
-                    fields: .init(arrayLiteral: .version, .minOsVersion, .uploadedDate)
+                    sort: .hyphenVersion,
+                    fields: [.version, .minOsVersion, .uploadedDate]
                 )
             )
-            XCTFail("Expected error not thrown, got result: \(result)")
+            XCTFail("Expected error not thrown, got result: \(String(describing: result))")
         } catch AppStoreConnectError.forbidden(let error) {
             XCTAssertEqual(error, expectedError)
         } catch {
@@ -286,11 +286,11 @@ final class AppStoreConnectClientTests: XCTestCase {
             let result = try await client.fetchBuilds(
                 for: app,
                 with: BuildsQuery.init(
-                    sort: .init(arrayLiteral: ._hyphen_version),
-                    fields: .init(arrayLiteral: .version, .minOsVersion, .uploadedDate)
+                    sort: .hyphenVersion,
+                    fields: [.version, .minOsVersion, .uploadedDate]
                 )
             )
-            XCTFail("Expected error not thrown, got result: \(result)")
+            XCTFail("Expected error not thrown, got result: \(String(describing: result))")
         } catch AppStoreConnectError.serverError(let error) {
             XCTAssertEqual(error, expectedError)
         } catch {

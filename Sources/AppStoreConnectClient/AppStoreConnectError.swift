@@ -38,4 +38,8 @@ public enum AppStoreConnectError: Error, Equatable {
     case notFound(errors: String?)
     /// An unexpected error occurred.
     case unexpectedError(errors: String?)
+    /// A required sort parameter is missing from the request.
+    case missingSortParameter(errors: String?)
+    /// An invalid sort parameter was provided in the request.
+    case invalidSortParameter(errors: String?)
 }

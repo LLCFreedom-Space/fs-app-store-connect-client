@@ -125,17 +125,24 @@ public struct AppStoreConnectClient {
     public func fetchBuilds(
         for app: Application,
         with query: BuildsQuery
-    ) async throws -> [Build] {
+    ) async throws -> [Build]? {
+        guard let querySort = query.sort else {
+            throw AppStoreConnectError.missingSortParameter(
+                errors: "\(String(describing: query.sort))"
+            )
+        }
+        guard let sort = Sort(rawValue: querySort.rawValue) else {
+            throw AppStoreConnectError.invalidSortParameter(
+                errors: "\(String(describing: Sort(rawValue: querySort.rawValue)))"
+            )
+        }
+        let sortPayload = query.convertSort(sort)
+        let fieldsPayload = query.convertFields([])
         let response = try await client.builds_hyphen_get_collection(
             query: .init(
                 filter_lbrack_app_rbrack_: [app.id],
-                sort: type(of: query.sort).init(arrayLiteral: ._hyphen_version),
-                fields_lbrack_builds_rbrack_: type(of: query.fields).init(
-                    arrayLiteral: 
-                    .version,
-                    .minOsVersion,
-                    .uploadedDate
-                )
+                sort: [sortPayload],
+                fields_lbrack_builds_rbrack_: fieldsPayload
             )
         )
         switch response {
