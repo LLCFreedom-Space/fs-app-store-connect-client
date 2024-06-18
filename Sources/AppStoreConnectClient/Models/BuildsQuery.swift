@@ -63,38 +63,38 @@ public struct BuildsQuery {
 
 /// An enumeration representing the possible sort options for the query.
 public enum Sort: String {
-    case preReleaseVersion = "preReleaseVersion"
+    case preReleaseVersion
     case hyphenPreReleaseVersion = "-preReleaseVersion"
-    case uploadedDate = "uploadedDate"
+    case uploadedDate
     case hyphenUploadedDate = "-uploadedDate"
-    case version = "version"
+    case version
     case hyphenVersion = "-version"
 }
 
 /// An enumeration representing the possible fields that can be included in the query.
 public enum Fields: String {
-    case app = "app"
-    case appEncryptionDeclaration = "appEncryptionDeclaration"
-    case appStoreVersion = "appStoreVersion"
-    case betaAppReviewSubmission = "betaAppReviewSubmission"
-    case betaBuildLocalizations = "betaBuildLocalizations"
-    case betaGroups = "betaGroups"
-    case buildAudienceType = "buildAudienceType"
-    case buildBetaDetail = "buildBetaDetail"
-    case buildBundles = "buildBundles"
-    case computedMinMacOsVersion = "computedMinMacOsVersion"
-    case diagnosticSignatures = "diagnosticSignatures"
-    case expirationDate = "expirationDate"
-    case expired = "expired"
-    case iconAssetToken = "iconAssetToken"
-    case icons = "icons"
-    case individualTesters = "individualTesters"
-    case lsMinimumSystemVersion = "lsMinimumSystemVersion"
-    case minOsVersion = "minOsVersion"
-    case perfPowerMetrics = "perfPowerMetrics"
-    case preReleaseVersion = "preReleaseVersion"
-    case processingState = "processingState"
-    case uploadedDate = "uploadedDate"
-    case usesNonExemptEncryption = "usesNonExemptEncryption"
-    case version = "version"
+    case app
+    case appEncryptionDeclaration
+    case appStoreVersion
+    case betaAppReviewSubmission
+    case betaBuildLocalizations
+    case betaGroups
+    case buildAudienceType
+    case buildBetaDetail
+    case buildBundles
+    case computedMinMacOsVersion
+    case diagnosticSignatures
+    case expirationDate
+    case expired
+    case iconAssetToken
+    case icons
+    case individualTesters
+    case lsMinimumSystemVersion
+    case minOsVersion
+    case perfPowerMetrics
+    case preReleaseVersion
+    case processingState
+    case uploadedDate
+    case usesNonExemptEncryption
+    case version
 }
