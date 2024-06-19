@@ -124,15 +124,15 @@ public struct AppStoreConnectClient {
     /// - Throws: An error of type `AppStoreConnectError` if the response indicates an error.
     public func fetchBuilds(
         for app: Application,
-        with query: BuildsQuery
-    ) async throws -> [Build]? {
-        let sortPayload = query.convertSort(query.sort ?? .init( arrayLiteral: .hyphenVersion))
-        let fieldsPayload = query.convertFields(query.fields ?? [])
+        with query: BuildsQuery?
+    ) async throws -> [Build] {
+        let sort = query?.convertSort(query?.sort ?? .init( arrayLiteral: .hyphenVersion))
+        let fields = query?.convertFields(query?.fields ?? [])
         let response = try await client.builds_hyphen_get_collection(
             query: .init(
                 filter_lbrack_app_rbrack_: [app.id],
-                sort: sortPayload,
-                fields_lbrack_builds_rbrack_: fieldsPayload
+                sort: sort,
+                fields_lbrack_builds_rbrack_: fields
             )
         )
         switch response {
