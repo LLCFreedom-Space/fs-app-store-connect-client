@@ -200,7 +200,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         let build = try await client.fetchBuilds(
             for: app,
             with: BuildsQuery.init(
-                sort: .hyphenVersion,
+                sort: .init(arrayLiteral: .hyphenVersion),
                 fields: [.version, .minOsVersion, .uploadedDate]
             )
         )
@@ -217,7 +217,7 @@ final class AppStoreConnectClientTests: XCTestCase {
             let result = try await client.fetchBuilds(
                 for: app,
                 with: BuildsQuery.init(
-                    sort: .hyphenVersion,
+                    sort: .init(arrayLiteral: .hyphenVersion),
                     fields: [.version, .minOsVersion, .uploadedDate]
                 )
             )
@@ -239,7 +239,7 @@ final class AppStoreConnectClientTests: XCTestCase {
             let result = try await client.fetchBuilds(
                 for: app,
                 with: BuildsQuery.init(
-                    sort: .hyphenVersion,
+                    sort: .init(arrayLiteral: .hyphenVersion),
                     fields: [.version, .minOsVersion, .uploadedDate]
                 )
             )
@@ -261,7 +261,7 @@ final class AppStoreConnectClientTests: XCTestCase {
             let result = try await client.fetchBuilds(
                 for: app,
                 with: BuildsQuery.init(
-                    sort: .hyphenVersion,
+                    sort: .init(arrayLiteral: .hyphenVersion),
                     fields: [.version, .minOsVersion, .uploadedDate]
                 )
             )
@@ -283,7 +283,7 @@ final class AppStoreConnectClientTests: XCTestCase {
             let result = try await client.fetchBuilds(
                 for: app,
                 with: BuildsQuery.init(
-                    sort: .hyphenVersion,
+                    sort: .init(arrayLiteral: .hyphenVersion),
                     fields: [.version, .minOsVersion, .uploadedDate]
                 )
             )
@@ -387,52 +387,35 @@ final class AppStoreConnectClientTests: XCTestCase {
         }
     }
     
-    func testConvertSortPreReleaseVersion() {
-        let query = BuildsQuery(sort: nil, fields: nil)
-        let sort: [BuildsQuery.Sort] = [.preReleaseVersion]
-        let result = query.convertSort(sort)
-        XCTAssertEqual(result, .preReleaseVersion)
+    func testFetchBuildsSuccessWithSortIsNil() async throws {
+        var mockClient = MockAPIClient()
+        mockClient.result = .ok
+        let client = AppStoreConnectClient(client: mockClient)
+        let app = Application(id: "Foo", bundleId: "Bar")
+        let expectedBuilds = [Build(schema: MockObjects.build)]
+        let build = try await client.fetchBuilds(
+            for: app,
+            with: BuildsQuery.init(
+                sort: nil,
+                fields: [.version, .minOsVersion, .uploadedDate]
+            )
+        )
+        XCTAssertEqual(build, expectedBuilds)
     }
     
-    func testConvertSortHyphenPreReleaseVersion() {
-        let query = BuildsQuery(sort: nil, fields: nil)
-        let sort: [BuildsQuery.Sort] = [.hyphenPreReleaseVersion]
-        let result = query.convertSort(sort)
-        XCTAssertEqual(result, ._hyphen_preReleaseVersion)
-    }
-    
-    func testConvertSortUploadedDate() {
-        let query = BuildsQuery(sort: nil, fields: nil)
-        let sort: [BuildsQuery.Sort] = [.uploadedDate]
-        let result = query.convertSort(sort)
-        XCTAssertEqual(result, .uploadedDate)
-    }
-    
-    func testConvertSortHyphenUploadedDate() {
-        let query = BuildsQuery(sort: nil, fields: nil)
-        let sort: [BuildsQuery.Sort] = [.hyphenUploadedDate]
-        let result = query.convertSort(sort)
-        XCTAssertEqual(result, ._hyphen_uploadedDate)
-    }
-    
-    func testConvertSortVersion() {
-        let query = BuildsQuery(sort: nil, fields: nil)
-        let sort: [BuildsQuery.Sort] = [.version]
-        let result = query.convertSort(sort)
-        XCTAssertEqual(result, .version)
-    }
-    
-    func testConvertSortHyphenVersion() {
-        let query = BuildsQuery(sort: nil, fields: nil)
-        let sort: [BuildsQuery.Sort] = [.hyphenVersion]
-        let result = query.convertSort(sort)
-        XCTAssertEqual(result, ._hyphen_version)
-    }
-    
-    func testConvertSortDefault() {
-        let query = BuildsQuery(sort: nil, fields: nil)
-        let sort: [BuildsQuery.Sort] = []
-        let result = query.convertSort(sort)
-        XCTAssertEqual(result, ._hyphen_version)
+    func testFetchBuildsSuccessWithFieldsIsNil() async throws {
+        var mockClient = MockAPIClient()
+        mockClient.result = .ok
+        let client = AppStoreConnectClient(client: mockClient)
+        let app = Application(id: "Foo", bundleId: "Bar")
+        let expectedBuilds = [Build(schema: MockObjects.build)]
+        let build = try await client.fetchBuilds(
+            for: app,
+            with: BuildsQuery.init(
+                sort: .init(arrayLiteral: .hyphenVersion),
+                fields: nil
+            )
+        )
+        XCTAssertEqual(build, expectedBuilds)
     }
 }

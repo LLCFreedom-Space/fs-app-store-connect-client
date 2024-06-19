@@ -27,29 +27,16 @@ import Foundation
 /// A structure representing a query for builds with specified sort and fields parameters.
 public struct BuildsQuery {
     /// The sort payload for the query.
-    public let sort: Sort?
+    public let sort: [Sort]?
     /// The fields payload for the query.
     public let fields: [Fields]?
     
     /// Converts the Sort enum to the appropriate payload type used in the query.
     /// - Parameter from: The Sort enum value to convert.
     /// - Returns: The converted sort payload.
-    func convertSort(_ from: [Sort]) -> Operations.builds_hyphen_get_collection.Input.Query.sortPayloadPayload {
-        switch from {
-        case [.preReleaseVersion]:
-            return .preReleaseVersion
-        case [.hyphenPreReleaseVersion]:
-            return ._hyphen_preReleaseVersion
-        case [.uploadedDate]:
-            return .uploadedDate
-        case [.hyphenUploadedDate]:
-            return ._hyphen_uploadedDate
-        case [.version]:
-            return .version
-        case [.hyphenVersion]:
-            return ._hyphen_version
-        default:
-            return ._hyphen_version
+    func convertSort(_ from: [Sort]) -> [Operations.builds_hyphen_get_collection.Input.Query.sortPayloadPayload] {
+        return from.compactMap { sort in
+            return Operations.builds_hyphen_get_collection.Input.Query.sortPayloadPayload(rawValue: sort.rawValue)
         }
     }
     

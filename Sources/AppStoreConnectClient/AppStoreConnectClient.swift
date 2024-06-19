@@ -126,14 +126,12 @@ public struct AppStoreConnectClient {
         for app: Application,
         with query: BuildsQuery
     ) async throws -> [Build]? {
-        let sort = query.sort ?? .hyphenVersion
-        let sortPayload = query.convertSort([sort])
-        let tranzit = query.fields ?? []
-        let fieldsPayload = query.convertFields(tranzit)
+        let sortPayload = query.convertSort(query.sort ?? .init( arrayLiteral: .hyphenVersion))
+        let fieldsPayload = query.convertFields(query.fields ?? [])
         let response = try await client.builds_hyphen_get_collection(
             query: .init(
                 filter_lbrack_app_rbrack_: [app.id],
-                sort: [sortPayload],
+                sort: sortPayload,
                 fields_lbrack_builds_rbrack_: fieldsPayload
             )
         )
