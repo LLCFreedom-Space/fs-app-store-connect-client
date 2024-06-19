@@ -204,10 +204,7 @@ final class AppStoreConnectClientTests: XCTestCase {
                 fields: [.version, .minOsVersion, .uploadedDate]
             )
         )
-        XCTAssertEqual(build?.first?.id, expectedBuilds.first?.id)
-        XCTAssertEqual(build?.first?.version, expectedBuilds.first?.version)
-        XCTAssertEqual(build?.first?.uploadedDate, expectedBuilds.first?.uploadedDate)
-        XCTAssertEqual(build?.first?.minOsVersion, expectedBuilds.first?.minOsVersion)
+        XCTAssertEqual(build, expectedBuilds)
     }
     
     func testFetchBuildsBadRequest() async throws {
@@ -388,5 +385,54 @@ final class AppStoreConnectClientTests: XCTestCase {
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
+    }
+    
+    func testConvertSortPreReleaseVersion() {
+        let query = BuildsQuery(sort: nil, fields: nil)
+        let sort: [BuildsQuery.Sort] = [.preReleaseVersion]
+        let result = query.convertSort(sort)
+        XCTAssertEqual(result, .preReleaseVersion)
+    }
+    
+    func testConvertSortHyphenPreReleaseVersion() {
+        let query = BuildsQuery(sort: nil, fields: nil)
+        let sort: [BuildsQuery.Sort] = [.hyphenPreReleaseVersion]
+        let result = query.convertSort(sort)
+        XCTAssertEqual(result, ._hyphen_preReleaseVersion)
+    }
+    
+    func testConvertSortUploadedDate() {
+        let query = BuildsQuery(sort: nil, fields: nil)
+        let sort: [BuildsQuery.Sort] = [.uploadedDate]
+        let result = query.convertSort(sort)
+        XCTAssertEqual(result, .uploadedDate)
+    }
+    
+    func testConvertSortHyphenUploadedDate() {
+        let query = BuildsQuery(sort: nil, fields: nil)
+        let sort: [BuildsQuery.Sort] = [.hyphenUploadedDate]
+        let result = query.convertSort(sort)
+        XCTAssertEqual(result, ._hyphen_uploadedDate)
+    }
+    
+    func testConvertSortVersion() {
+        let query = BuildsQuery(sort: nil, fields: nil)
+        let sort: [BuildsQuery.Sort] = [.version]
+        let result = query.convertSort(sort)
+        XCTAssertEqual(result, .version)
+    }
+    
+    func testConvertSortHyphenVersion() {
+        let query = BuildsQuery(sort: nil, fields: nil)
+        let sort: [BuildsQuery.Sort] = [.hyphenVersion]
+        let result = query.convertSort(sort)
+        XCTAssertEqual(result, ._hyphen_version)
+    }
+    
+    func testConvertSortDefault() {
+        let query = BuildsQuery(sort: nil, fields: nil)
+        let sort: [BuildsQuery.Sort] = []
+        let result = query.convertSort(sort)
+        XCTAssertEqual(result, ._hyphen_version)
     }
 }

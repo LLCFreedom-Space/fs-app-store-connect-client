@@ -34,19 +34,21 @@ public struct BuildsQuery {
     /// Converts the Sort enum to the appropriate payload type used in the query.
     /// - Parameter from: The Sort enum value to convert.
     /// - Returns: The converted sort payload.
-    func convertSort(_ from: Sort) -> Operations.builds_hyphen_get_collection.Input.Query.sortPayloadPayload {
+    func convertSort(_ from: [Sort]) -> Operations.builds_hyphen_get_collection.Input.Query.sortPayloadPayload {
         switch from {
-        case .preReleaseVersion:
+        case [.preReleaseVersion]:
             return .preReleaseVersion
-        case .hyphenPreReleaseVersion:
+        case [.hyphenPreReleaseVersion]:
             return ._hyphen_preReleaseVersion
-        case .uploadedDate:
+        case [.uploadedDate]:
             return .uploadedDate
-        case .hyphenUploadedDate:
+        case [.hyphenUploadedDate]:
             return ._hyphen_uploadedDate
-        case .version:
+        case [.version]:
             return .version
-        case .hyphenVersion:
+        case [.hyphenVersion]:
+            return ._hyphen_version
+        default:
             return ._hyphen_version
         }
     }
@@ -59,42 +61,42 @@ public struct BuildsQuery {
             return Operations.builds_hyphen_get_collection.Input.Query.fields_lbrack_builds_rbrack_PayloadPayload(rawValue: field.rawValue)
         }
     }
-}
-
-/// An enumeration representing the possible sort options for the query.
-public enum Sort: String {
-    case preReleaseVersion
-    case hyphenPreReleaseVersion = "-preReleaseVersion"
-    case uploadedDate
-    case hyphenUploadedDate = "-uploadedDate"
-    case version
-    case hyphenVersion = "-version"
-}
-
-/// An enumeration representing the possible fields that can be included in the query.
-public enum Fields: String {
-    case app
-    case appEncryptionDeclaration
-    case appStoreVersion
-    case betaAppReviewSubmission
-    case betaBuildLocalizations
-    case betaGroups
-    case buildAudienceType
-    case buildBetaDetail
-    case buildBundles
-    case computedMinMacOsVersion
-    case diagnosticSignatures
-    case expirationDate
-    case expired
-    case iconAssetToken
-    case icons
-    case individualTesters
-    case lsMinimumSystemVersion
-    case minOsVersion
-    case perfPowerMetrics
-    case preReleaseVersion
-    case processingState
-    case uploadedDate
-    case usesNonExemptEncryption
-    case version
+    
+    /// An enumeration representing the possible sort options for the query.
+    public enum Sort: String {
+        case preReleaseVersion
+        case hyphenPreReleaseVersion = "-preReleaseVersion"
+        case uploadedDate
+        case hyphenUploadedDate = "-uploadedDate"
+        case version
+        case hyphenVersion = "-version"
+    }
+    
+    /// An enumeration representing the possible fields that can be included in the query.
+    public enum Fields: String {
+        case app
+        case appEncryptionDeclaration
+        case appStoreVersion
+        case betaAppReviewSubmission
+        case betaBuildLocalizations
+        case betaGroups
+        case buildAudienceType
+        case buildBetaDetail
+        case buildBundles
+        case computedMinMacOsVersion
+        case diagnosticSignatures
+        case expirationDate
+        case expired
+        case iconAssetToken
+        case icons
+        case individualTesters
+        case lsMinimumSystemVersion
+        case minOsVersion
+        case perfPowerMetrics
+        case preReleaseVersion
+        case processingState
+        case uploadedDate
+        case usesNonExemptEncryption
+        case version
+    }
 }

@@ -32,7 +32,7 @@ import Foundation
 ///   - minOsVersion: The minimum required OS version for the build.
 /// - Note: A build is a specific version of an app that has been uploaded to App Store Connect.
 /// It contains metadata such as the build version, upload date, and minimum supported OS version.
-public struct Build {
+public struct Build: Equatable {
     /// The unique identifier of the build.
     public let id: String
     /// The version string of the build.
