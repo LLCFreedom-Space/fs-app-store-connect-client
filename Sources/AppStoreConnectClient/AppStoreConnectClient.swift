@@ -126,8 +126,8 @@ public struct AppStoreConnectClient {
         for app: Application,
         with query: BuildsQuery?
     ) async throws -> [Build] {
-        let sort = query?.convertSort(query?.sort ?? .init( arrayLiteral: .hyphenVersion))
-        let fields = query?.convertFields(query?.fields ?? [])
+        let sort = query?.convertSort(query?.sort)
+        let fields = query?.convertFields(query?.fields)
         let response = try await client.builds_hyphen_get_collection(
             query: .init(
                 filter_lbrack_app_rbrack_: [app.id],
