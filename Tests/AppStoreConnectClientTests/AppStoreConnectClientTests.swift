@@ -200,7 +200,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         let build = try await client.fetchBuilds(
             for: app,
             with: BuildsQuery.init(
-                sort: .init(arrayLiteral: .hyphenVersion),
+                sort: [.hyphenVersion],
                 fields: [.version, .minOsVersion, .uploadedDate]
             )
         )
@@ -217,7 +217,7 @@ final class AppStoreConnectClientTests: XCTestCase {
             let result = try await client.fetchBuilds(
                 for: app,
                 with: BuildsQuery.init(
-                    sort: .init(arrayLiteral: .hyphenVersion, .uploadedDate),
+                    sort: [.hyphenVersion, .uploadedDate],
                     fields: [.version, .minOsVersion, .uploadedDate]
                 )
             )
@@ -239,7 +239,7 @@ final class AppStoreConnectClientTests: XCTestCase {
             let result = try await client.fetchBuilds(
                 for: app,
                 with: BuildsQuery.init(
-                    sort: .init(arrayLiteral: .hyphenVersion, .uploadedDate),
+                    sort: [.hyphenVersion, .uploadedDate],
                     fields: [.version, .minOsVersion, .uploadedDate]
                 )
             )
@@ -261,7 +261,7 @@ final class AppStoreConnectClientTests: XCTestCase {
             let result = try await client.fetchBuilds(
                 for: app,
                 with: BuildsQuery.init(
-                    sort: .init(arrayLiteral: .hyphenVersion, .uploadedDate),
+                    sort: [.hyphenVersion, .uploadedDate],
                     fields: [.version, .minOsVersion, .uploadedDate]
                 )
             )
@@ -283,7 +283,7 @@ final class AppStoreConnectClientTests: XCTestCase {
             let result = try await client.fetchBuilds(
                 for: app,
                 with: BuildsQuery.init(
-                    sort: .init(arrayLiteral: .hyphenVersion, .uploadedDate),
+                    sort: [.hyphenVersion, .uploadedDate],
                     fields: [.version, .minOsVersion, .uploadedDate]
                 )
             )
@@ -412,7 +412,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         let build = try await client.fetchBuilds(
             for: app,
             with: BuildsQuery.init(
-                sort: .init(arrayLiteral: .hyphenVersion, .uploadedDate),
+                sort: [.hyphenVersion, .uploadedDate],
                 fields: nil
             )
         )
