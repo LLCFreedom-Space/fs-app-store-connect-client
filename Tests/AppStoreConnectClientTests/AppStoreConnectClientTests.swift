@@ -199,7 +199,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         let expectedBuilds = [Build(schema: MockObjects.build)]
         let build = try await client.fetchBuilds(
             for: app,
-            with: BuildsQuery.init(
+            with: BuildsQuery(
                 sort: [.hyphenVersion],
                 fields: [.version, .minOsVersion, .uploadedDate]
             )
@@ -216,7 +216,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         do {
             let result = try await client.fetchBuilds(
                 for: app,
-                with: BuildsQuery.init(
+                with: BuildsQuery(
                     sort: [.hyphenVersion, .uploadedDate],
                     fields: [.version, .minOsVersion, .uploadedDate]
                 )
@@ -238,7 +238,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         do {
             let result = try await client.fetchBuilds(
                 for: app,
-                with: BuildsQuery.init(
+                with: BuildsQuery(
                     sort: [.hyphenVersion, .uploadedDate],
                     fields: [.version, .minOsVersion, .uploadedDate]
                 )
@@ -260,7 +260,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         do {
             let result = try await client.fetchBuilds(
                 for: app,
-                with: BuildsQuery.init(
+                with: BuildsQuery(
                     sort: [.hyphenVersion, .uploadedDate],
                     fields: [.version, .minOsVersion, .uploadedDate]
                 )
@@ -282,7 +282,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         do {
             let result = try await client.fetchBuilds(
                 for: app,
-                with: BuildsQuery.init(
+                with: BuildsQuery(
                     sort: [.hyphenVersion, .uploadedDate],
                     fields: [.version, .minOsVersion, .uploadedDate]
                 )
@@ -387,7 +387,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         }
     }
     
-    func testFetchBuildsSuccessWithSortIsNil() async throws {
+    func testFetchBuildsSuccessWithEmptySort() async throws {
         var mockClient = MockAPIClient()
         mockClient.result = .ok
         let client = AppStoreConnectClient(client: mockClient)
@@ -395,15 +395,15 @@ final class AppStoreConnectClientTests: XCTestCase {
         let expectedBuilds = [Build(schema: MockObjects.build)]
         let build = try await client.fetchBuilds(
             for: app,
-            with: BuildsQuery.init(
-                sort: nil,
+            with: BuildsQuery(
+                sort: [],
                 fields: [.version, .minOsVersion, .uploadedDate]
             )
         )
         XCTAssertEqual(build, expectedBuilds)
     }
     
-    func testFetchBuildsSuccessWithFieldsIsNil() async throws {
+    func testFetchBuildsSuccessWithEmptyFields() async throws {
         var mockClient = MockAPIClient()
         mockClient.result = .ok
         let client = AppStoreConnectClient(client: mockClient)
@@ -411,11 +411,21 @@ final class AppStoreConnectClientTests: XCTestCase {
         let expectedBuilds = [Build(schema: MockObjects.build)]
         let build = try await client.fetchBuilds(
             for: app,
-            with: BuildsQuery.init(
+            with: BuildsQuery(
                 sort: [.hyphenVersion, .uploadedDate],
-                fields: nil
+                fields: []
             )
         )
+        XCTAssertEqual(build, expectedBuilds)
+    }
+    
+    func testFetchBuildsSuccessWithoutQuery() async throws {
+        var mockClient = MockAPIClient()
+        mockClient.result = .ok
+        let client = AppStoreConnectClient(client: mockClient)
+        let app = Application(id: "Foo", bundleId: "Bar")
+        let expectedBuilds = [Build(schema: MockObjects.build)]
+        let build = try await client.fetchBuilds(for: app)
         XCTAssertEqual(build, expectedBuilds)
     }
 }

@@ -48,7 +48,7 @@ public protocol AppStoreConnectClientProtocol {
     /// - Note: Builds are specific versions of an app that have been uploaded to App Store Connect.
     func fetchBuilds(
         for app: Application,
-        with query: BuildsQuery
+        with query: BuildsQuery?
     ) async throws -> [Build]
     
     /// Fetches the pre-release testFlight's version associated with a specific build from App Store Connect.
@@ -57,5 +57,5 @@ public protocol AppStoreConnectClientProtocol {
     /// - Returns: a `PreReleaseVersion` object containing details about the retrieved pre-release version.
     /// - Throws:AppStoreConnectClientError: An error that may occur during the fetch process.
     /// - Note: Pre-release versions are used for beta testing or/and internal reviews before an app is published on the App Store.
-    func fetchPreReleaseVersion(by id: Build) async throws -> PreReleaseVersion
+    func fetchPreReleaseVersion(for id: Build) async throws -> PreReleaseVersion
 }

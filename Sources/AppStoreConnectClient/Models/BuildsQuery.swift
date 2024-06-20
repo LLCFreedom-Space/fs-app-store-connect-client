@@ -27,15 +27,15 @@ import Foundation
 /// A structure representing a query for builds with specified sort and fields parameters.
 public struct BuildsQuery {
     /// The sort payload for the query.
-    public let sort: [Sort]?
+    public var sort: [Sort] = []
     /// The fields payload for the query.
-    public let fields: [Fields]?
+    public var fields: [Fields] = []
     
     /// Converts the Sort enum to the appropriate payload type used in the query.
     /// - Parameter from: The Sort enum value to convert.
     /// - Returns: The converted sort payload.
-    func convertSort(_ from: [Sort]?) -> [Operations.builds_hyphen_get_collection.Input.Query.sortPayloadPayload]? {
-        return from?.compactMap { sort in
+    func convertSort(from sorts: [Sort]) -> [Operations.builds_hyphen_get_collection.Input.Query.sortPayloadPayload] {
+        return sorts.compactMap { sort in
             return Operations.builds_hyphen_get_collection.Input.Query.sortPayloadPayload(rawValue: sort.rawValue)
         }
     }
@@ -43,8 +43,8 @@ public struct BuildsQuery {
     /// Converts the Fields enum array to the appropriate payload type used in the query.
     /// - Parameter from: The array of Fields enum values to convert.
     /// - Returns: An array of converted field payloads.
-    func convertFields(_ from: [Fields]?) -> [Operations.builds_hyphen_get_collection.Input.Query.fields_lbrack_builds_rbrack_PayloadPayload]? {
-        return from?.compactMap { field in
+    func convertFields(from fields: [Fields]) -> [Operations.builds_hyphen_get_collection.Input.Query.fields_lbrack_builds_rbrack_PayloadPayload] {
+        return fields.compactMap { field in
             return Operations.builds_hyphen_get_collection.Input.Query.fields_lbrack_builds_rbrack_PayloadPayload(rawValue: field.rawValue)
         }
     }

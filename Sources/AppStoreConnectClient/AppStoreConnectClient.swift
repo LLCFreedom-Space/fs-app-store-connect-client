@@ -26,7 +26,7 @@ import OpenAPIURLSession
 import Foundation
 
 /// The client for interacting with the App Store Connect API.
-public struct AppStoreConnectClient {
+public struct AppStoreConnectClient: AppStoreConnectClientProtocol {
     private let client: any APIProtocol
     
     /// Initializes the client with a custom API protocol implementation.
@@ -124,17 +124,26 @@ public struct AppStoreConnectClient {
     /// - Throws: An error of type `AppStoreConnectError` if the response indicates an error.
     public func fetchBuilds(
         for app: Application,
-        with query: BuildsQuery?
+        with query: BuildsQuery? = nil
     ) async throws -> [Build] {
-        let sort = query?.convertSort(query?.sort)
-        let fields = query?.convertFields(query?.fields)
-        let response = try await client.builds_hyphen_get_collection(
-            query: .init(
-                filter_lbrack_app_rbrack_: [app.id],
-                sort: sort,
-                fields_lbrack_builds_rbrack_: fields
+        let response: Operations.builds_hyphen_get_collection.Output
+        if let query = query {
+            let sort = query.convertSort(from: query.sort)
+            let fields = query.convertFields(from: query.fields)
+            response = try await client.builds_hyphen_get_collection(
+                query: .init(
+                    filter_lbrack_app_rbrack_: [app.id],
+                    sort: sort,
+                    fields_lbrack_builds_rbrack_: fields
+                )
             )
-        )
+        } else {
+            response = try await client.builds_hyphen_get_collection(
+                query: .init(
+                filter_lbrack_app_rbrack_: [app.id]
+                )
+            )
+        }
         switch response {
         case .ok(let okResponse):
             return try okResponse.body.json.data.compactMap { Build(schema: $0) }
