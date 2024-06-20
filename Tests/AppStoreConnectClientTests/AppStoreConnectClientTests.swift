@@ -428,4 +428,10 @@ final class AppStoreConnectClientTests: XCTestCase {
         let build = try await client.fetchBuilds(for: app)
         XCTAssertEqual(build, expectedBuilds)
     }
+    
+    func testBuildsQueryInitialization() {
+        let query = BuildsQuery()
+        XCTAssertEqual(query.sort, [])
+        XCTAssertEqual(query.fields, [])
+    }
 }
