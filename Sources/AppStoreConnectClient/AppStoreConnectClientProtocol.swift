@@ -57,5 +57,5 @@ public protocol AppStoreConnectClientProtocol {
     /// - Returns: a `PreReleaseVersion` object containing details about the retrieved pre-release version.
     /// - Throws:AppStoreConnectClientError: An error that may occur during the fetch process.
     /// - Note: Pre-release versions are used for beta testing or/and internal reviews before an app is published on the App Store.
-    func fetchPreReleaseVersion(for id: Build) async throws -> PreReleaseVersion
+    func fetchPreReleaseVersion(by id: Build) async throws -> PreReleaseVersion
 }

@@ -300,7 +300,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         mockClient.result = .ok
         let client = AppStoreConnectClient(client: mockClient)
         let build = Build(schema: MockObjects.build)
-        let preReleaseVersion = try await client.fetchPreReleaseVersion(for: build)
+        let preReleaseVersion = try await client.fetchPreReleaseVersion(by: build)
         XCTAssertEqual(preReleaseVersion.id, "FooBarId")
         XCTAssertEqual(preReleaseVersion.version, "Foo")
         XCTAssertEqual(preReleaseVersion.platform, "IOS")
@@ -314,7 +314,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         let build = Build(schema: MockObjects.build)
         let expectedError = "\nFailed with: \(badRequest), Foo, Bar, Baz."
         do {
-            let result = try await client.fetchPreReleaseVersion(for: build)
+            let result = try await client.fetchPreReleaseVersion(by: build)
             XCTFail("Expected error not thrown, got result: \(result)")
         } catch AppStoreConnectError.badRequest(let error) {
             XCTAssertEqual(error, expectedError)
@@ -330,7 +330,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         let build = Build(schema: MockObjects.build)
         let expectedError = "\nFailed with: \(unauthorized), Foo, Bar, Baz."
         do {
-            let result = try await client.fetchPreReleaseVersion(for: build)
+            let result = try await client.fetchPreReleaseVersion(by: build)
             XCTFail("Expected error not thrown, got result: \(result)")
         } catch AppStoreConnectError.unauthorized(let error) {
             XCTAssertEqual(error, expectedError)
@@ -346,7 +346,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         let build = Build(schema: MockObjects.build)
         let expectedError = "\nFailed with: \(notFound), Foo, Bar, Baz."
         do {
-            let result = try await client.fetchPreReleaseVersion(for: build)
+            let result = try await client.fetchPreReleaseVersion(by: build)
             XCTFail("Expected error not thrown, got result: \(result)")
         } catch AppStoreConnectError.notFound(let error) {
             XCTAssertEqual(error, expectedError)
@@ -362,7 +362,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         let build = Build(schema: MockObjects.build)
         let expectedError = "\nFailed with: \(forbidden), Foo, Bar, Baz."
         do {
-            let result = try await client.fetchPreReleaseVersion(for: build)
+            let result = try await client.fetchPreReleaseVersion(by: build)
             XCTFail("Expected error not thrown, got result: \(result)")
         } catch AppStoreConnectError.forbidden(let error) {
             XCTAssertEqual(error, expectedError)
@@ -378,7 +378,7 @@ final class AppStoreConnectClientTests: XCTestCase {
         let build = Build(schema: MockObjects.build)
         let expectedError = 501
         do {
-            let result = try await client.fetchPreReleaseVersion(for: build)
+            let result = try await client.fetchPreReleaseVersion(by: build)
             XCTFail("Expected error not thrown, got result: \(result)")
         } catch AppStoreConnectError.serverError(let error) {
             XCTAssertEqual(error, expectedError)
