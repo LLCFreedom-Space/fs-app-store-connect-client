@@ -27,7 +27,63 @@ import Foundation
 /// A structure representing a query for builds with specified sort and fields parameters.
 public struct BuildsQuery {
     /// The sort payload for the query.
-    let sort: Operations.builds_hyphen_get_collection.Input.Query.sortPayload
+    public var sort: [Sort] = []
     /// The fields payload for the query.
-    let fields: Operations.builds_hyphen_get_collection.Input.Query.fields_lbrack_builds_rbrack_Payload
+    public var fields: [Fields] = []
+    
+    /// Converts the Sort enum array to the appropriate payload type used in the query.
+    /// - Parameter from: The Sort enum value to convert.
+    /// - Returns: The converted sort payload.
+    func convert(from sorts: [Sort]) -> [Operations.builds_hyphen_get_collection.Input.Query.sortPayloadPayload] {
+        return sorts.compactMap { sort in
+            return Operations.builds_hyphen_get_collection.Input.Query.sortPayloadPayload(rawValue: sort.rawValue)
+        }
+    }
+    
+    /// Converts the Fields enum array to the appropriate payload type used in the query.
+    /// - Parameter from: The array of Fields enum values to convert.
+    /// - Returns: An array of converted field payloads.
+    func convert(from fields: [Fields]) -> [Operations.builds_hyphen_get_collection.Input.Query.fields_lbrack_builds_rbrack_PayloadPayload] {
+        return fields.compactMap { field in
+            return Operations.builds_hyphen_get_collection.Input.Query.fields_lbrack_builds_rbrack_PayloadPayload(rawValue: field.rawValue)
+        }
+    }
+    
+    /// An enumeration representing the possible sort options for the query.
+    public enum Sort: String {
+        case preReleaseVersion
+        case hyphenPreReleaseVersion = "-preReleaseVersion"
+        case uploadedDate
+        case hyphenUploadedDate = "-uploadedDate"
+        case version
+        case hyphenVersion = "-version"
+    }
+    
+    /// An enumeration representing the possible fields that can be included in the query.
+    public enum Fields: String {
+        case app
+        case appEncryptionDeclaration
+        case appStoreVersion
+        case betaAppReviewSubmission
+        case betaBuildLocalizations
+        case betaGroups
+        case buildAudienceType
+        case buildBetaDetail
+        case buildBundles
+        case computedMinMacOsVersion
+        case diagnosticSignatures
+        case expirationDate
+        case expired
+        case iconAssetToken
+        case icons
+        case individualTesters
+        case lsMinimumSystemVersion
+        case minOsVersion
+        case perfPowerMetrics
+        case preReleaseVersion
+        case processingState
+        case uploadedDate
+        case usesNonExemptEncryption
+        case version
+    }
 }

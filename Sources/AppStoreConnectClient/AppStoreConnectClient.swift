@@ -26,7 +26,7 @@ import OpenAPIURLSession
 import Foundation
 
 /// The client for interacting with the App Store Connect API.
-public struct AppStoreConnectClient {
+public struct AppStoreConnectClient: AppStoreConnectClientProtocol {
     private let client: any APIProtocol
     
     /// Initializes the client with a custom API protocol implementation.
@@ -124,20 +124,26 @@ public struct AppStoreConnectClient {
     /// - Throws: An error of type `AppStoreConnectError` if the response indicates an error.
     public func fetchBuilds(
         for app: Application,
-        with query: BuildsQuery
+        with query: BuildsQuery? = nil
     ) async throws -> [Build] {
-        let response = try await client.builds_hyphen_get_collection(
-            query: .init(
-                filter_lbrack_app_rbrack_: [app.id],
-                sort: type(of: query.sort).init(arrayLiteral: ._hyphen_version),
-                fields_lbrack_builds_rbrack_: type(of: query.fields).init(
-                    arrayLiteral: 
-                    .version,
-                    .minOsVersion,
-                    .uploadedDate
+        var response: Operations.builds_hyphen_get_collection.Output
+        if let query = query {
+            let sort = query.convert(from: query.sort)
+            let fields = query.convert(from: query.fields)
+            response = try await client.builds_hyphen_get_collection(
+                query: .init(
+                    filter_lbrack_app_rbrack_: [app.id],
+                    sort: sort,
+                    fields_lbrack_builds_rbrack_: fields
                 )
             )
-        )
+        } else {
+            response = try await client.builds_hyphen_get_collection(
+                query: .init(
+                filter_lbrack_app_rbrack_: [app.id]
+                )
+            )
+        }
         switch response {
         case .ok(let okResponse):
             return try okResponse.body.json.data.compactMap { Build(schema: $0) }
@@ -164,7 +170,7 @@ public struct AppStoreConnectClient {
     /// - Parameter id: The build-id for which to fetch the pre-release version.
     /// - Returns: A `PreReleaseVersion` object.
     /// - Throws: An error of type `AppStoreConnectError` if the response indicates an error.
-    public func fetchPreReleaseVersion(for build: Build) async throws -> PreReleaseVersion {
+    public func fetchPreReleaseVersion(by build: Build) async throws -> PreReleaseVersion {
         let id = build.id
         let response = try await client.builds_hyphen_preReleaseVersion_hyphen_get_to_one_related(
             path: .init(id: id)
