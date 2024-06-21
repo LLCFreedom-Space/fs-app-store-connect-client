@@ -31,7 +31,7 @@ public struct BuildsQuery {
     /// The fields payload for the query.
     public let fields: [Fields]
     
-    /// Initializes a new instance of the BuildsQuery structure.
+    /// Initializes instance of the BuildsQuery structure.
     /// - Parameters:
     ///   - sort: An array of Sort objects representing the sort parameters for the query. Default value is an empty array.
     ///   - fields: An array of Fields objects representing the fields parameters for the query. Default value is an empty array.
