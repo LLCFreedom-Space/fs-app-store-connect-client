@@ -27,9 +27,18 @@ import Foundation
 /// A structure representing a query for builds with specified sort and fields parameters.
 public struct BuildsQuery {
     /// The sort payload for the query.
-    public var sort: [Sort] = []
+    public let sort: [Sort]
     /// The fields payload for the query.
-    public var fields: [Fields] = []
+    public let fields: [Fields]
+    
+    /// Initializes a new instance of the BuildsQuery structure.
+    /// - Parameters:
+    ///   - sort: An array of Sort objects representing the sort parameters for the query. Default value is an empty array.
+    ///   - fields: An array of Fields objects representing the fields parameters for the query. Default value is an empty array.
+    public init(sort: [Sort] = [], fields: [Fields] = []) {
+        self.sort = sort
+        self.fields = fields
+    }
     
     /// Converts the Sort enum array to the appropriate payload type used in the query.
     /// - Parameter from: The Sort enum value to convert.
