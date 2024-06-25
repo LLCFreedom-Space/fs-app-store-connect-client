@@ -54,4 +54,12 @@ final class ReleaseTests: XCTestCase {
         let release = Release(schema: schema)
         XCTAssertNil(release)
     }
+    
+    func testReleaseInitializer() {
+        let version = "mock-3.0.0"
+        let appStoreState = "mock-Ready for Sale"
+        let release = Release(version: version, appStoreState: appStoreState)
+        XCTAssertEqual(release.version, version)
+        XCTAssertEqual(release.appStoreState, appStoreState)
+    }
 }
