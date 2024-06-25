@@ -42,6 +42,20 @@ public struct Build: Equatable {
     /// The minimum version of the operating system required to run this build.
     public let minOsVersion: String?
     
+    /// Initializes a `Build` instance with the provided parameters.
+    /// - Parameters:
+    ///   - id: A unique identifier for the build.
+    ///   - version: The version number of the build.
+    ///   - uploadedDate: The date when the build was uploaded, if available.
+    ///   - minOsVersion: The minimum OS version required for this build, if specified.
+    /// - Note: Some properties may be nil if not provided during initialization.
+    public init(id: String, version: String, uploadedDate: Date?, minOsVersion: String?) {
+        self.id = id
+        self.version = version
+        self.uploadedDate = uploadedDate
+        self.minOsVersion = minOsVersion
+    }
+    
     /// Initializes a `Build` instance with the provided App Store Connect build schema.
     /// - Parameters:
     ///   - schema: The schema representing the build from the API.

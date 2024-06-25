@@ -35,6 +35,15 @@ public struct Release {
     /// The state of the release on the App Store.
     public let appStoreState: String
     
+    /// Initializes a `Release` instance with the provided parameters.
+    /// - Parameters:
+    ///   - version: The version string of the release.
+    ///   - appStoreState: The state of the release on the App Store.
+    /// - Note: This initializer creates a new `Release` instance with the given information.
+    public init(version: String, appStoreState: String) {
+        self.version = version
+        self.appStoreState = appStoreState
+    }
     /// Initializes a `Release` instance with the provided App Store version schema.
     /// - Parameters:
     ///    - schema: The schema representing the App Store version.

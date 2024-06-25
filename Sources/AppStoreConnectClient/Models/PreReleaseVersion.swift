@@ -38,6 +38,18 @@ public struct PreReleaseVersion {
     /// The platform for which the pre-release version is intended.
     public let platform: String?
     
+    /// Initializes a `PreReleaseVersion` instance with the provided parameters.
+        /// - Parameters:
+        ///   - id: The unique identifier for the pre-release version.
+        ///   - version: The version string of the pre-release version.
+        ///   - platform: The platform for which the pre-release version is intended, if specified.
+        /// - Note: This initializer creates a new `PreReleaseVersion` instance with the given information.
+    public init(id: String, version: String, platform: String?) {
+        self.id = id
+        self.version = version
+        self.platform = platform
+    }
+    
     /// Initializes a `PreReleaseVersion` instance with the provided testFlight's pre-release version schema.
     /// - Parameters:
     ///   - schema: The schema representing the pre-release version from the API.

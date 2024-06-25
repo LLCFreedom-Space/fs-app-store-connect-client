@@ -64,4 +64,14 @@ final class PreReleaseVersionTest: XCTestCase {
         XCTAssertNil(preReleaseVersion.version)
         XCTAssertNil(preReleaseVersion.platform)
     }
+    
+    func testPreReleaseVersionInitializer() {
+        let id = "mock-456"
+        let version = "mock-2.0.0"
+        let platform = "mock-iOS"
+        let preRelease = PreReleaseVersion(id: id, version: version, platform: platform)
+        XCTAssertEqual(preRelease.id, id)
+        XCTAssertEqual(preRelease.version, version)
+        XCTAssertEqual(preRelease.platform, platform)
+    }
 }

@@ -64,4 +64,16 @@ final class BuildTest: XCTestCase {
         XCTAssertNil(build.uploadedDate)
         XCTAssertNil(build.minOsVersion)
     }
+    
+    func testBuildInitializer() {
+        let id = "mock-123"
+        let version = "mock-1.0.0"
+        let uploadedDate = Date()
+        let minOsVersion = "mock-14.0"
+        let build = Build(id: id, version: version, uploadedDate: uploadedDate, minOsVersion: minOsVersion)
+        XCTAssertEqual(build.id, id)
+        XCTAssertEqual(build.version, version)
+        XCTAssertEqual(build.uploadedDate, uploadedDate)
+        XCTAssertEqual(build.minOsVersion, minOsVersion)
+    }
 }
