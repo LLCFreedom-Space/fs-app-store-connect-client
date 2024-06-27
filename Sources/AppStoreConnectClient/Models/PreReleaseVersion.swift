@@ -38,13 +38,35 @@ public struct PreReleaseVersion {
     /// The platform for which the pre-release version is intended.
     public let platform: String?
     
+    /// A Boolean value checks if the version string is not nil and the platform is specified and matches the current operating system.
+    /// If the platform is not supported or if the version is missing, the pre-release version is considered invalid.
+    /// - Returns: `true` if the pre-release version is valid; otherwise, `false`.
+    var isValid: Bool {
+        guard nil != self.version else {
+            return false
+        }
+        guard let platform = self.platform else {
+            return false
+        }
+#if os(iOS)
+        guard platform == "IOS" else {
+            return false
+        }
+#elseif os(macOS)
+        guard platform == "MAC_OS" else {
+            return false
+        }
+#endif
+        return true
+    }
+    
     /// Initializes a `PreReleaseVersion` instance with the provided parameters.
-        /// - Parameters:
-        ///   - id: The unique identifier for the pre-release version.
-        ///   - version: The version string of the pre-release version.
-        ///   - platform: The platform for which the pre-release version is intended, if specified.
-        /// - Note: This initializer creates a new `PreReleaseVersion` instance with the given information.
-    public init(id: String, version: String, platform: String?) {
+    /// - Parameters:
+    ///   - id: The unique identifier for the pre-release version.
+    ///   - version: The version string of the pre-release version.
+    ///   - platform: The platform for which the pre-release version is intended, if specified.
+    /// - Note: This initializer creates a new `PreReleaseVersion` instance with the given information.
+    public init(id: String?, version: String?, platform: String?) {
         self.id = id
         self.version = version
         self.platform = platform
