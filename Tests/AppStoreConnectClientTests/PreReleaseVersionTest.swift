@@ -74,4 +74,37 @@ final class PreReleaseVersionTest: XCTestCase {
         XCTAssertEqual(preRelease.version, version)
         XCTAssertEqual(preRelease.platform, platform)
     }
+    
+    func testIsValidSucceedWithValidIOSPlatform() {
+        let preReleaseVersion = PreReleaseVersion(id: "mock-123", version: "1.1.1", platform: "IOS")
+    #if os(iOS)
+        XCTAssertTrue(preReleaseVersion.isValid)
+    #else
+        XCTAssertFalse(preReleaseVersion.isValid)
+    #endif
+    }
+    
+    func testIsValidSucceedWithValidMacOSPlatform() {
+        let preReleaseVersion = PreReleaseVersion(id: "mock-123", version: "1.1.1", platform: "MAC_OS")
+    #if os(macOS)
+        XCTAssertTrue(preReleaseVersion.isValid)
+    #else
+        XCTAssertFalse(preReleaseVersion.isValid)
+    #endif
+    }
+    
+    func testIsValidWithNilVersion() {
+        let preReleaseVersion = PreReleaseVersion(id: "mock-123", version: nil, platform: "IOS")
+        XCTAssertFalse(preReleaseVersion.isValid)
+    }
+
+    func testIsValidWithNilPlatform() {
+        let preReleaseVersion = PreReleaseVersion(id: "mock-123", version: "1.0.0", platform: nil)
+        XCTAssertFalse(preReleaseVersion.isValid)
+    }
+
+    func testIsValidWithInvalidPlatform() {
+        let preReleaseVersion = PreReleaseVersion(id: "mock-123", version: "1.0.0", platform: "Android")
+        XCTAssertFalse(preReleaseVersion.isValid)
+    }
 }
