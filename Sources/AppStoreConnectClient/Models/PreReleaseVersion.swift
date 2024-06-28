@@ -41,7 +41,7 @@ public struct PreReleaseVersion {
     /// A Boolean value checks if the version string is not nil and the platform is specified and matches the current operating system.
     /// If the platform is not supported or if the version is missing, the pre-release version is considered invalid.
     /// - Returns: `true` if the pre-release version is valid; otherwise, `false`.
-    var isValid: Bool {
+    public var isValid: Bool {
         guard nil != self.version else {
             return false
         }
